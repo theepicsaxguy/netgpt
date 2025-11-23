@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
+using NetGPT.Application.DTOs;
 using NetGPT.Application.Interfaces;
 using NetGPT.Domain.Aggregates;
 using NetGPT.Domain.Enums;
@@ -63,11 +64,13 @@ public sealed class AgentOrchestrator : IAgentOrchestrator
             var responseTime = DateTime.UtcNow - startTime;
             tokenCount = EstimateTokens(userMessage + responseText);
 
-            return new AgentResponse(
-                responseText,
-                tokenCount,
-                responseTime,
-                toolsInvoked);
+            var response = new AgentResponse(
+                Content: responseText,
+                TokensUsed: tokenCount,
+                ResponseTime: responseTime,
+                ModelUsed: config.ModelName);
+
+            return Result.Success(response);
         }
         catch (Exception ex)
         {
@@ -88,9 +91,3 @@ public sealed class AgentOrchestrator : IAgentOrchestrator
 
     private static int EstimateTokens(string text) => (int)(text.Length / 4.0);
 }
-
-public sealed record AgentResponse(
-    string Text,
-    int TokensUsed,
-    TimeSpan ResponseTime,
-    List<string> ToolsInvoked);
