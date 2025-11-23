@@ -8,7 +8,7 @@ namespace NetGPT.Application.Services;
 
 public sealed class ConversationMapper : IConversationMapper
 {
-    public Result<ConversationResponse> ToResponse(Conversation conversation)
+    public ConversationResponse ToResponse(Conversation conversation)
     {
         return new ConversationResponse(
             conversation.Id,
@@ -27,7 +27,7 @@ public sealed class ConversationMapper : IConversationMapper
                 conversation.AgentConfiguration.PresencePenalty));
     }
 
-    public Result<MessageResponse> ToMessageResponse(Message message)
+    public MessageResponse ToMessageResponse(Message message)
     {
         var attachments = message.Content.Attachments?
             .Select(a => new FileAttachmentDto(a.FileName, a.FileUrl, a.ContentType, a.FileSizeBytes))

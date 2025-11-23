@@ -5,10 +5,11 @@ using NetGPT.Application.Commands;
 using NetGPT.Application.DTOs;
 using NetGPT.Domain.Aggregates;
 using NetGPT.Domain.Interfaces;
+using NetGPT.Domain.Primitives;
 
 namespace NetGPT.Application.Handlers;
 
-public class CreateConversationHandler : IRequestHandler<CreateConversationCommand, ConversationDto>
+public class CreateConversationHandler : IRequestHandler<CreateConversationCommand, Result<ConversationResponse>>
 {
     private readonly IConversationRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
@@ -21,21 +22,23 @@ public class CreateConversationHandler : IRequestHandler<CreateConversationComma
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<ConversationDto> Handle(
+    public async Task<Result<ConversationResponse>> Handle(
         CreateConversationCommand request,
         CancellationToken ct)
     {
         var conversation = Conversation.Create(request.UserId, request.Title);
-        
+
         await _repository.AddAsync(conversation, ct);
         await _unitOfWork.SaveChangesAsync(ct);
 
-        return new ConversationDto(
+        var response = new ConversationResponse(
             conversation.Id.Value,
             conversation.Title,
             conversation.CreatedAt,
             conversation.UpdatedAt,
             0
         );
+
+        return Result.Success(response);
     }
 }

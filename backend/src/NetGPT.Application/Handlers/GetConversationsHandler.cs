@@ -8,6 +8,7 @@ using NetGPT.Application.Interfaces;
 using NetGPT.Application.Queries;
 using NetGPT.Domain.Interfaces;
 using NetGPT.Domain.Primitives;
+using NetGPT.Domain.ValueObjects;
 
 namespace NetGPT.Application.Handlers;
 
@@ -24,8 +25,10 @@ public sealed class GetConversationsHandler : IRequestHandler<GetConversationsQu
 
     public async Task<Result<PaginatedResponse<ConversationResponse>>> Handle(GetConversationsQuery request, CancellationToken cancellationToken)
     {
-        var conversations = await _repository.GetByUserIdAsync(request.UserId, request.Page, request.PageSize, cancellationToken);
-        var totalCount = await _repository.CountByUserIdAsync(request.UserId, cancellationToken);
+        var userId = UserId.From(request.UserId);
+
+        var conversations = await _repository.GetByUserIdAsync(userId, request.Page, request.PageSize, cancellationToken);
+        var totalCount = await _repository.CountByUserIdAsync(userId, cancellationToken);
         var totalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize);
 
         var responses = conversations.Select(_mapper.ToResponse).ToList();

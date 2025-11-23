@@ -8,6 +8,7 @@ using NetGPT.Application.Interfaces;
 using NetGPT.Application.Queries;
 using NetGPT.Domain.Interfaces;
 using NetGPT.Domain.Primitives;
+using NetGPT.Domain.ValueObjects;
 
 namespace NetGPT.Application.Handlers;
 
@@ -24,14 +25,17 @@ public sealed class GetMessagesHandler : IRequestHandler<GetMessagesQuery, Resul
 
     public async Task<Result<List<MessageResponse>>> Handle(GetMessagesQuery request, CancellationToken cancellationToken)
     {
-        var conversation = await _repository.GetByIdAsync(request.ConversationId, cancellationToken);
+        var conversationId = ConversationId.From(request.ConversationId);
+        var userId = UserId.From(request.UserId);
+
+        var conversation = await _repository.GetByIdAsync(conversationId, cancellationToken);
         if (conversation is null)
         {
             return Result.Failure<List<MessageResponse>>(
                 new Error("Conversation.NotFound", "Conversation not found"));
         }
 
-        if (conversation.UserId != request.UserId)
+        if (conversation.UserId != userId)
         {
             return Result.Failure<List<MessageResponse>>(
                 new Error("Conversation.Unauthorized", "Unauthorized access"));

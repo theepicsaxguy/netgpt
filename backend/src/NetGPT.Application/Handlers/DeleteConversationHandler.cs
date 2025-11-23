@@ -4,6 +4,7 @@ using MediatR;
 using NetGPT.Application.Commands;
 using NetGPT.Domain.Interfaces;
 using NetGPT.Domain.Primitives;
+using NetGPT.Domain.ValueObjects;
 
 namespace NetGPT.Application.Handlers;
 
@@ -20,18 +21,21 @@ public sealed class DeleteConversationHandler : IRequestHandler<DeleteConversati
 
     public async Task<Result> Handle(DeleteConversationCommand request, CancellationToken cancellationToken)
     {
-        var conversation = await _repository.GetByIdAsync(request.ConversationId, cancellationToken);
+        var conversationId = ConversationId.From(request.ConversationId);
+        var userId = UserId.From(request.UserId);
+
+        var conversation = await _repository.GetByIdAsync(conversationId, cancellationToken);
         if (conversation is null)
         {
             return Result.Failure(new Error("Conversation.NotFound", "Conversation not found"));
         }
 
-        if (conversation.UserId != request.UserId)
+        if (conversation.UserId != userId)
         {
             return Result.Failure(new Error("Conversation.Unauthorized", "Unauthorized access"));
         }
 
-        await _repository.DeleteAsync(request.ConversationId, cancellationToken);
+        await _repository.DeleteAsync(conversationId, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result.Success();

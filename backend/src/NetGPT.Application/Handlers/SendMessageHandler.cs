@@ -6,11 +6,12 @@ using NetGPT.Application.DTOs;
 using NetGPT.Domain.Enums;
 using NetGPT.Domain.Exceptions;
 using NetGPT.Domain.Interfaces;
+using NetGPT.Domain.Primitives;
 using NetGPT.Domain.ValueObjects;
 
 namespace NetGPT.Application.Handlers;
 
-public class SendMessageHandler : IRequestHandler<SendMessageCommand, MessageDto>
+public class SendMessageHandler : IRequestHandler<SendMessageCommand, Result<MessageResponse>>
 {
     private readonly IConversationRepository _repository;
     private readonly IUnitOfWork _unitOfWork;
@@ -23,12 +24,18 @@ public class SendMessageHandler : IRequestHandler<SendMessageCommand, MessageDto
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<MessageDto> Handle(SendMessageCommand request, CancellationToken ct)
+    public async Task<Result<MessageResponse>> Handle(SendMessageCommand request, CancellationToken ct)
     {
-        var conversation = await _repository.GetByIdAsync(request.ConversationId, ct)
-            ?? throw new NotFoundException(nameof(Conversation), request.ConversationId);
+        var conversationId = ConversationId.From(request.ConversationId);
+        var userId = UserId.From(request.UserId);
 
-        conversation.EnsureOwnership(request.UserId);
+        var conversation = await _repository.GetByIdAsync(conversationId, ct);
+        if (conversation is null)
+        {
+            return Result.Failure<MessageResponse>(new Error("Conversation.NotFound", "Conversation not found"));
+        }
+
+        conversation.EnsureOwnership(userId);
 
         var content = MessageContent.FromText(request.Content);
         var messageId = conversation.AddMessage(MessageRole.User, content);
@@ -36,12 +43,14 @@ public class SendMessageHandler : IRequestHandler<SendMessageCommand, MessageDto
         await _unitOfWork.SaveChangesAsync(ct);
 
         var message = conversation.GetMessage(messageId);
-        
-        return new MessageDto(
+
+        var response = new MessageResponse(
             message.Id.Value,
-            message.Role,
+            message.Role.ToString(),
             message.Content.Text,
             message.CreatedAt
         );
+
+        return Result.Success(response);
     }
 }
