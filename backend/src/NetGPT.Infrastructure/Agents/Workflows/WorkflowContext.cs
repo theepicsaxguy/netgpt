@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NetGPT.Domain.Aggregates;
 using NetGPT.Infrastructure.Configuration;
 

@@ -6,6 +6,7 @@ using NetGPT.Application.DTOs;
 using NetGPT.Domain.Aggregates;
 using NetGPT.Domain.Interfaces;
 using NetGPT.Domain.Primitives;
+using NetGPT.Domain.ValueObjects;
 
 namespace NetGPT.Application.Handlers;
 
@@ -26,7 +27,8 @@ public class CreateConversationHandler : IRequestHandler<CreateConversationComma
         CreateConversationCommand request,
         CancellationToken ct)
     {
-        var conversation = Conversation.Create(request.UserId, request.Title);
+        var userId = UserId.From(request.UserId);
+        var conversation = Conversation.Create(userId, request.Title);
 
         await _repository.AddAsync(conversation, ct);
         await _unitOfWork.SaveChangesAsync(ct);

@@ -16,24 +16,30 @@ public sealed class Conversation
     public ConversationId Id { get; private set; }
     public UserId UserId { get; private set; }
     public string Title { get; private set; }
+    public ConversationStatus Status { get; private set; }
+    public int TokensUsed { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
     public ConversationMetadata Metadata { get; private set; }
+    public AgentConfiguration AgentConfiguration { get; private set; }
     public IReadOnlyList<Message> Messages => _messages.AsReadOnly();
     public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
     private Conversation() { } // EF Core
 
-    public static Conversation Create(UserId userId, string? title = null)
+    public static Conversation Create(UserId userId, string? title = null, AgentConfiguration? agentConfig = null)
     {
         var conversation = new Conversation
         {
             Id = ConversationId.CreateNew(),
             UserId = userId ?? throw new ArgumentNullException(nameof(userId)),
             Title = title ?? "New Conversation",
+            Status = ConversationStatus.Active,
+            TokensUsed = 0,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
-            Metadata = ConversationMetadata.Default()
+            Metadata = ConversationMetadata.Default(),
+            AgentConfiguration = agentConfig ?? AgentConfiguration.Default()
         };
 
         conversation.AddDomainEvent(new ConversationCreatedEvent(conversation.Id, userId));
@@ -85,5 +91,17 @@ public sealed class Conversation
     {
         if (UserId != userId)
             throw new UnauthorizedAccessException("User does not own this conversation");
+    }
+
+    public void AddTokens(int tokens)
+    {
+        TokensUsed += tokens;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Archive()
+    {
+        Status = ConversationStatus.Archived;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

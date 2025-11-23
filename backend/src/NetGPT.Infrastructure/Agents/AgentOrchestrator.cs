@@ -1,8 +1,15 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using NetGPT.Application.Interfaces;
-using NetGPT.Domain.Aggregates.ConversationAggregate;
+using NetGPT.Domain.Aggregates;
+using NetGPT.Domain.Enums;
 using NetGPT.Domain.Primitives;
+using NetGPT.Infrastructure.Tools;
 using OpenAI;
 
 namespace NetGPT.Infrastructure.Agents;

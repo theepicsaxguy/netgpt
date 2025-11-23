@@ -1,6 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using NetGPT.Domain.Aggregates.ConversationAggregate;
+using NetGPT.Domain.Aggregates;
 using NetGPT.Domain.Interfaces;
+using NetGPT.Domain.ValueObjects;
 using NetGPT.Infrastructure.Persistence;
 
 namespace NetGPT.Infrastructure.Repositories;
@@ -14,7 +20,7 @@ public sealed class ConversationRepository : IConversationRepository
         _context = context;
     }
 
-    public async Task<Conversation?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Conversation?> GetByIdAsync(ConversationId id, CancellationToken cancellationToken = default)
     {
         return await _context.Conversations
             .Include(c => c.Messages)
@@ -22,16 +28,16 @@ public sealed class ConversationRepository : IConversationRepository
     }
 
     public async Task<List<Conversation>> GetByUserIdAsync(
-        Guid userId,
-        int page,
-        int pageSize,
+        UserId userId,
+        int skip,
+        int take,
         CancellationToken cancellationToken = default)
     {
         return await _context.Conversations
             .Where(c => c.UserId == userId)
             .OrderByDescending(c => c.UpdatedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .Skip(skip)
+            .Take(take)
             .ToListAsync(cancellationToken);
     }
 
@@ -47,17 +53,16 @@ public sealed class ConversationRepository : IConversationRepository
         return Task.CompletedTask;
     }
 
-    public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(ConversationId id, CancellationToken cancellationToken = default)
     {
-        var conversation = _context.Conversations.Find(id);
+        var conversation = await _context.Conversations.FindAsync(new object[] { id }, cancellationToken);
         if (conversation != null)
         {
             _context.Conversations.Remove(conversation);
         }
-        return Task.CompletedTask;
     }
 
-    public async Task<int> CountByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<int> CountByUserIdAsync(UserId userId, CancellationToken cancellationToken = default)
     {
         return await _context.Conversations
             .Where(c => c.UserId == userId)

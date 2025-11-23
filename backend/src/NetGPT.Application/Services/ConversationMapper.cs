@@ -11,44 +11,43 @@ public sealed class ConversationMapper : IConversationMapper
     public ConversationResponse ToResponse(Conversation conversation)
     {
         return new ConversationResponse(
-            conversation.Id,
+            conversation.Id.Value,
             conversation.Title,
-            conversation.Status.ToString(),
             conversation.CreatedAt,
             conversation.UpdatedAt,
-            conversation.Messages.Count,
-            conversation.TokensUsed,
-            new AgentConfigurationDto(
-                conversation.AgentConfiguration.ModelName,
-                conversation.AgentConfiguration.Temperature,
-                conversation.AgentConfiguration.MaxTokens,
-                conversation.AgentConfiguration.TopP,
-                conversation.AgentConfiguration.FrequencyPenalty,
-                conversation.AgentConfiguration.PresencePenalty));
+            conversation.Messages.Count);
     }
 
     public MessageResponse ToMessageResponse(Message message)
     {
-        var attachments = message.Content.Attachments?
-            .Select(a => new FileAttachmentDto(a.FileName, a.FileUrl, a.ContentType, a.FileSizeBytes))
+        var attachments = message.Content.Attachments
+            .Select(a => new AttachmentDto(a.FileName, a.ContentType, a.SizeBytes, a.StorageKey))
             .ToList();
 
         MessageMetadataDto? metadata = null;
         if (message.Metadata != null)
         {
+            var toolInvocations = message.Metadata.ToolInvocations?
+                .Select(t => new ToolInvocationDto(
+                    t.ToolName,
+                    t.Arguments,
+                    t.Result,
+                    t.InvokedAt,
+                    t.Duration.TotalMilliseconds))
+                .ToList();
+
             metadata = new MessageMetadataDto(
-                message.Metadata.TokenCount,
-                message.Metadata.ResponseTime.TotalMilliseconds,
-                message.Metadata.ModelUsed,
-                message.Metadata.ToolsInvoked);
+                toolInvocations,
+                message.Metadata.AgentName,
+                message.Metadata.TokenCount);
         }
 
         return new MessageResponse(
-            message.Id,
-            message.Content.Role.ToString(),
+            message.Id.Value,
+            message.Role.ToString(),
             message.Content.Text,
+            message.CreatedAt,
             attachments,
-            metadata,
-            message.CreatedAt);
+            metadata);
     }
 }

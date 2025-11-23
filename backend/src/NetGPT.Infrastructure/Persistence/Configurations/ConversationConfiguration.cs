@@ -1,6 +1,7 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NetGPT.Domain.Aggregates.ConversationAggregate;
+using NetGPT.Domain.Aggregates;
 
 namespace NetGPT.Infrastructure.Persistence.Configurations;
 
