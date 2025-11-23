@@ -284,10 +284,14 @@ MessageAttachments
 
 ```bash
 # Local Development
-dotnet run --project src/NetGPT.API
+cd backend
+make run
+# Or: dotnet run --project src/NetGPT.API
 
 # Docker
-docker-compose up
+cd backend
+make docker-up
+# Or: docker-compose up
 
 # Production (K8s)
 kubectl apply -f k8s/

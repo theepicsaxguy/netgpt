@@ -1,177 +1,124 @@
-# NetGPT Backend - Production-Ready ChatGPT Clone
+# NetGPT - Production-Ready ChatGPT Clone
 
-## Architecture
-
-### Clean Architecture with DDD
-- **Domain Layer**: Aggregates, Value Objects, Domain Events, Business Logic
-- **Application Layer**: CQRS Commands/Queries, Handlers, DTOs, Interfaces  
-- **Infrastructure Layer**: Agent Framework Integration, EF Core, External Services
-- **API Layer**: Controllers, SignalR Hubs, Middleware
-
-### Key Design Patterns
-- **SOLID**: Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion
-- **DRY**: Reusable components, shared abstractions
-- **CQRS**: Separate read and write models
-- **Repository Pattern**: Data access abstraction
-- **Unit of Work**: Transaction management
-- **Result Pattern**: Error handling without exceptions
-
-## Agent Framework Integration
-
-### Microsoft Agent Framework (Microsoft.Agents.AI)
-- Primary agent orchestration
-- Multi-agent workflows
-- Tool/Plugin system with runtime DI registration
-- Streaming responses via SignalR
-
-### Tools/Plugins (Registered at Runtime)
-- Web Search Tool
-- Code Execution Tool (Python, JavaScript)
-- File Processing Tool (PDF, Images)
-- Custom tools can be added by implementing methods with `[Description]` attributes
+A full-stack ChatGPT clone with a production-ready .NET backend and React frontend.
 
 ## Project Structure
 
 ```
-NetGPT.Backend/
-├── src/
-│   ├── NetGPT.Domain/           # Core business logic
-│   │   ├── Aggregates/
-│   │   ├── ValueObjects/
-│   │   ├── Events/
-│   │   ├── Interfaces/
-│   │   └── Primitives/
-│   ├── NetGPT.Application/      # Use cases
-│   │   ├── Commands/
-│   │   ├── Queries/
-│   │   ├── Handlers/
-│   │   ├── DTOs/
-│   │   └── Mappings/
-│   ├── NetGPT.Infrastructure/   # External concerns
-│   │   ├── Agents/
-│   │   ├── Tools/
-│   │   ├── Persistence/
-│   │   └── Configuration/
-│   └── NetGPT.API/              # HTTP/SignalR interface
-│       ├── Controllers/
-│       └── Hubs/
+netgpt/
+├── backend/          # .NET 8 Backend API
+│   ├── src/
+│   │   ├── NetGPT.Domain/
+│   │   ├── NetGPT.Application/
+│   │   ├── NetGPT.Infrastructure/
+│   │   └── NetGPT.API/
+│   ├── NetGPT.sln
+│   ├── Dockerfile
+│   └── docker-compose.yml
+├── frontend/         # React Frontend (To be implemented)
+│   └── src/
+└── orval.config.ts   # API client code generation
 ```
 
-## Getting Started
+## Backend
+
+The backend is built with Clean Architecture and Domain-Driven Design principles.
+
+### Features
+- **Clean Architecture with DDD**: Separated concerns across Domain, Application, Infrastructure, and API layers
+- **CQRS Pattern**: Command/Query separation using MediatR
+- **Microsoft Agent Framework**: AI orchestration with multi-agent workflows
+- **Real-time Streaming**: SignalR for streaming AI responses
+- **Tool/Plugin System**: Extensible tools (Web Search, Code Execution, File Processing)
+- **OpenAI Integration**: Standard OpenAI API (not Azure)
+- **PostgreSQL Database**: Entity Framework Core with migrations
+
+### Quick Start
+
+```bash
+cd backend
+
+# Build the solution
+make build
+
+# Run the API
+make run
+
+# Or with Docker
+make docker-up
+```
+
+See [backend/README.md](./backend/README.md) for detailed backend documentation.
+
+## Frontend
+
+The frontend will be a modern React application with TypeScript.
+
+### Planned Features
+- Real-time chat interface with streaming responses
+- Conversation management
+- File upload support
+- Markdown and code syntax highlighting
+- SignalR WebSocket integration
+
+### Tech Stack (Planned)
+- React with TypeScript
+- React Query for state management
+- Tailwind CSS
+- Orval for auto-generated API client
+
+See [frontend/README.md](./frontend/README.md) for frontend setup instructions.
+
+## API Client Generation
+
+The project uses Orval to auto-generate TypeScript API clients from the Swagger specification:
+
+```bash
+# Generate API client (when backend is running)
+npx orval
+```
+
+Configuration is in `orval.config.ts` at the root.
+
+## Development
 
 ### Prerequisites
 - .NET 8 SDK
+- Node.js 18+ (for frontend)
 - PostgreSQL 14+
 - OpenAI API Key
 
-### Configuration
+### Getting Started
 
-Update `appsettings.json`:
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Database=netgpt;Username=postgres;Password=yourpassword"
-  },
-  "OpenAI": {
-    "ApiKey": "sk-your-openai-api-key",
-    "DefaultModel": "gpt-4o",
-    "MaxTokens": 4000
-  }
-}
-```
+1. **Start the backend:**
+   ```bash
+   cd backend
+   # Update appsettings.json with your database and OpenAI API key
+   make run
+   ```
 
-### Run Migrations
-```bash
-cd src/NetGPT.API
-dotnet ef migrations add InitialCreate --project ../NetGPT.Infrastructure
-dotnet ef database update
-```
+2. **Access the API:**
+   - API: https://localhost:5001
+   - Swagger: https://localhost:5001/swagger
 
-### Run Application
-```bash
-cd src/NetGPT.API
-dotnet run
-```
+3. **Generate API client for frontend:**
+   ```bash
+   npx orval
+   ```
 
-API: https://localhost:5001  
-Swagger: https://localhost:5001/swagger  
-SignalR Hub: wss://localhost:5001/hubs/conversation
+## Architecture
 
-## API Endpoints
+- **Backend**: Clean Architecture with SOLID principles, CQRS, Repository Pattern
+- **Frontend**: Component-based architecture with React Query for server state
+- **API**: RESTful endpoints + SignalR for real-time streaming
+- **Database**: PostgreSQL with EF Core
 
-### Conversations
-- `POST /api/v1/conversations` - Create conversation
-- `GET /api/v1/conversations` - List conversations (paginated)
-- `GET /api/v1/conversations/{id}` - Get conversation
-- `DELETE /api/v1/conversations/{id}` - Delete conversation
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed architecture documentation.
 
-### Messages
-- `POST /api/v1/conversations/{id}/messages` - Send message (REST)
-- WebSocket: `/hubs/conversation` - Streaming messages
+## Contributing
 
-## Orval Code Generation
-
-The API is designed for Orval to auto-generate TypeScript client:
-
-```yaml
-# orval.config.ts
-export default {
-  netgpt: {
-    input: 'https://localhost:5001/swagger/v1/swagger.json',
-    output: {
-      mode: 'tags-split',
-      target: 'src/api/generated',
-      schemas: 'src/api/models',
-      client: 'react-query',
-    },
-  },
-};
-```
-
-## Adding Custom Tools/Plugins
-
-Create a new plugin class:
-```csharp
-public sealed class CustomToolPlugin
-{
-    [Description("Your tool description")]
-    public async Task<string> YourTool(
-        [Description("Parameter description")] string param)
-    {
-        // Implementation
-        return "result";
-    }
-}
-```
-
-Register in `Program.cs`:
-```csharp
-var customTools = AIFunctionFactory.Create(new CustomToolPlugin());
-foreach (var tool in customTools)
-{
-    registry.RegisterTool(tool);
-}
-```
-
-## Production Deployment
-
-### Database
-- Use connection pooling (PgBouncer)
-- Enable read replicas for scaling
-- Regular backups
-
-### Application
-- Deploy as Docker containers
-- Use Kubernetes for orchestration
-- Configure health checks
-- Enable distributed tracing (OpenTelemetry)
-
-### Security
-- Implement JWT authentication
-- Add rate limiting
-- Enable HTTPS only
-- Validate all inputs
-- Sanitize user content before sending to OpenAI
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for contribution guidelines.
 
 ## License
+
 MIT
