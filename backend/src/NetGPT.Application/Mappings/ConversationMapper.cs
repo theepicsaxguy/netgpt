@@ -1,6 +1,7 @@
+using System.Linq;
 using NetGPT.Application.DTOs;
 using NetGPT.Application.Interfaces;
-using NetGPT.Domain.Aggregates.ConversationAggregate;
+using NetGPT.Domain.Aggregates;
 
 namespace NetGPT.Application.Mappings;
 

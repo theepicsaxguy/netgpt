@@ -1,5 +1,5 @@
 using NetGPT.Application.DTOs;
-using NetGPT.Domain.Aggregates.ConversationAggregate;
+using NetGPT.Domain.Aggregates;
 
 namespace NetGPT.Application.Interfaces;
 

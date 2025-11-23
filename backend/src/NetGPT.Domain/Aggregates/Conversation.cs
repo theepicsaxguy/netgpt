@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using NetGPT.Domain.Enums;
 using NetGPT.Domain.Events;
 using NetGPT.Domain.Exceptions;
 using NetGPT.Domain.ValueObjects;

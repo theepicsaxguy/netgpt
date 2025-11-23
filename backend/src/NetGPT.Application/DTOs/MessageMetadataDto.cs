@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace NetGPT.Application.DTOs;
 
 public record MessageMetadataDto(

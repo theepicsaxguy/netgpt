@@ -1,3 +1,5 @@
+using System;
+
 namespace NetGPT.Domain.Exceptions;
 
 public class DomainException : Exception

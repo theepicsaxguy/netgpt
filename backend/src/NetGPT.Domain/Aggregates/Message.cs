@@ -1,3 +1,5 @@
+using System;
+using NetGPT.Domain.Enums;
 using NetGPT.Domain.ValueObjects;
 
 namespace NetGPT.Domain.Aggregates;

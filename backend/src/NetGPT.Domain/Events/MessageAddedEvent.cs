@@ -1,3 +1,4 @@
+using System;
 using NetGPT.Domain.ValueObjects;
 using NetGPT.Domain.Enums;
 

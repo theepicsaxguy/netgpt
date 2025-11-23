@@ -1,3 +1,5 @@
+using System;
+
 namespace NetGPT.Application.DTOs;
 
 public record StreamingChunkDto(

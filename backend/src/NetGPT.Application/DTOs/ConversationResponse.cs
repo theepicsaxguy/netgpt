@@ -2,7 +2,7 @@ using System;
 
 namespace NetGPT.Application.DTOs;
 
-public record ConversationDto(
+public record ConversationResponse(
     Guid Id,
     string Title,
     DateTime CreatedAt,

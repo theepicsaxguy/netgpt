@@ -1,6 +1,7 @@
-using NetGPT.Domain.Aggregates.ConversationAggregate;
+using System.Threading;
+using System.Threading.Tasks;
+using NetGPT.Domain.Aggregates;
 using NetGPT.Domain.Primitives;
-using NetGPT.Infrastructure.Agents;
 
 namespace NetGPT.Application.Interfaces;
 
