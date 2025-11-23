@@ -1,0 +1,30 @@
+using Microsoft.OpenApi.Models;
+
+namespace NetGPT.API.Configuration;
+
+public static class SwaggerConfiguration
+{
+    public static IServiceCollection AddSwaggerConfiguration(this IServiceCollection services)
+    {
+        services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "NetGPT API",
+                Version = "v1",
+                Description = "ChatGPT clone with Agent Framework"
+            });
+
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Description = "JWT Authorization header",
+                Name = "Authorization",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer"
+            });
+        });
+
+        return services;
+    }
+}

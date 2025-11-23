@@ -1,0 +1,85 @@
+using NetGPT.Domain.Events;
+using NetGPT.Domain.Exceptions;
+using NetGPT.Domain.ValueObjects;
+
+namespace NetGPT.Domain.Aggregates;
+
+public sealed class Conversation
+{
+    private readonly List<Message> _messages = new();
+    private readonly List<IDomainEvent> _domainEvents = new();
+
+    public ConversationId Id { get; private set; }
+    public UserId UserId { get; private set; }
+    public string Title { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public DateTime UpdatedAt { get; private set; }
+    public ConversationMetadata Metadata { get; private set; }
+    public IReadOnlyList<Message> Messages => _messages.AsReadOnly();
+    public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    private Conversation() { } // EF Core
+
+    public static Conversation Create(UserId userId, string? title = null)
+    {
+        var conversation = new Conversation
+        {
+            Id = ConversationId.CreateNew(),
+            UserId = userId ?? throw new ArgumentNullException(nameof(userId)),
+            Title = title ?? "New Conversation",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            Metadata = ConversationMetadata.Default()
+        };
+
+        conversation.AddDomainEvent(new ConversationCreatedEvent(conversation.Id, userId));
+        return conversation;
+    }
+
+    public MessageId AddMessage(MessageRole role, MessageContent content)
+    {
+        var message = Message.Create(
+            Id,
+            role,
+            content,
+            _messages.LastOrDefault()?.Id
+        );
+
+        _messages.Add(message);
+        UpdatedAt = DateTime.UtcNow;
+
+        AddDomainEvent(new MessageAddedEvent(Id, message.Id, role));
+        return message.Id;
+    }
+
+    public void UpdateTitle(string title)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+            throw new DomainException("Title cannot be empty");
+
+        Title = title;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void UpdateMetadata(ConversationMetadata metadata)
+    {
+        Metadata = metadata ?? throw new ArgumentNullException(nameof(metadata));
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public Message GetMessage(MessageId messageId)
+    {
+        return _messages.FirstOrDefault(m => m.Id == messageId)
+            ?? throw new DomainException($"Message {messageId} not found");
+    }
+
+    public void ClearDomainEvents() => _domainEvents.Clear();
+
+    private void AddDomainEvent(IDomainEvent domainEvent) => _domainEvents.Add(domainEvent);
+
+    public void EnsureOwnership(UserId userId)
+    {
+        if (UserId != userId)
+            throw new UnauthorizedAccessException("User does not own this conversation");
+    }
+}

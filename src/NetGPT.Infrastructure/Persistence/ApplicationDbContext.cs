@@ -1,0 +1,41 @@
+using Microsoft.EntityFrameworkCore;
+using NetGPT.Domain.Aggregates.ConversationAggregate;
+using NetGPT.Domain.Primitives;
+using NetGPT.Infrastructure.Persistence.Configurations;
+
+namespace NetGPT.Infrastructure.Persistence;
+
+public sealed class ApplicationDbContext : DbContext
+{
+    public DbSet<Conversation> Conversations => Set<Conversation>();
+    public DbSet<Message> Messages => Set<Message>();
+
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfiguration(new ConversationConfiguration());
+        modelBuilder.ApplyConfiguration(new MessageConfiguration());
+        
+        base.OnModelCreating(modelBuilder);
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var domainEvents = ChangeTracker.Entries<Entity>()
+            .Select(e => e.Entity)
+            .SelectMany(e =>
+            {
+                var events = e.DomainEvents.ToList();
+                e.ClearDomainEvents();
+                return events;
+            })
+            .ToList();
+
+        var result = await base.SaveChangesAsync(cancellationToken);
+
+        // TODO: Publish domain events via MediatR
+        
+        return result;
+    }
+}
