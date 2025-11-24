@@ -49,10 +49,5 @@ namespace NetGPT.Domain.Aggregates
                 ParentMessageId = parentMessageId,
             };
         }
-
-        public void AddMetadata(MessageMetadata metadata)
-        {
-            Metadata = metadata;
-        }
     }
 }

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using NetGPT.Application.DTOs;
@@ -16,8 +17,8 @@ namespace NetGPT.Application.Services
         public async Task<EvaluationResult> EvaluateAsync(Conversation conversation, string userMessage, AgentResponse response)
         {
             // Simple heuristic: check if response contains keywords from user message
-            var userWords = userMessage.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries).Distinct();
-            var responseWords = response.Content.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries).Distinct();
+            var userWords = userMessage.ToLower(CultureInfo.InvariantCulture).Split(' ', StringSplitOptions.RemoveEmptyEntries).Distinct();
+            var responseWords = response.Content.ToLower(CultureInfo.InvariantCulture).Split(' ', StringSplitOptions.RemoveEmptyEntries).Distinct();
             var overlap = userWords.Intersect(responseWords).Count();
             var score = userWords.Count() > 0 ? (double)overlap / userWords.Count() : 0.0;
 

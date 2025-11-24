@@ -6,6 +6,7 @@
     <LangVersion>latest</LangVersion>
     <AssemblyName>NetGPT.Analyzers</AssemblyName>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <NoWarn>RS2008</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

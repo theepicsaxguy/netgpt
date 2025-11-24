@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoWarn>SA0001</NoWarn>
     <Company>NetGPT</Company>
     <Copyright>Copyright (c) 2025 NetGPT. All rights reserved.</Copyright>
   </PropertyGroup>
