@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using MediatR;
 using NetGPT.Application.Commands;
+using NetGPT.Application.DTOs;
 using NetGPT.Application.Interfaces;
 using NetGPT.Domain.Interfaces;
 using NetGPT.Domain.ValueObjects;
@@ -46,13 +47,7 @@ public sealed class ConversationHub : Hub
             // Stream agent response
             await foreach (var chunk in StreamAgentResponse(conversation, content))
             {
-                await Clients.Caller.SendAsync("MessageChunk", new
-                {
-                    MessageId = messageId,
-                    Content = chunk.Content,
-                    ToolInvocations = chunk.ToolInvocations,
-                    IsComplete = chunk.IsComplete
-                });
+                await Clients.Caller.SendAsync("MessageChunk", chunk);
             }
 
             await Clients.Caller.SendAsync("MessageCompleted", messageId);
@@ -63,14 +58,17 @@ public sealed class ConversationHub : Hub
         }
     }
 
-    private async IAsyncEnumerable<StreamChunk> StreamAgentResponse(
+    private async IAsyncEnumerable<StreamingChunkDto> StreamAgentResponse(
         Domain.Aggregates.Conversation conversation,
         string userMessage)
     {
+        // Generate a new messageId for the streaming response
+        var messageId = Guid.NewGuid();
+
         // This would integrate with actual Agent Framework streaming
-        yield return new StreamChunk("Hello", new List<string>(), false);
+        yield return new StreamingChunkDto(messageId, "Hello", null, false);
         await Task.Delay(100);
-        yield return new StreamChunk(" World", new List<string>(), true);
+        yield return new StreamingChunkDto(messageId, " World", null, true);
     }
 
     private Guid GetCurrentUserId()
@@ -79,5 +77,3 @@ public sealed class ConversationHub : Hub
         return Guid.Parse("00000000-0000-0000-0000-000000000001");
     }
 }
-
-public record StreamChunk(string Content, List<string> ToolInvocations, bool IsComplete);
