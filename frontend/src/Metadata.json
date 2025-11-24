@@ -1,0 +1,5 @@
+{
+  "name": "NetGPT Chat",
+  "description": "A modern, responsive chat interface for the NetGPT API.",
+  "requestFramePermissions": []
+}

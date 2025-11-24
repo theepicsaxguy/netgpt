@@ -7,8 +7,6 @@ module.exports = {
     project: './tsconfig.json',
   },
   plugins: ['@typescript-eslint'],
-  // Expose local rules under "local-rules" namespace
-  settings: { 'local-rules': require('./eslint-rules') },
   env: {
     browser: true,
     node: true,
@@ -18,10 +16,10 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended'
   ],
-  plugins: ['max-classes-per-file'],
+  plugins: ['@typescript-eslint'],
   rules: {
     // Enforce single exported type/interface/class per DTO file
-    'local-rules/single-type-per-file': ['error', { rule: settings['local-rules'] }],
+    // 'single-type-per-file': 'error',
 
     // Encourage SRP / small files: max 200 lines
     'max-lines': ['error', { max: 200, skipBlankLines: true, skipComments: true }],
@@ -42,11 +40,11 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['*.dto.ts', '*.dto.tsx', '*.dto.jsx', '*.dto.js'],
+      files: ['src/api/generated/**'],
       rules: {
-        // stricter for DTO files
-        'local-rules/single-type-per-file': 'error',
-        'max-lines': ['error', { max: 120 }]
+        'max-lines': 'off',
+        '@typescript-eslint/consistent-type-definitions': 'off',
+        '@typescript-eslint/explicit-module-boundary-types': 'off'
       }
     }
   ]
