@@ -26,12 +26,14 @@ public sealed class ApplicationDbContext : DbContext
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var domainEvents = ChangeTracker.Entries<Entity>()
+        // Collect domain events from Conversation aggregates
+        var domainEvents = ChangeTracker.Entries<Conversation>()
             .Select(e => e.Entity)
-            .SelectMany(e =>
+            .Where(c => c.DomainEvents.Any())
+            .SelectMany(c =>
             {
-                var events = e.DomainEvents.ToList();
-                e.ClearDomainEvents();
+                var events = c.DomainEvents.ToList();
+                c.ClearDomainEvents();
                 return events;
             })
             .ToList();
@@ -39,7 +41,7 @@ public sealed class ApplicationDbContext : DbContext
         var result = await base.SaveChangesAsync(cancellationToken);
 
         // TODO: Publish domain events via MediatR
-        
+
         return result;
     }
 }

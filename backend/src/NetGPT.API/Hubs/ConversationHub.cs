@@ -1,8 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using MediatR;
 using NetGPT.Application.Commands;
 using NetGPT.Application.Interfaces;
 using NetGPT.Domain.Interfaces;
+using NetGPT.Domain.ValueObjects;
 
 namespace NetGPT.API.Hubs;
 
@@ -28,8 +32,8 @@ public sealed class ConversationHub : Hub
 
         try
         {
-            var conversation = await _repository.GetByIdAsync(conversationId);
-            if (conversation == null || conversation.UserId != userId)
+            var conversation = await _repository.GetByIdAsync(ConversationId.From(conversationId));
+            if (conversation == null || conversation.UserId != UserId.From(userId))
             {
                 await Clients.Caller.SendAsync("Error", "Conversation not found or unauthorized");
                 return;
@@ -60,7 +64,7 @@ public sealed class ConversationHub : Hub
     }
 
     private async IAsyncEnumerable<StreamChunk> StreamAgentResponse(
-        Domain.Aggregates.ConversationAggregate.Conversation conversation,
+        Domain.Aggregates.Conversation conversation,
         string userMessage)
     {
         // This would integrate with actual Agent Framework streaming

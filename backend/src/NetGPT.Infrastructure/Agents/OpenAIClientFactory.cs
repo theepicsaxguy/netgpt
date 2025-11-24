@@ -21,6 +21,7 @@ public class OpenAIClientFactory : IOpenAIClientFactory
     public IChatClient CreateChatClient(string? model = null)
     {
         var client = new OpenAIClient(_settings.ApiKey);
-        return client.GetChatClient(model ?? _settings.DefaultModel);
+        var chatClient = client.GetChatClient(model ?? _settings.DefaultModel);
+        return chatClient.AsIChatClient();
     }
 }

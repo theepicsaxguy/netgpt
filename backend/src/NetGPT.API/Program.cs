@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using NetGPT.API.Hubs;
 using NetGPT.Application.Handlers;
 using NetGPT.Application.Interfaces;
-using NetGPT.Application.Mappings;
+using NetGPT.Application.Services;
 using NetGPT.Domain.Interfaces;
 using NetGPT.Infrastructure.Agents;
 using NetGPT.Infrastructure.Configuration;
@@ -18,8 +21,10 @@ builder.Services.Configure<OpenAISettings>(
     builder.Configuration.GetSection("OpenAI"));
 
 // Database
+var connectionString = builder.Configuration.GetSection("ConnectionStrings")["DefaultConnection"]
+    ?? throw new InvalidOperationException("ConnectionString 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(connectionString));
 
 // MediatR
 builder.Services.AddMediatR(cfg =>

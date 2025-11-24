@@ -34,9 +34,11 @@ public sealed class AgentFactory : IAgentFactory
         var client = new OpenAIClient(_settings.ApiKey);
         var chatClient = client.GetChatClient(config.ModelName);
 
-        var agent = chatClient.CreateAIAgent(
-            instructions: "You are a helpful AI assistant. Use available tools when needed to help the user.",
-            tools: tools);
+        // Cast to IChatClient to use extension method
+        IChatClient aiChatClient = chatClient.AsIChatClient();
+
+        var agent = aiChatClient.CreateAIAgent(
+            instructions: "You are a helpful AI assistant. Use available tools when needed to help the user.");
 
         return await Task.FromResult(agent);
     }

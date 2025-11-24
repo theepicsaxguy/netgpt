@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
 
 namespace NetGPT.Application.DTOs;
 
 public record SendMessageRequest(
     string Content,
-    List<Guid>? AttachmentIds = null);
+    List<FileAttachmentDto>? Attachments = null);

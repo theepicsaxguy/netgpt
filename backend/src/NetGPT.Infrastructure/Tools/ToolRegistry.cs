@@ -10,7 +10,7 @@ public sealed class ToolRegistry : IToolRegistry
 
     public void RegisterTool(AIFunction tool)
     {
-        _tools.TryAdd(tool.Metadata.Name, tool);
+        _tools.TryAdd(tool.Name, tool);
     }
 
     public IEnumerable<AIFunction> GetAllTools() => _tools.Values;

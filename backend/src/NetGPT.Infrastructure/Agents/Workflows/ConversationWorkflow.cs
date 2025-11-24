@@ -26,52 +26,24 @@ public class ConversationWorkflow : IWorkflow
 
     public async IAsyncEnumerable<StreamingChunkDto> ExecuteAsync(
         WorkflowContext context,
-        CancellationToken ct = default)
+        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct = default)
     {
         var chatClient = _clientFactory.CreateChatClient();
-        var agentClient = new OpenAIChatClient(chatClient);
 
-        var tools = AIFunctionFactory.Create(_toolRegistry.GetAllTools());
+        var agent = chatClient.CreateAIAgent(
+            instructions: "You are a helpful AI assistant. Use tools when needed.");
 
-        var agent = agentClient.CreateAgent(
-            name: "ConversationAgent",
-            instructions: "You are a helpful AI assistant. Use tools when needed.",
-            tools: tools
-        );
-
-        var messages = BuildMessageHistory(context);
         var messageId = MessageId.CreateNew();
 
-        await foreach (var update in agent.RunStreamAsync(messages, cancellationToken: ct))
-        {
-            if (update.Text != null)
-            {
-                yield return new StreamingChunkDto(
-                    MessageId: messageId.Value,
-                    Content: update.Text,
-                    IsComplete: false
-                );
-            }
+        // Simple non-streaming response for now
+        var result = await agent.RunAsync(context.UserMessage, cancellationToken: ct);
+        var responseText = result.Messages.LastOrDefault()?.Text ?? string.Empty;
 
-            if (update.ToolCalls != null)
-            {
-                foreach (var toolCall in update.ToolCalls)
-                {
-                    yield return new StreamingChunkDto(
-                        MessageId: messageId.Value,
-                        Content: null,
-                        ToolInvocation: new ToolInvocationDto(
-                            ToolName: toolCall.FunctionName,
-                            Arguments: toolCall.FunctionArguments?.ToString() ?? "",
-                            Result: null,
-                            InvokedAt: DateTime.UtcNow,
-                            DurationMs: 0
-                        ),
-                        IsComplete: false
-                    );
-                }
-            }
-        }
+        yield return new StreamingChunkDto(
+            MessageId: messageId.Value,
+            Content: responseText,
+            IsComplete: false
+        );
 
         yield return new StreamingChunkDto(
             MessageId: messageId.Value,

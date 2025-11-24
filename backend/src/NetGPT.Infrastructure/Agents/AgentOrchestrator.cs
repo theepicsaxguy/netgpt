@@ -37,29 +37,14 @@ public sealed class AgentOrchestrator : IAgentOrchestrator
                 conversation.AgentConfiguration,
                 _toolRegistry.GetAllTools());
 
-            var messages = BuildChatHistory(conversation);
-            messages.Add(new ChatMessage(ChatRole.User, userMessage));
-
             var startTime = DateTime.UtcNow;
             var responseText = string.Empty;
-            var toolsInvoked = new List<string>();
             var tokenCount = 0;
 
-            await foreach (var update in agent.RunStreamAsync(messages, cancellationToken))
-            {
-                if (update.Text != null)
-                {
-                    responseText += update.Text;
-                }
-
-                if (update.ToolCalls != null)
-                {
-                    foreach (var toolCall in update.ToolCalls)
-                    {
-                        toolsInvoked.Add(toolCall.FunctionName);
-                    }
-                }
-            }
+            // Run agent with user message
+            var result = await agent.RunAsync(userMessage, cancellationToken: cancellationToken);
+            // Extract the text response from AgentRunResponse
+            responseText = result.Messages.LastOrDefault()?.Text ?? string.Empty;
 
             var responseTime = DateTime.UtcNow - startTime;
             tokenCount = EstimateTokens(userMessage + responseText);
@@ -68,7 +53,7 @@ public sealed class AgentOrchestrator : IAgentOrchestrator
                 Content: responseText,
                 TokensUsed: tokenCount,
                 ResponseTime: responseTime,
-                ModelUsed: config.ModelName);
+                ModelUsed: conversation.AgentConfiguration.ModelName);
 
             return Result.Success(response);
         }
@@ -84,7 +69,7 @@ public sealed class AgentOrchestrator : IAgentOrchestrator
         return conversation.Messages
             .OrderBy(m => m.CreatedAt)
             .Select(m => new ChatMessage(
-                m.Content.Role == MessageRole.User ? ChatRole.User : ChatRole.Assistant,
+                m.Role == MessageRole.User ? ChatRole.User : ChatRole.Assistant,
                 m.Content.Text))
             .ToList();
     }
