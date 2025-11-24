@@ -1,5 +1,8 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace NetGPT.Analyzers

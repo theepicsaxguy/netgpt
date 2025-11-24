@@ -1,7 +1,6 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
 using System;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -39,14 +38,17 @@ namespace NetGPT.Infrastructure.Agents
                 if (conversation.AgentConfiguration.IsMultiAgent)
                 {
                     // Simple multi-agent: each agent responds sequentially, concatenate responses
-                    List<AIAgent> agents = new();
-                    foreach (AgentDefinition agentDef in conversation.AgentConfiguration.Agents!)
+                    List<AIAgent> agents = [];
+                    if (conversation.AgentConfiguration.Agents is { } agentDefs)
                     {
-                        AIAgent agent = await agentFactory.CreateAgentAsync(agentDef, toolRegistry.GetAllTools());
-                        agents.Add(agent);
+                        foreach (AgentDefinition agentDef in agentDefs)
+                        {
+                            AIAgent agent = await agentFactory.CreateAgentAsync(agentDef, toolRegistry.GetAllTools());
+                            agents.Add(agent);
+                        }
                     }
 
-                    List<string> responses = new();
+                    List<string> responses = [];
                     foreach (AIAgent agent in agents)
                     {
                         AgentRunResponse result = await agent.RunAsync(userMessage, cancellationToken: cancellationToken);
@@ -104,11 +106,14 @@ namespace NetGPT.Infrastructure.Agents
             if (conversation.AgentConfiguration.IsMultiAgent)
             {
                 // Multi-agent: stream each agent's response
-                List<AIAgent> agents = new();
-                foreach (AgentDefinition agentDef in conversation.AgentConfiguration.Agents!)
+                List<AIAgent> agents = [];
+                if (conversation.AgentConfiguration.Agents is { } agentDefs)
                 {
-                    AIAgent agent = await agentFactory.CreateAgentAsync(agentDef, toolRegistry.GetAllTools());
-                    agents.Add(agent);
+                    foreach (AgentDefinition agentDef in agentDefs)
+                    {
+                        AIAgent agent = await agentFactory.CreateAgentAsync(agentDef, toolRegistry.GetAllTools());
+                        agents.Add(agent);
+                    }
                 }
 
                 foreach (AIAgent agent in agents)
@@ -133,7 +138,7 @@ namespace NetGPT.Infrastructure.Agents
                 string[] chunks = responseText.Split('.', StringSplitOptions.RemoveEmptyEntries);
                 for (int i = 0; i < chunks.Length; i++)
                 {
-                    string chunk = chunks[i] + (i < chunks.Length - 1 ? "." : "");
+                    string chunk = chunks[i] + (i < chunks.Length - 1 ? "." : string.Empty);
                     yield return new StreamingChunkDto(messageId, chunk, null, i == chunks.Length - 1);
                     await Task.Delay(50, cancellationToken); // Simulate streaming delay
                 }
@@ -151,38 +156,9 @@ namespace NetGPT.Infrastructure.Agents
             }
         }
 
-        private static int EstimateTokens(string text)"{agent.Name}: {agentResponse}\n\n";
-                    yield return new StreamingChunkDto(messageId, chunk, null, false);
-                }
-            }
-            else
-            {
-                // Single-agent: stream the response
-                AIAgent agent = await agentFactory.CreatePrimaryAgentAsync(
-                    conversation.AgentConfiguration,
-                    toolRegistry.GetAllTools());
-
-                AgentRunResponse result = await agent.RunAsync(userMessage, cancellationToken: cancellationToken);
-                string responseText = result.Messages.LastOrDefault()?.Text ?? string.Empty;
-
-                // Yield in chunks (simple split by sentences)
-                string[] chunks = responseText.Split('.', StringSplitOptions.RemoveEmptyEntries);
-                for (int i = 0; i < chunks.Length; i++)
-                {
-                    string chunk = chunks[i] + (i < chunks.Length - 1 ? "." : "");
-                    yield return new StreamingChunkDto(messageId, chunk, null, i == chunks.Length - 1);
-                    await Task.Delay(50, cancellationToken); // Simulate streaming delay
-                }
-            }
-
-            // Run evaluators after streaming
-            Result<AgentResponse> fullResult = await ExecuteAsync(conversation, userMessage, cancellationToken);
-            if (fullResult.IsSuccess)
-            {
-                foreach (IEvaluator evaluator in evaluators)
-                {
-                    EvaluationResult evalResult = await evaluator.EvaluateAsync(conversation, userMessage, fullResult.Value);
-                    logger.LogInformation("Evaluation {Evaluator}: Score {Score}, Feedback {Feedback}", evalResult.EvaluatorName, evalResult.Score, evalResult.Feedback);
-                }
-            }
+        private static int EstimateTokens(string text)
+        {
+            return (int)(text.Length / 4.0);
         }
+    }
+}

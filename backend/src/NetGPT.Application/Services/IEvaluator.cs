@@ -1,5 +1,6 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using NetGPT.Application.DTOs;
 using NetGPT.Domain.Aggregates;
@@ -9,6 +10,7 @@ namespace NetGPT.Application.Services
     public interface IEvaluator
     {
         string Name { get; }
+
         Task<EvaluationResult> EvaluateAsync(Conversation conversation, string userMessage, AgentResponse response);
     }
 
