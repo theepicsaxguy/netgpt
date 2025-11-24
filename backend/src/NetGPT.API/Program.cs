@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
+using NetGPT.API.Configuration;
 using NetGPT.API.Hubs;
 using NetGPT.Application.Handlers;
 using NetGPT.Application.Interfaces;
@@ -50,18 +51,18 @@ builder.Services.AddSingleton(sp =>
     IToolRegistry registry = sp.GetRequiredService<IToolRegistry>();
 
     // Web Search Tool
-    AIFunction webSearchTool = AIFunctionFactory.Create((Func<string, string>)WebSearchToolPlugin.SearchWeb);
+    AIFunction webSearchTool = AIFunctionFactory.Create(WebSearchToolPlugin.SearchWeb);
     registry.RegisterTool(webSearchTool);
 
     // Code Execution Tools
-    AIFunction pythonTool = AIFunctionFactory.Create((Func<string, string>)CodeExecutionToolPlugin.ExecutePython);
-    AIFunction jsTool = AIFunctionFactory.Create((Func<string, string>)CodeExecutionToolPlugin.ExecuteJavaScript);
+    AIFunction pythonTool = AIFunctionFactory.Create(CodeExecutionToolPlugin.ExecutePython);
+    AIFunction jsTool = AIFunctionFactory.Create(CodeExecutionToolPlugin.ExecuteJavaScript);
     registry.RegisterTool(pythonTool);
     registry.RegisterTool(jsTool);
 
     // File Processing Tools
-    AIFunction pdfTool = AIFunctionFactory.Create((Func<string, string>)FileProcessingToolPlugin.ExtractPdfText);
-    AIFunction imageTool = AIFunctionFactory.Create((Func<string, string>)FileProcessingToolPlugin.AnalyzeImage);
+    AIFunction pdfTool = AIFunctionFactory.Create(FileProcessingToolPlugin.ExtractPdfText);
+    AIFunction imageTool = AIFunctionFactory.Create(FileProcessingToolPlugin.AnalyzeImage);
     registry.RegisterTool(pdfTool);
     registry.RegisterTool(imageTool);
 
@@ -71,10 +72,7 @@ builder.Services.AddSingleton(sp =>
 // API
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new() { Title = "NetGPT API", Version = "v1" });
-});
+builder.Services.AddSwaggerConfiguration();
 
 // SignalR
 builder.Services.AddSignalR();
@@ -92,6 +90,40 @@ builder.Services.AddCors(options =>
 });
 
 WebApplication app = builder.Build();
+
+// Ensure database is ready before starting
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    int maxRetries = 10;
+    int retryCount = 0;
+
+    while (retryCount < maxRetries)
+    {
+        try
+        {
+            if (dbContext.Database.CanConnect())
+            {
+                Console.WriteLine("✓ Database connection successful!");
+                break;
+            }
+        }
+        catch (Exception ex)
+        {
+            retryCount++;
+            Console.WriteLine($"✗ Database connection attempt {retryCount}/{maxRetries} failed: {ex.Message}");
+            if (retryCount >= maxRetries)
+            {
+                throw new InvalidOperationException(
+                    "Failed to connect to the database after multiple attempts. " +
+                    "Ensure PostgreSQL is running and accessible.",
+                    ex);
+            }
+
+            System.Threading.Thread.Sleep(1000);
+        }
+    }
+}
 
 // Middleware Pipeline
 app.UseSwagger();

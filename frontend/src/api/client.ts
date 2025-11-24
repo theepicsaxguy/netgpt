@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 const AXIOS_INSTANCE = axios.create({
-  baseURL: 'http://localhost:5000', // Standard local development port
+  baseURL: (import.meta as any).env?.VITE_API_URL || 'http://localhost:5000', // Configurable API URL
 });
 
 AXIOS_INSTANCE.interceptors.response.use(

@@ -1,0 +1,23 @@
+# Default compose file: runs only PostgreSQL for local development
+# To run with API in Docker: docker compose -f docker-compose.dev.yml up
+# For production: docker compose -f docker-compose.prod.yml up
+
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: netgpt
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
