@@ -17,7 +17,7 @@ namespace NetGPT.Domain.Primitives
             ? field!
             : throw new InvalidOperationException("The value of a failure result cannot be accessed.");
 
-        protected internal Result(TValue? value, bool isSuccess, Error error)
+        protected internal Result(TValue? value, bool isSuccess, DomainError error)
             : base(isSuccess, error)
         {
             Value = value;

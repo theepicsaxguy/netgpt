@@ -28,7 +28,7 @@ namespace NetGPT.Application.Handlers
             Conversation? conversation = await repository.GetByIdAsync(conversationId, cancellationToken);
             if (conversation is null)
             {
-                return Result.Failure<MessageResponse>(new Error("Conversation.NotFound", "Conversation not found"));
+                return Result.Failure<MessageResponse>(new DomainError("Conversation.NotFound", "Conversation not found"));
             }
 
             conversation.EnsureOwnership(userId);

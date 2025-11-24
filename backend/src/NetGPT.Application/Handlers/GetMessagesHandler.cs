@@ -29,13 +29,13 @@ namespace NetGPT.Application.Handlers
             if (conversation is null)
             {
                 return Result.Failure<List<MessageResponse>>(
-                    new Error("Conversation.NotFound", "Conversation not found"));
+                    new DomainError("Conversation.NotFound", "Conversation not found"));
             }
 
             if (conversation.UserId != userId)
             {
                 return Result.Failure<List<MessageResponse>>(
-                    new Error("Conversation.Unauthorized", "Unauthorized access"));
+                    new DomainError("Conversation.Unauthorized", "Unauthorized access"));
             }
 
             List<MessageResponse> messages = [.. conversation.Messages

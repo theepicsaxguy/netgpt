@@ -22,16 +22,16 @@ namespace NetGPT.Domain.Primitives
         /// <summary>
         /// Gets the error associated with the failure.
         /// </summary>
-        public Error Error { get; }
+        public DomainError Error { get; }
 
-        protected Result(bool isSuccess, Error error)
+        protected Result(bool isSuccess, DomainError error)
         {
-            if (isSuccess && error != Error.None)
+            if (isSuccess && error != DomainError.None)
             {
                 throw new InvalidOperationException();
             }
 
-            if (!isSuccess && error == Error.None)
+            if (!isSuccess && error == DomainError.None)
             {
                 throw new InvalidOperationException();
             }
@@ -46,7 +46,7 @@ namespace NetGPT.Domain.Primitives
         /// <returns>A successful result.</returns>
         public static Result Success()
         {
-            return new(true, Error.None);
+            return new(true, DomainError.None);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace NetGPT.Domain.Primitives
         /// </summary>
         /// <param name="error">The error.</param>
         /// <returns>A failed result.</returns>
-        public static Result Failure(Error error)
+        public static Result Failure(DomainError error)
         {
             return new(false, error);
         }
@@ -67,7 +67,7 @@ namespace NetGPT.Domain.Primitives
         /// <returns>A successful result with the value.</returns>
         public static Result<TValue> Success<TValue>(TValue value)
         {
-            return new(value, true, Error.None);
+            return new(value, true, DomainError.None);
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace NetGPT.Domain.Primitives
         /// <typeparam name="TValue">The type of the value.</typeparam>
         /// <param name="error">The error.</param>
         /// <returns>A failed result.</returns>
-        public static Result<TValue> Failure<TValue>(Error error)
+        public static Result<TValue> Failure<TValue>(DomainError error)
         {
             return new(default, false, error);
         }

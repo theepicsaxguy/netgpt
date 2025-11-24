@@ -24,12 +24,12 @@ namespace NetGPT.Application.Handlers
             Conversation? conversation = await repository.GetByIdAsync(conversationId, cancellationToken);
             if (conversation is null)
             {
-                return Result.Failure(new Error("Conversation.NotFound", "Conversation not found"));
+                return Result.Failure(new DomainError("Conversation.NotFound", "Conversation not found"));
             }
 
             if (conversation.UserId != userId)
             {
-                return Result.Failure(new Error("Conversation.Unauthorized", "Unauthorized access"));
+                return Result.Failure(new DomainError("Conversation.Unauthorized", "Unauthorized access"));
             }
 
             await repository.DeleteAsync(conversationId, cancellationToken);

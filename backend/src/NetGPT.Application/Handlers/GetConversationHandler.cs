@@ -26,10 +26,10 @@ namespace NetGPT.Application.Handlers
             Conversation? conversation = await repository.GetByIdAsync(conversationId, cancellationToken);
             return conversation is null
                 ? Result.Failure<ConversationResponse>(
-                    new Error("Conversation.NotFound", "Conversation not found"))
+                    new DomainError("Conversation.NotFound", "Conversation not found"))
                 : conversation.UserId != userId
                 ? Result.Failure<ConversationResponse>(
-                    new Error("Conversation.Unauthorized", "Unauthorized access"))
+                    new DomainError("Conversation.Unauthorized", "Unauthorized access"))
                 : (Result<ConversationResponse>)mapper.ToResponse(conversation);
         }
     }
