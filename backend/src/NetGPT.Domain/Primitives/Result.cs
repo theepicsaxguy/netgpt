@@ -9,21 +9,6 @@ namespace NetGPT.Domain.Primitives
     /// </summary>
     public class Result
     {
-        /// <summary>
-        /// Gets a value indicating whether the operation was successful.
-        /// </summary>
-        public bool IsSuccess { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether the operation failed.
-        /// </summary>
-        public bool IsFailure => !IsSuccess;
-
-        /// <summary>
-        /// Gets the error associated with the failure.
-        /// </summary>
-        public DomainError Error { get; }
-
         protected Result(bool isSuccess, DomainError error)
         {
             if (isSuccess && error != DomainError.None)
@@ -39,6 +24,21 @@ namespace NetGPT.Domain.Primitives
             IsSuccess = isSuccess;
             Error = error;
         }
+
+        /// <summary>
+        /// Gets a value indicating whether the operation was successful.
+        /// </summary>
+        public bool IsSuccess { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the operation failed.
+        /// </summary>
+        public bool IsFailure => !IsSuccess;
+
+        /// <summary>
+        /// Gets the error associated with the failure.
+        /// </summary>
+        public DomainError Error { get; }
 
         /// <summary>
         /// Creates a successful result.
@@ -82,4 +82,3 @@ namespace NetGPT.Domain.Primitives
         }
     }
 }
-

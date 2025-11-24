@@ -10,6 +10,10 @@ namespace NetGPT.Domain.Aggregates
 {
     public sealed class Message
     {
+        private Message()
+        {
+        } // EF Core
+
         public MessageId Id { get; private set; }
 
         public ConversationId ConversationId { get; private set; }
@@ -24,9 +28,10 @@ namespace NetGPT.Domain.Aggregates
 
         public MessageMetadata? Metadata { get; private set; }
 
-        private Message()
+        public void AddMetadata(MessageMetadata metadata)
         {
-        } // EF Core
+            Metadata = metadata;
+        }
 
         internal static Message Create(
             ConversationId conversationId,

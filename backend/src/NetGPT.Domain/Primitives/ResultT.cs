@@ -10,18 +10,18 @@ namespace NetGPT.Domain.Primitives
     /// <typeparam name="TValue">The type of the value.</typeparam>
     public class Result<TValue> : Result
     {
+        protected internal Result(TValue? value, bool isSuccess, DomainError error)
+            : base(isSuccess, error)
+        {
+            Value = value;
+        }
+
         /// <summary>
         /// Gets the value.
         /// </summary>
         public TValue Value => IsSuccess
             ? field!
             : throw new InvalidOperationException("The value of a failure result cannot be accessed.");
-
-        protected internal Result(TValue? value, bool isSuccess, DomainError error)
-            : base(isSuccess, error)
-        {
-            Value = value;
-        }
 
         /// <summary>
         /// Implicitly converts a value to a successful result.

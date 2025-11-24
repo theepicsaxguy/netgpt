@@ -2,7 +2,6 @@
 
 using System;
 
-
 namespace NetGPT.Domain.ValueObjects
 {
     public record MessageId(Guid Value)

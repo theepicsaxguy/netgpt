@@ -17,6 +17,10 @@ namespace NetGPT.Domain.Aggregates
         private readonly List<Message> messages = [];
         private readonly List<IDomainEvent> domainEvents = [];
 
+        private Conversation()
+        {
+        } // EF Core
+
         public ConversationId Id { get; private set; }
 
         public UserId UserId { get; private set; }
@@ -40,10 +44,6 @@ namespace NetGPT.Domain.Aggregates
         public IReadOnlyList<Message> Messages => messages.AsReadOnly();
 
         public IReadOnlyList<IDomainEvent> DomainEvents => domainEvents.AsReadOnly();
-
-        private Conversation()
-        {
-        } // EF Core
 
         public static Conversation Create(UserId userId, string? title = null, AgentConfiguration? agentConfig = null)
         {
@@ -107,11 +107,6 @@ namespace NetGPT.Domain.Aggregates
             domainEvents.Clear();
         }
 
-        private void AddDomainEvent(IDomainEvent domainEvent)
-        {
-            domainEvents.Add(domainEvent);
-        }
-
         public void EnsureOwnership(UserId userId)
         {
             if (UserId != userId)
@@ -130,6 +125,11 @@ namespace NetGPT.Domain.Aggregates
         {
             Status = ConversationStatus.Archived;
             UpdatedAt = DateTime.UtcNow;
+        }
+
+        private void AddDomainEvent(IDomainEvent domainEvent)
+        {
+            domainEvents.Add(domainEvent);
         }
     }
 }

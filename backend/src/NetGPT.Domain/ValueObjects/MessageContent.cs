@@ -8,10 +8,6 @@ namespace NetGPT.Domain.ValueObjects
 {
     public record MessageContent
     {
-        public string Text { get; init; }
-
-        public IReadOnlyList<Attachment> Attachments { get; init; }
-
         public MessageContent(string text, IEnumerable<Attachment>? attachments = null)
         {
             if (string.IsNullOrWhiteSpace(text) && (attachments == null || !attachments.Any()))
@@ -22,6 +18,10 @@ namespace NetGPT.Domain.ValueObjects
             Text = text ?? string.Empty;
             Attachments = attachments?.ToList() ?? [];
         }
+
+        public string Text { get; init; }
+
+        public IReadOnlyList<Attachment> Attachments { get; init; }
 
         public static MessageContent FromText(string text)
         {
