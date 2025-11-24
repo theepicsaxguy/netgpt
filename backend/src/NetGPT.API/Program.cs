@@ -50,21 +50,18 @@ builder.Services.AddSingleton(sp =>
     IToolRegistry registry = sp.GetRequiredService<IToolRegistry>();
 
     // Web Search Tool
-    WebSearchToolPlugin webSearchPlugin = new();
-    AIFunction webSearchTool = AIFunctionFactory.Create(webSearchPlugin.SearchWeb);
+    AIFunction webSearchTool = AIFunctionFactory.Create((Func<string, string>)WebSearchToolPlugin.SearchWeb);
     registry.RegisterTool(webSearchTool);
 
     // Code Execution Tools
-    CodeExecutionToolPlugin codePlugin = new();
-    AIFunction pythonTool = AIFunctionFactory.Create(codePlugin.ExecutePython);
-    AIFunction jsTool = AIFunctionFactory.Create(codePlugin.ExecuteJavaScript);
+    AIFunction pythonTool = AIFunctionFactory.Create((Func<string, string>)CodeExecutionToolPlugin.ExecutePython);
+    AIFunction jsTool = AIFunctionFactory.Create((Func<string, string>)CodeExecutionToolPlugin.ExecuteJavaScript);
     registry.RegisterTool(pythonTool);
     registry.RegisterTool(jsTool);
 
     // File Processing Tools
-    FileProcessingToolPlugin filePlugin = new();
-    AIFunction pdfTool = AIFunctionFactory.Create(filePlugin.ExtractPdfText);
-    AIFunction imageTool = AIFunctionFactory.Create(filePlugin.AnalyzeImage);
+    AIFunction pdfTool = AIFunctionFactory.Create((Func<string, string>)FileProcessingToolPlugin.ExtractPdfText);
+    AIFunction imageTool = AIFunctionFactory.Create((Func<string, string>)FileProcessingToolPlugin.AnalyzeImage);
     registry.RegisterTool(pdfTool);
     registry.RegisterTool(imageTool);
 

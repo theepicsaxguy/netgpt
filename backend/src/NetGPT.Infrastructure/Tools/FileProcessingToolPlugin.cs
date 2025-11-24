@@ -8,18 +8,18 @@ namespace NetGPT.Infrastructure.Tools
     public sealed class FileProcessingToolPlugin
     {
         [Description("Extract text from a PDF file")]
-        public static async Task<string> ExtractPdfText(
+        public static string ExtractPdfText(
             [Description("URL or path to PDF file")] string fileUrl)
         {
-            await Task.Delay(100);
+            // Simulate extraction
             return "Extracted text from PDF...";
         }
 
         [Description("Analyze an image and describe its contents")]
-        public static async Task<string> AnalyzeImage(
+        public static string AnalyzeImage(
             [Description("URL to image")] string imageUrl)
         {
-            await Task.Delay(100);
+            // Simulate analysis
             return "Image analysis: The image contains...";
         }
     }
