@@ -24,7 +24,8 @@ namespace NetGPT.Application.Handlers
             CancellationToken cancellationToken)
         {
             UserId userId = UserId.From(request.UserId);
-            Conversation conversation = Conversation.Create(userId, request.Title);
+            AgentConfiguration agentConfig = MapToAgentConfiguration(request.Configuration);
+            Conversation conversation = Conversation.Create(userId, request.Title, agentConfig);
 
             _ = await repository.AddAsync(conversation, cancellationToken);
             _ = await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -37,6 +38,30 @@ namespace NetGPT.Application.Handlers
                 0);
 
             return Result.Success(response);
+        }
+
+        private static AgentConfiguration MapToAgentConfiguration(AgentConfigurationDto? dto)
+        {
+            if (dto is null)
+            {
+                return AgentConfiguration.Default();
+            }
+
+            var agents = dto.Agents?.Select(a => new AgentDefinition(
+                a.Name,
+                a.Instructions,
+                a.ModelName ?? "gpt-4o",
+                a.Temperature ?? 0.7f,
+                a.MaxTokens ?? 4000)).ToList();
+
+            return new AgentConfiguration(
+                dto.ModelName ?? "gpt-4o",
+                dto.Temperature ?? 0.7f,
+                dto.MaxTokens ?? 4000,
+                null, // TopP etc not in DTO
+                null,
+                null,
+                agents);
         }
     }
 }

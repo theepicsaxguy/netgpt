@@ -17,24 +17,29 @@ namespace NetGPT.Infrastructure.Agents
         Task<AIAgent> CreatePrimaryAgentAsync(
             AgentConfiguration config,
             IEnumerable<AIFunction> tools);
+
+        Task<AIAgent> CreateAgentAsync(
+            AgentDefinition definition,
+            IEnumerable<AIFunction> tools);
     }
 
     public sealed class AgentFactory(IOptions<OpenAISettings> settings) : IAgentFactory
     {
         private readonly OpenAISettings settings = settings.Value;
 
-        public async Task<AIAgent> CreatePrimaryAgentAsync(
-            AgentConfiguration config,
+        public async Task<AIAgent> CreateAgentAsync(
+            AgentDefinition definition,
             IEnumerable<AIFunction> tools)
         {
             OpenAIClient client = new(settings.ApiKey);
-            ChatClient chatClient = client.GetChatClient(config.ModelName);
+            ChatClient chatClient = client.GetChatClient(definition.ModelName);
 
             // Cast to IChatClient to use extension method
             IChatClient aiChatClient = chatClient.AsIChatClient();
 
             ChatClientAgent agent = aiChatClient.CreateAIAgent(
-                instructions: "You are a helpful AI assistant. Use available tools when needed to help the user.");
+                instructions: definition.Instructions,
+                tools: tools);
 
             return await Task.FromResult(agent);
         }
