@@ -2,9 +2,12 @@
 
 using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using NetGPT.API.Configuration;
 using NetGPT.API.Hubs;
 using NetGPT.Application.Handlers;
@@ -18,6 +21,16 @@ using NetGPT.Infrastructure.Persistence.Repositories;
 using NetGPT.Infrastructure.Tools;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+// Bind to URLs from configuration if present (no environment exports required).
+IConfigurationSection kestrelSectionAll = builder.Configuration.GetSection("Kestrel:Endpoints");
+string? httpUrlAll = kestrelSectionAll.GetSection("Http")?["Url"];
+string? httpsUrlAll = kestrelSectionAll.GetSection("Https")?["Url"];
+
+if (!string.IsNullOrWhiteSpace(httpUrlAll) && !string.IsNullOrWhiteSpace(httpsUrlAll))
+{
+    _ = builder.WebHost.UseUrls(httpUrlAll, httpsUrlAll);
+}
 
 // Configuration
 builder.Services.Configure<OpenAISettings>(
@@ -82,10 +95,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        _ = policy.WithOrigins("http://localhost:5173", "http://localhost:3000")
+        _ = policy
+              .AllowAnyOrigin()
               .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials();
+              .AllowAnyHeader();
     });
 });
 
