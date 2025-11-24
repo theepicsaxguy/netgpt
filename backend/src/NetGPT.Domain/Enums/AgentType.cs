@@ -1,10 +1,15 @@
-namespace NetGPT.Domain.Enums;
+// <copyright file="AgentType.cs" theepicsaxguy">
+// \
+// </copyright>
 
-public enum AgentType
+namespace NetGPT.Domain.Enums
 {
-    Conversation,
-    Document,
-    Code,
-    Research,
-    Data
+    public enum AgentType
+    {
+        Conversation,
+        Document,
+        Code,
+        Research,
+        Data,
+    }
 }

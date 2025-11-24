@@ -1,78 +1,50 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using Microsoft.Agents.AI;
-using Microsoft.Extensions.AI;
-using NetGPT.Application.DTOs;
-using NetGPT.Domain.ValueObjects;
-using NetGPT.Infrastructure.Tools;
-using OpenAI;
+// <copyright file="ConversationWorkflow.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Infrastructure.Agents.Workflows;
-
-public class ConversationWorkflow : IWorkflow
+namespace NetGPT.Infrastructure.Agents.Workflows
 {
-    private readonly IOpenAIClientFactory _clientFactory;
-    private readonly ToolRegistry _toolRegistry;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+    using Microsoft.Agents.AI;
+    using Microsoft.Extensions.AI;
+    using NetGPT.Application.DTOs;
+    using NetGPT.Domain.ValueObjects;
+    using NetGPT.Infrastructure.Tools;
+    using OpenAI;
 
-    public ConversationWorkflow(
+    public class ConversationWorkflow(
         IOpenAIClientFactory clientFactory,
-        ToolRegistry toolRegistry)
+        ToolRegistry toolRegistry) : IWorkflow
     {
-        _clientFactory = clientFactory;
-        _toolRegistry = toolRegistry;
-    }
+        private readonly IOpenAIClientFactory clientFactory = clientFactory;
+        private readonly ToolRegistry toolRegistry = toolRegistry;
 
-    public async IAsyncEnumerable<StreamingChunkDto> ExecuteAsync(
-        WorkflowContext context,
-        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct = default)
-    {
-        var chatClient = _clientFactory.CreateChatClient();
-
-        var agent = chatClient.CreateAIAgent(
-            instructions: "You are a helpful AI assistant. Use tools when needed.");
-
-        var messageId = MessageId.CreateNew();
-
-        // Simple non-streaming response for now
-        var result = await agent.RunAsync(context.UserMessage, cancellationToken: ct);
-        var responseText = result.Messages.LastOrDefault()?.Text ?? string.Empty;
-
-        yield return new StreamingChunkDto(
-            MessageId: messageId.Value,
-            Content: responseText,
-            IsComplete: false
-        );
-
-        yield return new StreamingChunkDto(
-            MessageId: messageId.Value,
-            Content: null,
-            IsComplete: true
-        );
-    }
-
-    private static List<ChatMessage> BuildMessageHistory(WorkflowContext context)
-    {
-        var messages = new List<ChatMessage>
+        public async IAsyncEnumerable<StreamingChunkDto> ExecuteAsync(
+            WorkflowContext context,
+            [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct = default)
         {
-            new(ChatRole.System, "You are a helpful assistant.")
-        };
+            IChatClient chatClient = this.clientFactory.CreateChatClient();
 
-        foreach (var msg in context.Conversation.Messages.TakeLast(10))
-        {
-            var role = msg.Role switch
-            {
-                Domain.Enums.MessageRole.User => ChatRole.User,
-                Domain.Enums.MessageRole.Assistant => ChatRole.Assistant,
-                Domain.Enums.MessageRole.System => ChatRole.System,
-                _ => ChatRole.User
-            };
+            ChatClientAgent agent = chatClient.CreateAIAgent(
+                instructions: "You are a helpful AI assistant. Use tools when needed.");
 
-            messages.Add(new ChatMessage(role, msg.Content.Text));
+            MessageId messageId = MessageId.CreateNew();
+
+            // Simple non-streaming response for now
+            AgentRunResponse result = await agent.RunAsync(context.UserMessage, cancellationToken: ct);
+            var responseText = result.Messages.LastOrDefault()?.Text ?? string.Empty;
+
+            yield return new StreamingChunkDto(
+                MessageId: messageId.Value,
+                Content: responseText,
+                IsComplete: false);
+
+            yield return new StreamingChunkDto(
+                MessageId: messageId.Value,
+                Content: null,
+                IsComplete: true);
         }
-
-        messages.Add(new ChatMessage(ChatRole.User, context.UserMessage));
-        return messages;
     }
 }

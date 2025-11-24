@@ -1,15 +1,20 @@
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using NetGPT.Application.Commands.Admin;
+// <copyright file="CancelAgentThreadHandler.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.Handlers.Admin;
-
-public sealed class CancelAgentThreadHandler : IRequestHandler<CancelAgentThreadCommand, Unit>
+namespace NetGPT.Application.Handlers.Admin
 {
-    public Task<Unit> Handle(CancelAgentThreadCommand request, CancellationToken cancellationToken)
+    using System.Threading;
+    using System.Threading.Tasks;
+    using MediatR;
+    using NetGPT.Application.Commands.Admin;
+
+    public sealed class CancelAgentThreadHandler : IRequestHandler<CancelAgentThreadCommand, Unit>
     {
-        // TODO: wire into orchestrator cancellation
-        return Task.FromResult(Unit.Value);
+        public Task<Unit> Handle(CancelAgentThreadCommand request, CancellationToken cancellationToken)
+        {
+            // TODO: wire into orchestrator cancellation
+            return Task.FromResult(Unit.Value);
+        }
     }
 }

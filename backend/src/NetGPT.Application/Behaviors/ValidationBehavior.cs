@@ -1,41 +1,40 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using FluentValidation;
-using MediatR;
+// <copyright file="ValidationBehavior.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.Behaviors;
-
-public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IRequest<TResponse>
+namespace NetGPT.Application.Behaviors
 {
-    private readonly IEnumerable<IValidator<TRequest>> _validators;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using FluentValidation;
+    using FluentValidation.Results;
+    using MediatR;
 
-    public ValidationBehavior(IEnumerable<IValidator<TRequest>> validators)
+    public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators) : IPipelineBehavior<TRequest, TResponse>
+        where TRequest : IRequest<TResponse>
     {
-        _validators = validators;
-    }
+        private readonly IEnumerable<IValidator<TRequest>> validators = validators;
 
-    public async Task<TResponse> Handle(
-        TRequest request,
-        RequestHandlerDelegate<TResponse> next,
-        CancellationToken ct)
-    {
-        if (!_validators.Any())
-            return await next();
+        public async Task<TResponse> Handle(
+            TRequest request,
+            RequestHandlerDelegate<TResponse> next,
+            CancellationToken cancellationToken)
+        {
+            if (!this.validators.Any())
+            {
+                return await next(cancellationToken);
+            }
 
-        var context = new ValidationContext<TRequest>(request);
-        
-        var failures = _validators
-            .Select(v => v.Validate(context))
-            .SelectMany(result => result.Errors)
-            .Where(f => f != null)
-            .ToList();
+            ValidationContext<TRequest> context = new(request);
 
-        if (failures.Any())
-            throw new ValidationException(failures);
+            List<ValidationFailure> failures = [.. this.validators
+                .Select(v => v.Validate(context))
+                .SelectMany(result => result.Errors)
+                .Where(f => f != null)];
 
-        return await next();
+            return failures.Count != 0 ? throw new ValidationException(failures) : await next(cancellationToken);
+        }
     }
 }

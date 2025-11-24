@@ -1,24 +1,29 @@
-using System.ComponentModel;
-using System.Threading.Tasks;
+// <copyright file="CodeExecutionToolPlugin.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Infrastructure.Tools;
-
-public sealed class CodeExecutionToolPlugin
+namespace NetGPT.Infrastructure.Tools
 {
-    [Description("Execute Python code in a sandboxed environment")]
-    public async Task<string> ExecutePython(
-        [Description("Python code to execute")] string code)
-    {
-        // Implement sandboxed code execution
-        await Task.Delay(100); // Simulate execution
-        return $"Execution result: Code executed successfully";
-    }
+    using System.ComponentModel;
+    using System.Threading.Tasks;
 
-    [Description("Execute JavaScript code")]
-    public async Task<string> ExecuteJavaScript(
-        [Description("JavaScript code to execute")] string code)
+    public sealed class CodeExecutionToolPlugin
     {
-        await Task.Delay(100);
-        return $"Execution result: {code.Length} characters executed";
+        [Description("Execute Python code in a sandboxed environment")]
+        public static async Task<string> ExecutePython(
+            [Description("Python code to execute")] string code)
+        {
+            // Implement sandboxed code execution
+            await Task.Delay(100); // Simulate execution
+            return $"Execution result: Code executed successfully";
+        }
+
+        [Description("Execute JavaScript code")]
+        public static async Task<string> ExecuteJavaScript(
+            [Description("JavaScript code to execute")] string code)
+        {
+            await Task.Delay(100);
+            return $"Execution result: {code.Length} characters executed";
+        }
     }
 }

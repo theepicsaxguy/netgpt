@@ -1,9 +1,14 @@
-using System.Collections.Generic;
+// <copyright file="MessageMetadata.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Domain.ValueObjects;
+namespace NetGPT.Domain.ValueObjects
+{
+    using System.Collections.Generic;
 
-public record MessageMetadata(
-    List<ToolInvocation>? ToolInvocations = null,
-    string? AgentName = null,
-    int? TokenCount = null,
-    Dictionary<string, object>? CustomProperties = null);
+    public record MessageMetadata(
+        List<ToolInvocation>? ToolInvocations = null,
+        string? AgentName = null,
+        int? TokenCount = null,
+        Dictionary<string, object>? CustomProperties = null);
+}

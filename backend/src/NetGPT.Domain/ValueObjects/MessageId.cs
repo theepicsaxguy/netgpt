@@ -1,11 +1,31 @@
-using System;
+// <copyright file="MessageId.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Domain.ValueObjects;
-
-public record MessageId(Guid Value)
+namespace NetGPT.Domain.ValueObjects
 {
-    public static MessageId CreateNew() => new(Guid.NewGuid());
-    public static MessageId From(Guid value) => new(value);
-    public static MessageId From(string value) => new(Guid.Parse(value));
-    public override string ToString() => Value.ToString();
+    using System;
+
+    public record MessageId(Guid Value)
+    {
+        public static MessageId CreateNew()
+        {
+            return new(Guid.NewGuid());
+        }
+
+        public static MessageId From(Guid value)
+        {
+            return new(value);
+        }
+
+        public static MessageId From(string value)
+        {
+            return new(Guid.Parse(value));
+        }
+
+        public override string ToString()
+        {
+            return this.Value.ToString();
+        }
+    }
 }

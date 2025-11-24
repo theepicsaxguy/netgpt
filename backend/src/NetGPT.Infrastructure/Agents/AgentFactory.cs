@@ -1,45 +1,44 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Agents.AI;
-using Microsoft.Extensions.AI;
-using Microsoft.Extensions.Options;
-using NetGPT.Domain.ValueObjects;
-using NetGPT.Infrastructure.Configuration;
-using OpenAI;
+// <copyright file="AgentFactory.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Infrastructure.Agents;
-
-public interface IAgentFactory
+namespace NetGPT.Infrastructure.Agents
 {
-    Task<AIAgent> CreatePrimaryAgentAsync(
-        AgentConfiguration config,
-        IEnumerable<AIFunction> tools);
-}
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Microsoft.Agents.AI;
+    using Microsoft.Extensions.AI;
+    using Microsoft.Extensions.Options;
+    using NetGPT.Domain.ValueObjects;
+    using NetGPT.Infrastructure.Configuration;
+    using OpenAI;
+    using OpenAI.Chat;
 
-public sealed class AgentFactory : IAgentFactory
-{
-    private readonly OpenAISettings _settings;
-
-    public AgentFactory(IOptions<OpenAISettings> settings)
+    public interface IAgentFactory
     {
-        _settings = settings.Value;
+        Task<AIAgent> CreatePrimaryAgentAsync(
+            AgentConfiguration config,
+            IEnumerable<AIFunction> tools);
     }
 
-    public async Task<AIAgent> CreatePrimaryAgentAsync(
-        AgentConfiguration config,
-        IEnumerable<AIFunction> tools)
+    public sealed class AgentFactory(IOptions<OpenAISettings> settings) : IAgentFactory
     {
-        var client = new OpenAIClient(_settings.ApiKey);
-        var chatClient = client.GetChatClient(config.ModelName);
+        private readonly OpenAISettings settings = settings.Value;
 
-        // Cast to IChatClient to use extension method
-        IChatClient aiChatClient = chatClient.AsIChatClient();
+        public async Task<AIAgent> CreatePrimaryAgentAsync(
+            AgentConfiguration config,
+            IEnumerable<AIFunction> tools)
+        {
+            OpenAIClient client = new(this.settings.ApiKey);
+            ChatClient chatClient = client.GetChatClient(config.ModelName);
 
-        var agent = aiChatClient.CreateAIAgent(
-            instructions: "You are a helpful AI assistant. Use available tools when needed to help the user.");
+            // Cast to IChatClient to use extension method
+            IChatClient aiChatClient = chatClient.AsIChatClient();
 
-        return await Task.FromResult(agent);
+            ChatClientAgent agent = aiChatClient.CreateAIAgent(
+                instructions: "You are a helpful AI assistant. Use available tools when needed to help the user.");
+
+            return await Task.FromResult(agent);
+        }
     }
 }

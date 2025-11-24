@@ -1,16 +1,23 @@
-using System.Collections.Generic;
+// <copyright file="ConversationMetadata.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Domain.ValueObjects;
-
-public record ConversationMetadata(
-    string? ModelName = null,
-    float? Temperature = null,
-    int? MaxTokens = null,
-    Dictionary<string, object>? CustomProperties = null)
+namespace NetGPT.Domain.ValueObjects
 {
-    public static ConversationMetadata Default() => new(
-        ModelName: "gpt-4o",
-        Temperature: 0.7f,
-        MaxTokens: 4000
-    );
+    using System.Collections.Generic;
+
+    public record ConversationMetadata(
+        string? ModelName = null,
+        float? Temperature = null,
+        int? MaxTokens = null,
+        Dictionary<string, object>? CustomProperties = null)
+    {
+        public static ConversationMetadata Default()
+        {
+            return new(
+            ModelName: "gpt-4o",
+            Temperature: 0.7f,
+            MaxTokens: 4000);
+        }
+    }
 }

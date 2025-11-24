@@ -1,43 +1,44 @@
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using NetGPT.Application.DTOs;
-using NetGPT.Application.Interfaces;
-using NetGPT.Application.Queries;
-using NetGPT.Domain.Interfaces;
-using NetGPT.Domain.Primitives;
-using NetGPT.Domain.ValueObjects;
+// <copyright file="GetConversationsHandler.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.Handlers;
-
-public sealed class GetConversationsHandler : IRequestHandler<GetConversationsQuery, Result<PaginatedResponse<ConversationResponse>>>
+namespace NetGPT.Application.Handlers
 {
-    private readonly IConversationRepository _repository;
-    private readonly IConversationMapper _mapper;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using MediatR;
+    using NetGPT.Application.DTOs;
+    using NetGPT.Application.Interfaces;
+    using NetGPT.Application.Queries;
+    using NetGPT.Domain.Aggregates;
+    using NetGPT.Domain.Interfaces;
+    using NetGPT.Domain.Primitives;
+    using NetGPT.Domain.ValueObjects;
 
-    public GetConversationsHandler(IConversationRepository repository, IConversationMapper mapper)
+    public sealed class GetConversationsHandler(IConversationRepository repository, IConversationMapper mapper) : IRequestHandler<GetConversationsQuery, Result<PaginatedResponse<ConversationResponse>>>
     {
-        _repository = repository;
-        _mapper = mapper;
-    }
+        private readonly IConversationRepository repository = repository;
+        private readonly IConversationMapper mapper = mapper;
 
-    public async Task<Result<PaginatedResponse<ConversationResponse>>> Handle(GetConversationsQuery request, CancellationToken cancellationToken)
-    {
-        var userId = UserId.From(request.UserId);
+        public async Task<Result<PaginatedResponse<ConversationResponse>>> Handle(GetConversationsQuery request, CancellationToken cancellationToken)
+        {
+            UserId userId = UserId.From(request.UserId);
 
-        var conversations = await _repository.GetByUserIdAsync(userId, request.Page, request.PageSize, cancellationToken);
-        var totalCount = await _repository.CountByUserIdAsync(userId, cancellationToken);
-        var totalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize);
+            List<Conversation> conversations = await this.repository.GetByUserIdAsync(userId, request.Page, request.PageSize, cancellationToken);
+            var totalCount = await this.repository.CountByUserIdAsync(userId, cancellationToken);
+            var totalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize);
 
-        var responses = conversations.Select(_mapper.ToResponse).ToList();
+            List<ConversationResponse> responses = [.. conversations.Select(this.mapper.ToResponse)];
 
-        return new PaginatedResponse<ConversationResponse>(
-            responses,
-            request.Page,
-            request.PageSize,
-            totalCount,
-            totalPages);
+            return new PaginatedResponse<ConversationResponse>(
+                responses,
+                request.Page,
+                request.PageSize,
+                totalCount,
+                totalPages);
+        }
     }
 }

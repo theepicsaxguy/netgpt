@@ -1,17 +1,27 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using NetGPT.Domain.Aggregates;
-using NetGPT.Domain.ValueObjects;
+// <copyright file="IConversationRepository.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Domain.Interfaces;
-
-public interface IConversationRepository
+namespace NetGPT.Domain.Interfaces
 {
-    Task<Conversation?> GetByIdAsync(ConversationId id, CancellationToken ct = default);
-    Task<List<Conversation>> GetByUserIdAsync(UserId userId, int skip, int take, CancellationToken ct = default);
-    Task<Conversation> AddAsync(Conversation conversation, CancellationToken ct = default);
-    Task UpdateAsync(Conversation conversation, CancellationToken ct = default);
-    Task DeleteAsync(ConversationId id, CancellationToken ct = default);
-    Task<int> CountByUserIdAsync(UserId userId, CancellationToken ct = default);
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using NetGPT.Domain.Aggregates;
+    using NetGPT.Domain.ValueObjects;
+
+    public interface IConversationRepository
+    {
+        Task<Conversation?> GetByIdAsync(ConversationId id, CancellationToken ct = default);
+
+        Task<List<Conversation>> GetByUserIdAsync(UserId userId, int skip, int take, CancellationToken ct = default);
+
+        Task<Conversation> AddAsync(Conversation conversation, CancellationToken ct = default);
+
+        Task UpdateAsync(Conversation conversation, CancellationToken ct = default);
+
+        Task DeleteAsync(ConversationId id, CancellationToken ct = default);
+
+        Task<int> CountByUserIdAsync(UserId userId, CancellationToken ct = default);
+    }
 }

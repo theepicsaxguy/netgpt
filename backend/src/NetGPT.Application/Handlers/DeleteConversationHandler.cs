@@ -1,43 +1,43 @@
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using NetGPT.Application.Commands;
-using NetGPT.Domain.Interfaces;
-using NetGPT.Domain.Primitives;
-using NetGPT.Domain.ValueObjects;
+// <copyright file="DeleteConversationHandler.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.Handlers;
-
-public sealed class DeleteConversationHandler : IRequestHandler<DeleteConversationCommand, Result>
+namespace NetGPT.Application.Handlers
 {
-    private readonly IConversationRepository _repository;
-    private readonly IUnitOfWork _unitOfWork;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using MediatR;
+    using NetGPT.Application.Commands;
+    using NetGPT.Domain.Aggregates;
+    using NetGPT.Domain.Interfaces;
+    using NetGPT.Domain.Primitives;
+    using NetGPT.Domain.ValueObjects;
 
-    public DeleteConversationHandler(IConversationRepository repository, IUnitOfWork unitOfWork)
+    public sealed class DeleteConversationHandler(IConversationRepository repository, IUnitOfWork unitOfWork) : IRequestHandler<DeleteConversationCommand, Result>
     {
-        _repository = repository;
-        _unitOfWork = unitOfWork;
-    }
+        private readonly IConversationRepository repository = repository;
+        private readonly IUnitOfWork unitOfWork = unitOfWork;
 
-    public async Task<Result> Handle(DeleteConversationCommand request, CancellationToken cancellationToken)
-    {
-        var conversationId = ConversationId.From(request.ConversationId);
-        var userId = UserId.From(request.UserId);
-
-        var conversation = await _repository.GetByIdAsync(conversationId, cancellationToken);
-        if (conversation is null)
+        public async Task<Result> Handle(DeleteConversationCommand request, CancellationToken cancellationToken)
         {
-            return Result.Failure(new Error("Conversation.NotFound", "Conversation not found"));
+            ConversationId conversationId = ConversationId.From(request.ConversationId);
+            UserId userId = UserId.From(request.UserId);
+
+            Conversation? conversation = await this.repository.GetByIdAsync(conversationId, cancellationToken);
+            if (conversation is null)
+            {
+                return Result.Failure(new Error("Conversation.NotFound", "Conversation not found"));
+            }
+
+            if (conversation.UserId != userId)
+            {
+                return Result.Failure(new Error("Conversation.Unauthorized", "Unauthorized access"));
+            }
+
+            await this.repository.DeleteAsync(conversationId, cancellationToken);
+            _ = await this.unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return Result.Success();
         }
-
-        if (conversation.UserId != userId)
-        {
-            return Result.Failure(new Error("Conversation.Unauthorized", "Unauthorized access"));
-        }
-
-        await _repository.DeleteAsync(conversationId, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        return Result.Success();
     }
 }

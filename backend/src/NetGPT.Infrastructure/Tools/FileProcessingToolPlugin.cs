@@ -1,23 +1,28 @@
-using System.ComponentModel;
-using System.Threading.Tasks;
+// <copyright file="FileProcessingToolPlugin.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Infrastructure.Tools;
-
-public sealed class FileProcessingToolPlugin
+namespace NetGPT.Infrastructure.Tools
 {
-    [Description("Extract text from a PDF file")]
-    public async Task<string> ExtractPdfText(
-        [Description("URL or path to PDF file")] string fileUrl)
-    {
-        await Task.Delay(100);
-        return "Extracted text from PDF...";
-    }
+    using System.ComponentModel;
+    using System.Threading.Tasks;
 
-    [Description("Analyze an image and describe its contents")]
-    public async Task<string> AnalyzeImage(
-        [Description("URL to image")] string imageUrl)
+    public sealed class FileProcessingToolPlugin
     {
-        await Task.Delay(100);
-        return "Image analysis: The image contains...";
+        [Description("Extract text from a PDF file")]
+        public static async Task<string> ExtractPdfText(
+            [Description("URL or path to PDF file")] string fileUrl)
+        {
+            await Task.Delay(100);
+            return "Extracted text from PDF...";
+        }
+
+        [Description("Analyze an image and describe its contents")]
+        public static async Task<string> AnalyzeImage(
+            [Description("URL to image")] string imageUrl)
+        {
+            await Task.Delay(100);
+            return "Image analysis: The image contains...";
+        }
     }
 }

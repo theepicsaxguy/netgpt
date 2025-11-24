@@ -1,10 +1,16 @@
-using NetGPT.Application.DTOs;
-using NetGPT.Domain.Aggregates;
+// <copyright file="IConversationMapper.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.Interfaces;
-
-public interface IConversationMapper
+namespace NetGPT.Application.Interfaces
 {
-    ConversationResponse ToResponse(Conversation conversation);
-    MessageResponse ToMessageResponse(Message message);
+    using NetGPT.Application.DTOs;
+    using NetGPT.Domain.Aggregates;
+
+    public interface IConversationMapper
+    {
+        ConversationResponse ToResponse(Conversation conversation);
+
+        MessageResponse ToMessageResponse(Message message);
+    }
 }

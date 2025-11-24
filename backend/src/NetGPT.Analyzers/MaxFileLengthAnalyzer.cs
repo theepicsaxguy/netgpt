@@ -1,3 +1,5 @@
+// \
+
 using System.Collections.Immutable;
 using System.IO;
 using Microsoft.CodeAnalysis;
@@ -9,7 +11,7 @@ namespace NetGPT.Analyzers
     public class MaxFileLengthAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "NG002";
-        private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        private static readonly DiagnosticDescriptor Rule = new(
             DiagnosticId,
             "File exceeds max allowed lines",
             "File '{0}' has {1} lines which exceeds the max of {2}",
@@ -32,18 +34,23 @@ namespace NetGPT.Analyzers
         {
             var path = context.Tree.FilePath ?? string.Empty;
             if (path.Contains("/obj/") || path.Contains("/bin/") || path.EndsWith(".g.cs") || path.EndsWith(".designer.cs"))
+            {
                 return;
+            }
 
             try
             {
                 int lines = 0;
-                using (var r = new StreamReader(path))
+                using (StreamReader r = new(path))
                 {
-                    while (r.ReadLine() != null) lines++;
+                    while (r.ReadLine() != null)
+                    {
+                        lines++;
+                    }
                 }
                 if (lines > DefaultMaxLines)
                 {
-                    var diag = Diagnostic.Create(Rule, Location.Create(context.Tree, new Microsoft.CodeAnalysis.Text.TextSpan(0, 0)), path, lines, DefaultMaxLines);
+                    Diagnostic diag = Diagnostic.Create(Rule, Location.Create(context.Tree, new Microsoft.CodeAnalysis.Text.TextSpan(0, 0)), path, lines, DefaultMaxLines);
                     context.ReportDiagnostic(diag);
                 }
             }

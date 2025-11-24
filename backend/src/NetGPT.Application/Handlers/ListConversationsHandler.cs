@@ -1,51 +1,50 @@
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using NetGPT.Application.DTOs;
-using NetGPT.Application.Queries;
-using NetGPT.Domain.Interfaces;
+// <copyright file="ListConversationsHandler.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.Handlers;
-
-public class ListConversationsHandler 
-    : IRequestHandler<ListConversationsQuery, PaginatedResult<ConversationDto>>
+namespace NetGPT.Application.Handlers
 {
-    private readonly IConversationRepository _repository;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using MediatR;
+    using NetGPT.Application.DTOs;
+    using NetGPT.Application.Queries;
+    using NetGPT.Domain.Aggregates;
+    using NetGPT.Domain.Interfaces;
 
-    public ListConversationsHandler(IConversationRepository repository)
+    public class ListConversationsHandler(IConversationRepository repository)
+            : IRequestHandler<ListConversationsQuery, PaginatedResult<ConversationDto>>
     {
-        _repository = repository;
-    }
+        private readonly IConversationRepository repository = repository;
 
-    public async Task<PaginatedResult<ConversationDto>> Handle(
-        ListConversationsQuery request,
-        CancellationToken ct)
-    {
-        var skip = (request.Page - 1) * request.PageSize;
-        
-        var conversations = await _repository.GetByUserIdAsync(
-            request.UserId,
-            skip,
-            request.PageSize,
-            ct
-        );
+        public async Task<PaginatedResult<ConversationDto>> Handle(
+            ListConversationsQuery request,
+            CancellationToken cancellationToken)
+        {
+            var skip = (request.Page - 1) * request.PageSize;
 
-        var totalCount = await _repository.CountByUserIdAsync(request.UserId, ct);
+            List<Conversation> conversations = await this.repository.GetByUserIdAsync(
+                request.UserId,
+                skip,
+                request.PageSize,
+                cancellationToken);
 
-        var items = conversations.Select(c => new ConversationDto(
-            c.Id.Value,
-            c.Title,
-            c.CreatedAt,
-            c.UpdatedAt,
-            c.Messages.Count
-        )).ToList();
+            var totalCount = await this.repository.CountByUserIdAsync(request.UserId, cancellationToken);
 
-        return new PaginatedResult<ConversationDto>(
-            items,
-            totalCount,
-            request.Page,
-            request.PageSize
-        );
+            List<ConversationDto> items = [.. conversations.Select(c => new ConversationDto(
+                c.Id.Value,
+                c.Title,
+                c.CreatedAt,
+                c.UpdatedAt,
+                c.Messages.Count))];
+
+            return new PaginatedResult<ConversationDto>(
+                items,
+                totalCount,
+                request.Page,
+                request.PageSize);
+        }
     }
 }

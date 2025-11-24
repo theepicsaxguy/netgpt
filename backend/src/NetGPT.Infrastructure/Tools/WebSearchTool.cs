@@ -1,36 +1,42 @@
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
+// <copyright file="WebSearchTool.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Infrastructure.Tools;
-
-public class WebSearchTool : IAgentTool
+namespace NetGPT.Infrastructure.Tools
 {
-    public string Name => "web_search";
-    public string Description => "Search the web for current information";
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Text.Json;
+    using System.Threading;
+    using System.Threading.Tasks;
 
-    [Description("Search the web")]
-    public async Task<string> ExecuteAsync(
-        [Description("Search query")] string query,
-        CancellationToken ct = default)
+    public class WebSearchTool : IAgentTool
     {
-        // Implementation would call actual search API
-        await Task.Delay(100, ct);
-        return JsonSerializer.Serialize(new
+        public string Name => "web_search";
+
+        public string Description => "Search the web for current information";
+
+        [Description("Search the web")]
+        public static async Task<string> ExecuteAsync(
+            [Description("Search query")] string query,
+            CancellationToken ct = default)
         {
-            query,
-            results = new[]
+            // Implementation would call actual search API
+            await Task.Delay(100, ct);
+            return JsonSerializer.Serialize(new
             {
-                new { title = "Example Result", snippet = "Example snippet", url = "https://example.com" }
-            }
-        });
-    }
+                query,
+                results = new[]
+                {
+                    new { title = "Example Result", snippet = "Example snippet", url = "https://example.com" },
+                },
+            });
+        }
 
-    async Task<string> IAgentTool.ExecuteAsync(string arguments, CancellationToken ct)
-    {
-        var args = JsonSerializer.Deserialize<Dictionary<string, string>>(arguments);
-        return await ExecuteAsync(args?["query"] ?? string.Empty, ct);
+        async Task<string> IAgentTool.ExecuteAsync(string arguments, CancellationToken ct)
+        {
+            Dictionary<string, string>? args = JsonSerializer.Deserialize<Dictionary<string, string>>(arguments);
+            return await ExecuteAsync(args?["query"] ?? string.Empty, ct);
+        }
     }
 }

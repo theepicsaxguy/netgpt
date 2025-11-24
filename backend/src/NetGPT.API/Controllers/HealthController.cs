@@ -1,15 +1,20 @@
-using System;
-using Microsoft.AspNetCore.Mvc;
+// <copyright file="HealthController.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.API.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public sealed class HealthController : ControllerBase
+namespace NetGPT.API.Controllers
 {
-    [HttpGet]
-    public IActionResult Get()
+    using System;
+    using Microsoft.AspNetCore.Mvc;
+
+    [ApiController]
+    [Route("api/[controller]")]
+    public sealed class HealthController : ControllerBase
     {
-        return Ok(new { status = "healthy", timestamp = DateTime.UtcNow });
+        [HttpGet]
+        public IActionResult Get()
+        {
+            return this.Ok(new { status = "healthy", timestamp = DateTime.UtcNow });
+        }
     }
 }

@@ -1,7 +1,10 @@
-namespace NetGPT.Domain.Exceptions;
+// <copyright file="ConversationNotFoundException.cs" theepicsaxguy">
+// \
+// </copyright>
 
-public sealed class ConversationNotFoundException : NotFoundException
+namespace NetGPT.Domain.Exceptions
 {
-    public ConversationNotFoundException(object conversationId)
-        : base("Conversation", conversationId) { }
+    public sealed class ConversationNotFoundException(object conversationId) : NotFoundException("Conversation", conversationId)
+    {
+    }
 }

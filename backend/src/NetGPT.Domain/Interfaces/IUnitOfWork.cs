@@ -1,12 +1,20 @@
-using System.Threading;
-using System.Threading.Tasks;
+// <copyright file="IUnitOfWork.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Domain.Interfaces;
-
-public interface IUnitOfWork
+namespace NetGPT.Domain.Interfaces
 {
-    Task<int> SaveChangesAsync(CancellationToken ct = default);
-    Task BeginTransactionAsync(CancellationToken ct = default);
-    Task CommitTransactionAsync(CancellationToken ct = default);
-    Task RollbackTransactionAsync(CancellationToken ct = default);
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    public interface IUnitOfWork
+    {
+        Task<int> SaveChangesAsync(CancellationToken ct = default);
+
+        Task BeginTransactionAsync(CancellationToken ct = default);
+
+        Task CommitTransactionAsync(CancellationToken ct = default);
+
+        Task RollbackTransactionAsync(CancellationToken ct = default);
+    }
 }

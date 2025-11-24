@@ -1,79 +1,77 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR;
-using MediatR;
-using NetGPT.Application.Commands;
-using NetGPT.Application.DTOs;
-using NetGPT.Application.Interfaces;
-using NetGPT.Domain.Interfaces;
-using NetGPT.Domain.ValueObjects;
+// <copyright file="ConversationHub.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.API.Hubs;
-
-public sealed class ConversationHub : Hub
+namespace NetGPT.API.Hubs
 {
-    private readonly IMediator _mediator;
-    private readonly IConversationRepository _repository;
-    private readonly IAgentOrchestrator _orchestrator;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using MediatR;
+    using Microsoft.AspNetCore.SignalR;
+    using NetGPT.Application.DTOs;
+    using NetGPT.Application.Interfaces;
+    using NetGPT.Domain.Aggregates;
+    using NetGPT.Domain.Interfaces;
+    using NetGPT.Domain.ValueObjects;
 
-    public ConversationHub(
+    public sealed class ConversationHub(
         IMediator mediator,
         IConversationRepository repository,
-        IAgentOrchestrator orchestrator)
+        IAgentOrchestrator orchestrator) : Hub
     {
-        _mediator = mediator;
-        _repository = repository;
-        _orchestrator = orchestrator;
-    }
+        private readonly IMediator mediator = mediator;
+        private readonly IConversationRepository repository = repository;
+        private readonly IAgentOrchestrator orchestrator = orchestrator;
 
-    public async Task SendMessage(Guid conversationId, string content)
-    {
-        var userId = GetCurrentUserId();
-
-        try
+        public async Task SendMessage(Guid conversationId, string content)
         {
-            var conversation = await _repository.GetByIdAsync(ConversationId.From(conversationId));
-            if (conversation == null || conversation.UserId != UserId.From(userId))
+            Guid userId = GetCurrentUserId();
+
+            try
             {
-                await Clients.Caller.SendAsync("Error", "Conversation not found or unauthorized");
-                return;
+                Conversation? conversation = await this.repository.GetByIdAsync(ConversationId.From(conversationId));
+                if (conversation == null || conversation.UserId != UserId.From(userId))
+                {
+                    await this.Clients.Caller.SendAsync("Error", "Conversation not found or unauthorized");
+                    return;
+                }
+
+                // Add user message
+                Guid messageId = Guid.NewGuid();
+                await this.Clients.Caller.SendAsync("MessageStarted", messageId);
+
+                // Stream agent response
+                await foreach (StreamingChunkDto chunk in StreamAgentResponse(conversation, content))
+                {
+                    await this.Clients.Caller.SendAsync("MessageChunk", chunk);
+                }
+
+                await this.Clients.Caller.SendAsync("MessageCompleted", messageId);
             }
-
-            // Add user message
-            var messageId = Guid.NewGuid();
-            await Clients.Caller.SendAsync("MessageStarted", messageId);
-
-            // Stream agent response
-            await foreach (var chunk in StreamAgentResponse(conversation, content))
+            catch (Exception ex)
             {
-                await Clients.Caller.SendAsync("MessageChunk", chunk);
+                await this.Clients.Caller.SendAsync("Error", ex.Message);
             }
-
-            await Clients.Caller.SendAsync("MessageCompleted", messageId);
         }
-        catch (Exception ex)
+
+        private static async IAsyncEnumerable<StreamingChunkDto> StreamAgentResponse(
+            Conversation conversation,
+            string userMessage)
         {
-            await Clients.Caller.SendAsync("Error", ex.Message);
+            // Generate a new messageId for the streaming response
+            Guid messageId = Guid.NewGuid();
+
+            // This would integrate with actual Agent Framework streaming
+            yield return new StreamingChunkDto(messageId, "Hello", null, false);
+            await Task.Delay(100);
+            yield return new StreamingChunkDto(messageId, " World", null, true);
         }
-    }
 
-    private async IAsyncEnumerable<StreamingChunkDto> StreamAgentResponse(
-        Domain.Aggregates.Conversation conversation,
-        string userMessage)
-    {
-        // Generate a new messageId for the streaming response
-        var messageId = Guid.NewGuid();
-
-        // This would integrate with actual Agent Framework streaming
-        yield return new StreamingChunkDto(messageId, "Hello", null, false);
-        await Task.Delay(100);
-        yield return new StreamingChunkDto(messageId, " World", null, true);
-    }
-
-    private Guid GetCurrentUserId()
-    {
-        // TODO: Get from JWT claims
-        return Guid.Parse("00000000-0000-0000-0000-000000000001");
+        private static Guid GetCurrentUserId()
+        {
+            // TODO: Get from JWT claims
+            return Guid.Parse("00000000-0000-0000-0000-000000000001");
+        }
     }
 }

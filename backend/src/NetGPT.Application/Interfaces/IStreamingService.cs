@@ -1,15 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+// <copyright file="IStreamingService.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.Interfaces;
-
-public interface IStreamingService
+namespace NetGPT.Application.Interfaces
 {
-    Task StreamResponseAsync(
-        Guid conversationId,
-        Guid messageId,
-        IAsyncEnumerable<string> chunks,
-        CancellationToken cancellationToken = default);
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    public interface IStreamingService
+    {
+        Task StreamResponseAsync(
+            Guid conversationId,
+            Guid messageId,
+            IAsyncEnumerable<string> chunks,
+            CancellationToken cancellationToken = default);
+    }
 }

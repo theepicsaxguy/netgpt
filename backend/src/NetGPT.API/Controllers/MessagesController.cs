@@ -1,40 +1,43 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using NetGPT.Application.Queries;
+// <copyright file="MessagesController.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.API.Controllers;
-
-[ApiController]
-[Route("api/v1/conversations/{conversationId}/messages")]
-public sealed class MessagesController : ControllerBase
+namespace NetGPT.API.Controllers
 {
-    private readonly IMediator _mediator;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using MediatR;
+    using Microsoft.AspNetCore.Mvc;
+    using NetGPT.Application.DTOs;
+    using NetGPT.Application.Queries;
+    using NetGPT.Domain.Primitives;
 
-    public MessagesController(IMediator mediator)
+    [ApiController]
+    [Route("api/v1/conversations/{conversationId}/messages")]
+    public sealed class MessagesController(IMediator mediator) : ControllerBase
     {
-        _mediator = mediator;
-    }
+        private readonly IMediator mediator = mediator;
 
-    [HttpGet]
-    public async Task<IActionResult> GetMessages(
-        Guid conversationId,
-        CancellationToken cancellationToken)
-    {
-        var userId = GetCurrentUserId();
-        var query = new GetMessagesQuery(conversationId, userId);
-        var result = await _mediator.Send(query, cancellationToken);
+        [HttpGet]
+        public async Task<IActionResult> GetMessages(
+            Guid conversationId,
+            CancellationToken cancellationToken)
+        {
+            Guid userId = GetCurrentUserId();
+            GetMessagesQuery query = new(conversationId, userId);
+            Result<List<MessageResponse>> result = await this.mediator.Send(query, cancellationToken);
 
-        return result.IsSuccess
-            ? Ok(result.Value)
-            : NotFound(new { error = result.Error.Message });
-    }
+            return result.IsSuccess
+                ? this.Ok(result.Value)
+                : this.NotFound(new { error = result.Error.Message });
+        }
 
-    private Guid GetCurrentUserId()
-    {
-        // TODO: Get from JWT claims
-        return Guid.Parse("00000000-0000-0000-0000-000000000001");
+        private static Guid GetCurrentUserId()
+        {
+            // TODO: Get from JWT claims
+            return Guid.Parse("00000000-0000-0000-0000-000000000001");
+        }
     }
 }

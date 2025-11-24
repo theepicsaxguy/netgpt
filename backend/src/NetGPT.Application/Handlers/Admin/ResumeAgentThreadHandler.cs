@@ -1,15 +1,20 @@
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using NetGPT.Application.Commands.Admin;
+// <copyright file="ResumeAgentThreadHandler.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.Handlers.Admin;
-
-public sealed class ResumeAgentThreadHandler : IRequestHandler<ResumeAgentThreadCommand, Unit>
+namespace NetGPT.Application.Handlers.Admin
 {
-    public Task<Unit> Handle(ResumeAgentThreadCommand request, CancellationToken cancellationToken)
+    using System.Threading;
+    using System.Threading.Tasks;
+    using MediatR;
+    using NetGPT.Application.Commands.Admin;
+
+    public sealed class ResumeAgentThreadHandler : IRequestHandler<ResumeAgentThreadCommand, Unit>
     {
-        // TODO: implement resume logic
-        return Task.FromResult(Unit.Value);
+        public Task<Unit> Handle(ResumeAgentThreadCommand request, CancellationToken cancellationToken)
+        {
+            // TODO: implement resume logic
+            return Task.FromResult(Unit.Value);
+        }
     }
 }

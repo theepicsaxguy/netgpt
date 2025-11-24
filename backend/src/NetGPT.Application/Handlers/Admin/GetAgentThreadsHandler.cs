@@ -1,20 +1,24 @@
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using NetGPT.Application.DTOs;
-using NetGPT.Application.Queries.Admin;
-using System;
-using System.Collections.Generic;
+// <copyright file="GetAgentThreadsHandler.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.Handlers.Admin;
-
-public sealed class GetAgentThreadsHandler : IRequestHandler<GetAgentThreadsQuery, PaginatedAgentThreadListDto>
+namespace NetGPT.Application.Handlers.Admin
 {
-    public Task<PaginatedAgentThreadListDto> Handle(GetAgentThreadsQuery request, CancellationToken cancellationToken)
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using MediatR;
+    using NetGPT.Application.DTOs;
+    using NetGPT.Application.Queries.Admin;
+
+    public sealed class GetAgentThreadsHandler : IRequestHandler<GetAgentThreadsQuery, PaginatedAgentThreadListDto>
     {
-        // TODO: implement data access and mapping from domain
-        var items = new List<AgentThreadSummaryDto>();
-        var dto = new PaginatedAgentThreadListDto(items, 0, request.Page, request.PageSize);
-        return Task.FromResult(dto);
+        public Task<PaginatedAgentThreadListDto> Handle(GetAgentThreadsQuery request, CancellationToken cancellationToken)
+        {
+            // TODO: implement data access and mapping from domain
+            List<AgentThreadSummaryDto> items = [];
+            PaginatedAgentThreadListDto dto = new(items, 0, request.Page, request.PageSize);
+            return Task.FromResult(dto);
+        }
     }
 }

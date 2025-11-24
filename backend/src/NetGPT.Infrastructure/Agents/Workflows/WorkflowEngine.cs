@@ -1,22 +1,21 @@
-using NetGPT.Infrastructure.Tools;
+// <copyright file="WorkflowEngine.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Infrastructure.Agents.Workflows;
-
-public class WorkflowEngine : IWorkflowEngine
+namespace NetGPT.Infrastructure.Agents.Workflows
 {
-    private readonly IOpenAIClientFactory _clientFactory;
-    private readonly ToolRegistry _toolRegistry;
+    using NetGPT.Infrastructure.Tools;
 
-    public WorkflowEngine(
+    public class WorkflowEngine(
         IOpenAIClientFactory clientFactory,
-        ToolRegistry toolRegistry)
+        ToolRegistry toolRegistry) : IWorkflowEngine
     {
-        _clientFactory = clientFactory;
-        _toolRegistry = toolRegistry;
-    }
+        private readonly IOpenAIClientFactory clientFactory = clientFactory;
+        private readonly ToolRegistry toolRegistry = toolRegistry;
 
-    public IWorkflow CreateConversationWorkflow()
-    {
-        return new ConversationWorkflow(_clientFactory, _toolRegistry);
+        public IWorkflow CreateConversationWorkflow()
+        {
+            return new ConversationWorkflow(this.clientFactory, this.toolRegistry);
+        }
     }
 }

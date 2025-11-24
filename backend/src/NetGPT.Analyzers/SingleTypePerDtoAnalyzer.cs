@@ -1,8 +1,9 @@
+// \
+
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace NetGPT.Analyzers
 {
@@ -10,7 +11,7 @@ namespace NetGPT.Analyzers
     public class SingleTypePerDtoAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "NG001";
-        private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+        private static readonly DiagnosticDescriptor Rule = new(
             DiagnosticId,
             "DTO should contain a single top-level type",
             "File '{0}' contains {1} top-level types; DTO files should contain a single type",
@@ -29,24 +30,28 @@ namespace NetGPT.Analyzers
 
         private static void AnalyzeSyntaxTree(SyntaxTreeAnalysisContext context)
         {
-            var root = context.Tree.GetRoot(context.CancellationToken);
+            SyntaxNode root = context.Tree.GetRoot(context.CancellationToken);
             // Check if path contains DTOs folder - skip otherwise
             var path = context.Tree.FilePath ?? string.Empty;
             if (!path.Contains("/DTOs/") && !path.Contains("\\DTOs\\"))
+            {
                 return;
+            }
 
             int topLevelCount = 0;
-            foreach (var node in root.ChildNodes())
+            foreach (SyntaxNode node in root.ChildNodes())
             {
                 if (node is NamespaceDeclarationSyntax ns)
                 {
-                    foreach (var member in ns.Members)
+                    foreach (MemberDeclarationSyntax member in ns.Members)
                     {
-                        if (member is TypeDeclarationSyntax || member is RecordDeclarationSyntax || member is EnumDeclarationSyntax)
+                        if (member is TypeDeclarationSyntax or RecordDeclarationSyntax or EnumDeclarationSyntax)
+                        {
                             topLevelCount++;
+                        }
                     }
                 }
-                else if (node is TypeDeclarationSyntax || node is RecordDeclarationSyntax || node is EnumDeclarationSyntax)
+                else if (node is TypeDeclarationSyntax or RecordDeclarationSyntax or EnumDeclarationSyntax)
                 {
                     topLevelCount++;
                 }
@@ -54,7 +59,7 @@ namespace NetGPT.Analyzers
 
             if (topLevelCount > 1)
             {
-                var diag = Diagnostic.Create(Rule, Location.Create(context.Tree, new Microsoft.CodeAnalysis.Text.TextSpan(0, 0)), path, topLevelCount);
+                Diagnostic diag = Diagnostic.Create(Rule, Location.Create(context.Tree, new Microsoft.CodeAnalysis.Text.TextSpan(0, 0)), path, topLevelCount);
                 context.ReportDiagnostic(diag);
             }
         }

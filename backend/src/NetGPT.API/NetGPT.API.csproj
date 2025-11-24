@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Company>NetGPT</Company>
+    <Copyright>Copyright (c) theepicsaxguy. All rights reserved.</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

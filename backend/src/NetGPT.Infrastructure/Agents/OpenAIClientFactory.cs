@@ -1,27 +1,28 @@
-using Microsoft.Extensions.AI;
-using NetGPT.Infrastructure.Configuration;
-using OpenAI;
+// <copyright file="OpenAIClientFactory.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Infrastructure.Agents;
-
-public interface IOpenAIClientFactory
+namespace NetGPT.Infrastructure.Agents
 {
-    IChatClient CreateChatClient(string? model = null);
-}
+    using Microsoft.Extensions.AI;
+    using NetGPT.Infrastructure.Configuration;
+    using OpenAI;
+    using OpenAI.Chat;
 
-public class OpenAIClientFactory : IOpenAIClientFactory
-{
-    private readonly OpenAISettings _settings;
-
-    public OpenAIClientFactory(OpenAISettings settings)
+    public interface IOpenAIClientFactory
     {
-        _settings = settings;
+        IChatClient CreateChatClient(string? model = null);
     }
 
-    public IChatClient CreateChatClient(string? model = null)
+    public class OpenAIClientFactory(OpenAISettings settings) : IOpenAIClientFactory
     {
-        var client = new OpenAIClient(_settings.ApiKey);
-        var chatClient = client.GetChatClient(model ?? _settings.DefaultModel);
-        return chatClient.AsIChatClient();
+        private readonly OpenAISettings settings = settings;
+
+        public IChatClient CreateChatClient(string? model = null)
+        {
+            OpenAIClient client = new(this.settings.ApiKey);
+            ChatClient chatClient = client.GetChatClient(model ?? this.settings.DefaultModel);
+            return chatClient.AsIChatClient();
+        }
     }
 }

@@ -13,6 +13,16 @@ dotnet_analyzer_diagnostic.severity = warning
 # StyleCop: one type per file (DTO rule)
 dotnet_diagnostic.SA1402.severity = error
 
+# StyleCop: file header must be present
+dotnet_diagnostic.SA1633.severity = warning
+
+# File header template for C# files
+file_header_template = \
+// <copyright file="{fileName}" company="NetGPT">\
+// Copyright (c) NetGPT. All rights reserved.\
+// Repo owner: theepicsaxguy\
+// </copyright>
+
 # Encourage file-scoped namespaces (cleaner files)
 dotnet_diagnostic.SA1500.severity = warning
 

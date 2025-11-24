@@ -1,56 +1,54 @@
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using NetGPT.Application.Commands;
-using NetGPT.Application.DTOs;
-using NetGPT.Domain.Enums;
-using NetGPT.Domain.Exceptions;
-using NetGPT.Domain.Interfaces;
-using NetGPT.Domain.Primitives;
-using NetGPT.Domain.ValueObjects;
+// <copyright file="SendMessageHandler.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.Handlers;
-
-public class SendMessageHandler : IRequestHandler<SendMessageCommand, Result<MessageResponse>>
+namespace NetGPT.Application.Handlers
 {
-    private readonly IConversationRepository _repository;
-    private readonly IUnitOfWork _unitOfWork;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using MediatR;
+    using NetGPT.Application.Commands;
+    using NetGPT.Application.DTOs;
+    using NetGPT.Domain.Aggregates;
+    using NetGPT.Domain.Enums;
+    using NetGPT.Domain.Interfaces;
+    using NetGPT.Domain.Primitives;
+    using NetGPT.Domain.ValueObjects;
 
-    public SendMessageHandler(
+    public class SendMessageHandler(
         IConversationRepository repository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork) : IRequestHandler<SendMessageCommand, Result<MessageResponse>>
     {
-        _repository = repository;
-        _unitOfWork = unitOfWork;
-    }
+        private readonly IConversationRepository repository = repository;
+        private readonly IUnitOfWork unitOfWork = unitOfWork;
 
-    public async Task<Result<MessageResponse>> Handle(SendMessageCommand request, CancellationToken ct)
-    {
-        var conversationId = ConversationId.From(request.ConversationId);
-        var userId = UserId.From(request.UserId);
-
-        var conversation = await _repository.GetByIdAsync(conversationId, ct);
-        if (conversation is null)
+        public async Task<Result<MessageResponse>> Handle(SendMessageCommand request, CancellationToken cancellationToken)
         {
-            return Result.Failure<MessageResponse>(new Error("Conversation.NotFound", "Conversation not found"));
+            ConversationId conversationId = ConversationId.From(request.ConversationId);
+            UserId userId = UserId.From(request.UserId);
+
+            Conversation? conversation = await this.repository.GetByIdAsync(conversationId, cancellationToken);
+            if (conversation is null)
+            {
+                return Result.Failure<MessageResponse>(new Error("Conversation.NotFound", "Conversation not found"));
+            }
+
+            conversation.EnsureOwnership(userId);
+
+            MessageContent content = MessageContent.FromText(request.Content);
+            MessageId messageId = conversation.AddMessage(MessageRole.User, content);
+
+            _ = await this.unitOfWork.SaveChangesAsync(cancellationToken);
+
+            Message message = conversation.GetMessage(messageId);
+
+            MessageResponse response = new(
+                message.Id.Value,
+                message.Role.ToString(),
+                message.Content.Text,
+                message.CreatedAt);
+
+            return Result.Success(response);
         }
-
-        conversation.EnsureOwnership(userId);
-
-        var content = MessageContent.FromText(request.Content);
-        var messageId = conversation.AddMessage(MessageRole.User, content);
-
-        await _unitOfWork.SaveChangesAsync(ct);
-
-        var message = conversation.GetMessage(messageId);
-
-        var response = new MessageResponse(
-            message.Id.Value,
-            message.Role.ToString(),
-            message.Content.Text,
-            message.CreatedAt
-        );
-
-        return Result.Success(response);
     }
 }

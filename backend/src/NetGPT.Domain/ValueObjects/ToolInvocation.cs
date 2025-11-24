@@ -1,10 +1,15 @@
-using System;
+// <copyright file="ToolInvocation.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Domain.ValueObjects;
+namespace NetGPT.Domain.ValueObjects
+{
+    using System;
 
-public record ToolInvocation(
-    string ToolName,
-    string Arguments,
-    string? Result,
-    DateTime InvokedAt,
-    TimeSpan Duration);
+    public record ToolInvocation(
+        string ToolName,
+        string Arguments,
+        string? Result,
+        DateTime InvokedAt,
+        TimeSpan Duration);
+}

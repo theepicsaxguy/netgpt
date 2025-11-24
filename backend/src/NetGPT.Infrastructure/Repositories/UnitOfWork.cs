@@ -1,48 +1,48 @@
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Storage;
-using NetGPT.Domain.Interfaces;
-using NetGPT.Infrastructure.Persistence;
+// <copyright file="UnitOfWork.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Infrastructure.Repositories;
-
-public sealed class UnitOfWork : IUnitOfWork
+namespace NetGPT.Infrastructure.Repositories
 {
-    private readonly ApplicationDbContext _context;
-    private IDbContextTransaction? _transaction;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore.Storage;
+    using NetGPT.Domain.Interfaces;
+    using NetGPT.Infrastructure.Persistence;
 
-    public UnitOfWork(ApplicationDbContext context)
+    public sealed class UnitOfWork(ApplicationDbContext context) : IUnitOfWork
     {
-        _context = context;
-    }
+        private readonly ApplicationDbContext context = context;
+        private IDbContextTransaction? transaction;
 
-    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        return await _context.SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
-    {
-        _transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
-    }
-
-    public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
-    {
-        if (_transaction != null)
+        public async Task<int> SaveChangesAsync(CancellationToken ct = default)
         {
-            await _transaction.CommitAsync(cancellationToken);
-            await _transaction.DisposeAsync();
-            _transaction = null;
+            return await this.context.SaveChangesAsync(ct);
         }
-    }
 
-    public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
-    {
-        if (_transaction != null)
+        public async Task BeginTransactionAsync(CancellationToken ct = default)
         {
-            await _transaction.RollbackAsync(cancellationToken);
-            await _transaction.DisposeAsync();
-            _transaction = null;
+            this.transaction = await this.context.Database.BeginTransactionAsync(ct);
+        }
+
+        public async Task CommitTransactionAsync(CancellationToken ct = default)
+        {
+            if (this.transaction != null)
+            {
+                await this.transaction.CommitAsync(ct);
+                await this.transaction.DisposeAsync();
+                this.transaction = null;
+            }
+        }
+
+        public async Task RollbackTransactionAsync(CancellationToken ct = default)
+        {
+            if (this.transaction != null)
+            {
+                await this.transaction.RollbackAsync(ct);
+                await this.transaction.DisposeAsync();
+                this.transaction = null;
+            }
         }
     }
 }

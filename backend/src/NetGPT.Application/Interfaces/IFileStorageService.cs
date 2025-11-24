@@ -1,13 +1,21 @@
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+// <copyright file="IFileStorageService.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.Interfaces;
-
-public interface IFileStorageService
+namespace NetGPT.Application.Interfaces
 {
-    Task<string> UploadAsync(Stream content, string fileName, string contentType, CancellationToken ct = default);
-    Task<Stream> DownloadAsync(string storageKey, CancellationToken ct = default);
-    Task DeleteAsync(string storageKey, CancellationToken ct = default);
-    string GetPublicUrl(string storageKey);
+    using System.IO;
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    public interface IFileStorageService
+    {
+        Task<string> UploadAsync(Stream content, string fileName, string contentType, CancellationToken ct = default);
+
+        Task<Stream> DownloadAsync(string storageKey, CancellationToken ct = default);
+
+        Task DeleteAsync(string storageKey, CancellationToken ct = default);
+
+        string GetPublicUrl(string storageKey);
+    }
 }

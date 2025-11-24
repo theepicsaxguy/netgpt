@@ -1,100 +1,101 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using NetGPT.Application.Commands;
-using NetGPT.Application.DTOs;
-using NetGPT.Application.Queries;
+// <copyright file="ConversationsController.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.API.Controllers;
-
-[ApiController]
-[Route("api/v1/[controller]")]
-public sealed class ConversationsController : ControllerBase
+namespace NetGPT.API.Controllers
 {
-    private readonly IMediator _mediator;
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using MediatR;
+    using Microsoft.AspNetCore.Mvc;
+    using NetGPT.Application.Commands;
+    using NetGPT.Application.DTOs;
+    using NetGPT.Application.Queries;
+    using NetGPT.Domain.Primitives;
 
-    public ConversationsController(IMediator mediator)
+    [ApiController]
+    [Route("api/v1/[controller]")]
+    public sealed class ConversationsController(IMediator mediator) : ControllerBase
     {
-        _mediator = mediator;
-    }
+        private readonly IMediator mediator = mediator;
 
-    [HttpPost]
-    public async Task<IActionResult> CreateConversation(
-        [FromBody] CreateConversationRequest request,
-        CancellationToken cancellationToken)
-    {
-        var userId = GetCurrentUserId();
-        var command = new CreateConversationCommand(userId, request.Title, request.Configuration);
-        var result = await _mediator.Send(command, cancellationToken);
+        [HttpPost]
+        public async Task<IActionResult> CreateConversation(
+            [FromBody] CreateConversationRequest request,
+            CancellationToken cancellationToken)
+        {
+            Guid userId = GetCurrentUserId();
+            CreateConversationCommand command = new(userId, request.Title, request.Configuration);
+            Result<ConversationResponse> result = await this.mediator.Send(command, cancellationToken);
 
-        return result.IsSuccess
-            ? Ok(result.Value)
-            : BadRequest(new { error = result.Error.Message });
-    }
+            return result.IsSuccess
+                ? this.Ok(result.Value)
+                : this.BadRequest(new { error = result.Error.Message });
+        }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetConversation(
-        Guid id,
-        CancellationToken cancellationToken)
-    {
-        var userId = GetCurrentUserId();
-        var query = new GetConversationQuery(id, userId);
-        var result = await _mediator.Send(query, cancellationToken);
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetConversation(
+            Guid id,
+            CancellationToken cancellationToken)
+        {
+            Guid userId = GetCurrentUserId();
+            GetConversationQuery query = new(id, userId);
+            Result<ConversationResponse> result = await this.mediator.Send(query, cancellationToken);
 
-        return result.IsSuccess
-            ? Ok(result.Value)
-            : NotFound(new { error = result.Error.Message });
-    }
+            return result.IsSuccess
+                ? this.Ok(result.Value)
+                : this.NotFound(new { error = result.Error.Message });
+        }
 
-    [HttpGet]
-    public async Task<IActionResult> GetConversations(
-        [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 20,
-        CancellationToken cancellationToken = default)
-    {
-        var userId = GetCurrentUserId();
-        var query = new GetConversationsQuery(userId, page, pageSize);
-        var result = await _mediator.Send(query, cancellationToken);
+        [HttpGet]
+        public async Task<IActionResult> GetConversations(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 20,
+            CancellationToken cancellationToken = default)
+        {
+            Guid userId = GetCurrentUserId();
+            GetConversationsQuery query = new(userId, page, pageSize);
+            Result<PaginatedResponse<ConversationResponse>> result = await this.mediator.Send(query, cancellationToken);
 
-        return result.IsSuccess
-            ? Ok(result.Value)
-            : BadRequest(new { error = result.Error.Message });
-    }
+            return result.IsSuccess
+                ? this.Ok(result.Value)
+                : this.BadRequest(new { error = result.Error.Message });
+        }
 
-    [HttpPost("{id}/messages")]
-    public async Task<IActionResult> SendMessage(
-        Guid id,
-        [FromBody] SendMessageRequest request,
-        CancellationToken cancellationToken)
-    {
-        var userId = GetCurrentUserId();
-        var command = new SendMessageCommand(id, userId, request.Content, request.Attachments);
-        var result = await _mediator.Send(command, cancellationToken);
+        [HttpPost("{id}/messages")]
+        public async Task<IActionResult> SendMessage(
+            Guid id,
+            [FromBody] SendMessageRequest request,
+            CancellationToken cancellationToken)
+        {
+            Guid userId = GetCurrentUserId();
+            SendMessageCommand command = new(id, userId, request.Content, request.Attachments);
+            Result<MessageResponse> result = await this.mediator.Send(command, cancellationToken);
 
-        return result.IsSuccess
-            ? Ok(result.Value)
-            : BadRequest(new { error = result.Error.Message });
-    }
+            return result.IsSuccess
+                ? this.Ok(result.Value)
+                : this.BadRequest(new { error = result.Error.Message });
+        }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteConversation(
-        Guid id,
-        CancellationToken cancellationToken)
-    {
-        var userId = GetCurrentUserId();
-        var command = new DeleteConversationCommand(id, userId);
-        var result = await _mediator.Send(command, cancellationToken);
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteConversation(
+            Guid id,
+            CancellationToken cancellationToken)
+        {
+            Guid userId = GetCurrentUserId();
+            DeleteConversationCommand command = new(id, userId);
+            Result result = await this.mediator.Send(command, cancellationToken);
 
-        return result.IsSuccess
-            ? NoContent()
-            : BadRequest(new { error = result.Error.Message });
-    }
+            return result.IsSuccess
+                ? this.NoContent()
+                : this.BadRequest(new { error = result.Error.Message });
+        }
 
-    private Guid GetCurrentUserId()
-    {
-        // TODO: Get from JWT claims
-        return Guid.Parse("00000000-0000-0000-0000-000000000001");
+        private static Guid GetCurrentUserId()
+        {
+            // TODO: Get from JWT claims
+            return Guid.Parse("00000000-0000-0000-0000-000000000001");
+        }
     }
 }

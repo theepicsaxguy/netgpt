@@ -1,44 +1,38 @@
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using NetGPT.Application.DTOs;
-using NetGPT.Application.Interfaces;
-using NetGPT.Application.Queries;
-using NetGPT.Domain.Interfaces;
-using NetGPT.Domain.Primitives;
-using NetGPT.Domain.ValueObjects;
+// <copyright file="GetConversationHandler.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.Handlers;
-
-public sealed class GetConversationHandler : IRequestHandler<GetConversationQuery, Result<ConversationResponse>>
+namespace NetGPT.Application.Handlers
 {
-    private readonly IConversationRepository _repository;
-    private readonly IConversationMapper _mapper;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using MediatR;
+    using NetGPT.Application.DTOs;
+    using NetGPT.Application.Interfaces;
+    using NetGPT.Application.Queries;
+    using NetGPT.Domain.Aggregates;
+    using NetGPT.Domain.Interfaces;
+    using NetGPT.Domain.Primitives;
+    using NetGPT.Domain.ValueObjects;
 
-    public GetConversationHandler(IConversationRepository repository, IConversationMapper mapper)
+    public sealed class GetConversationHandler(IConversationRepository repository, IConversationMapper mapper) : IRequestHandler<GetConversationQuery, Result<ConversationResponse>>
     {
-        _repository = repository;
-        _mapper = mapper;
-    }
+        private readonly IConversationRepository repository = repository;
+        private readonly IConversationMapper mapper = mapper;
 
-    public async Task<Result<ConversationResponse>> Handle(GetConversationQuery request, CancellationToken cancellationToken)
-    {
-        var conversationId = ConversationId.From(request.ConversationId);
-        var userId = UserId.From(request.UserId);
-
-        var conversation = await _repository.GetByIdAsync(conversationId, cancellationToken);
-        if (conversation is null)
+        public async Task<Result<ConversationResponse>> Handle(GetConversationQuery request, CancellationToken cancellationToken)
         {
-            return Result.Failure<ConversationResponse>(
-                new Error("Conversation.NotFound", "Conversation not found"));
-        }
+            ConversationId conversationId = ConversationId.From(request.ConversationId);
+            UserId userId = UserId.From(request.UserId);
 
-        if (conversation.UserId != userId)
-        {
-            return Result.Failure<ConversationResponse>(
-                new Error("Conversation.Unauthorized", "Unauthorized access"));
+            Conversation? conversation = await this.repository.GetByIdAsync(conversationId, cancellationToken);
+            return conversation is null
+                ? Result.Failure<ConversationResponse>(
+                    new Error("Conversation.NotFound", "Conversation not found"))
+                : conversation.UserId != userId
+                ? Result.Failure<ConversationResponse>(
+                    new Error("Conversation.Unauthorized", "Unauthorized access"))
+                : (Result<ConversationResponse>)this.mapper.ToResponse(conversation);
         }
-
-        return _mapper.ToResponse(conversation);
     }
 }

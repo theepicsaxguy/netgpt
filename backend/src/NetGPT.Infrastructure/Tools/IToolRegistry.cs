@@ -1,11 +1,18 @@
-using System.Collections.Generic;
-using Microsoft.Extensions.AI;
+// <copyright file="IToolRegistry.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Infrastructure.Tools;
-
-public interface IToolRegistry
+namespace NetGPT.Infrastructure.Tools
 {
-    void RegisterTool(AIFunction tool);
-    IEnumerable<AIFunction> GetAllTools();
-    AIFunction? GetTool(string name);
+    using System.Collections.Generic;
+    using Microsoft.Extensions.AI;
+
+    public interface IToolRegistry
+    {
+        void RegisterTool(AIFunction tool);
+
+        IEnumerable<AIFunction> GetAllTools();
+
+        AIFunction? GetTool(string name);
+    }
 }

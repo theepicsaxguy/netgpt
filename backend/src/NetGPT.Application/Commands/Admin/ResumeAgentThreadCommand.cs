@@ -1,6 +1,11 @@
-using System;
-using MediatR;
+// <copyright file="ResumeAgentThreadCommand.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.Commands.Admin;
+namespace NetGPT.Application.Commands.Admin
+{
+    using System;
+    using MediatR;
 
-public sealed record ResumeAgentThreadCommand(Guid ThreadId) : IRequest<Unit>;
+    public sealed record ResumeAgentThreadCommand(Guid ThreadId) : IRequest<Unit>;
+}

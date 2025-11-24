@@ -1,8 +1,15 @@
-namespace NetGPT.Infrastructure.Configuration;
+// <copyright file="OpenAISettings.cs" theepicsaxguy">
+// \
+// </copyright>
 
-public sealed class OpenAISettings
+namespace NetGPT.Infrastructure.Configuration
 {
-    public string ApiKey { get; set; } = string.Empty;
-    public string DefaultModel { get; set; } = "gpt-4o";
-    public int MaxTokens { get; set; } = 4000;
+    public sealed class OpenAISettings
+    {
+        public string ApiKey { get; set; } = string.Empty;
+
+        public string DefaultModel { get; set; } = "gpt-4o";
+
+        public int MaxTokens { get; set; } = 4000;
+    }
 }

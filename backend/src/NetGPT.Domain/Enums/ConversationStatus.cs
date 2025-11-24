@@ -1,8 +1,13 @@
-namespace NetGPT.Domain.Enums;
+// <copyright file="ConversationStatus.cs" theepicsaxguy">
+// \
+// </copyright>
 
-public enum ConversationStatus
+namespace NetGPT.Domain.Enums
 {
-    Active = 0,
-    Archived = 1,
-    Deleted = 2
+    public enum ConversationStatus
+    {
+        Active = 0,
+        Archived = 1,
+        Deleted = 2,
+    }
 }

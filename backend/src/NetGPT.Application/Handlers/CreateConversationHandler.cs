@@ -1,46 +1,44 @@
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using NetGPT.Application.Commands;
-using NetGPT.Application.DTOs;
-using NetGPT.Domain.Aggregates;
-using NetGPT.Domain.Interfaces;
-using NetGPT.Domain.Primitives;
-using NetGPT.Domain.ValueObjects;
+// <copyright file="CreateConversationHandler.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.Handlers;
-
-public class CreateConversationHandler : IRequestHandler<CreateConversationCommand, Result<ConversationResponse>>
+namespace NetGPT.Application.Handlers
 {
-    private readonly IConversationRepository _repository;
-    private readonly IUnitOfWork _unitOfWork;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using MediatR;
+    using NetGPT.Application.Commands;
+    using NetGPT.Application.DTOs;
+    using NetGPT.Domain.Aggregates;
+    using NetGPT.Domain.Interfaces;
+    using NetGPT.Domain.Primitives;
+    using NetGPT.Domain.ValueObjects;
 
-    public CreateConversationHandler(
+    public class CreateConversationHandler(
         IConversationRepository repository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork) : IRequestHandler<CreateConversationCommand, Result<ConversationResponse>>
     {
-        _repository = repository;
-        _unitOfWork = unitOfWork;
-    }
+        private readonly IConversationRepository repository = repository;
+        private readonly IUnitOfWork unitOfWork = unitOfWork;
 
-    public async Task<Result<ConversationResponse>> Handle(
-        CreateConversationCommand request,
-        CancellationToken ct)
-    {
-        var userId = UserId.From(request.UserId);
-        var conversation = Conversation.Create(userId, request.Title);
+        public async Task<Result<ConversationResponse>> Handle(
+            CreateConversationCommand request,
+            CancellationToken cancellationToken)
+        {
+            UserId userId = UserId.From(request.UserId);
+            Conversation conversation = Conversation.Create(userId, request.Title);
 
-        await _repository.AddAsync(conversation, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
+            _ = await this.repository.AddAsync(conversation, cancellationToken);
+            _ = await this.unitOfWork.SaveChangesAsync(cancellationToken);
 
-        var response = new ConversationResponse(
-            conversation.Id.Value,
-            conversation.Title,
-            conversation.CreatedAt,
-            conversation.UpdatedAt,
-            0
-        );
+            ConversationResponse response = new(
+                conversation.Id.Value,
+                conversation.Title,
+                conversation.CreatedAt,
+                conversation.UpdatedAt,
+                0);
 
-        return Result.Success(response);
+            return Result.Success(response);
+        }
     }
 }

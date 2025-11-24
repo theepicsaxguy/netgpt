@@ -1,9 +1,14 @@
-namespace NetGPT.Domain.Enums;
+// <copyright file="MessageRole.cs" theepicsaxguy">
+// \
+// </copyright>
 
-public enum MessageRole
+namespace NetGPT.Domain.Enums
 {
-    System,
-    User,
-    Assistant,
-    Tool
+    public enum MessageRole
+    {
+        System,
+        User,
+        Assistant,
+        Tool,
+    }
 }

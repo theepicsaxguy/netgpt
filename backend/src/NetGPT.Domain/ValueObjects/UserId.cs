@@ -1,10 +1,26 @@
-using System;
+// <copyright file="UserId.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Domain.ValueObjects;
-
-public record UserId(Guid Value)
+namespace NetGPT.Domain.ValueObjects
 {
-    public static UserId From(Guid value) => new(value);
-    public static UserId From(string value) => new(Guid.Parse(value));
-    public override string ToString() => Value.ToString();
+    using System;
+
+    public record UserId(Guid Value)
+    {
+        public static UserId From(Guid value)
+        {
+            return new(value);
+        }
+
+        public static UserId From(string value)
+        {
+            return new(Guid.Parse(value));
+        }
+
+        public override string ToString()
+        {
+            return this.Value.ToString();
+        }
+    }
 }

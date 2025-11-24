@@ -1,17 +1,22 @@
-using FluentValidation;
-using NetGPT.Application.Commands;
+// <copyright file="CreateConversationCommandValidator.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.Validators;
-
-public class CreateConversationCommandValidator : AbstractValidator<CreateConversationCommand>
+namespace NetGPT.Application.Validators
 {
-    public CreateConversationCommandValidator()
-    {
-        RuleFor(x => x.UserId)
-            .NotEmpty();
+    using FluentValidation;
+    using NetGPT.Application.Commands;
 
-        RuleFor(x => x.Title)
-            .MaximumLength(500)
-            .When(x => x.Title != null);
+    public class CreateConversationCommandValidator : AbstractValidator<CreateConversationCommand>
+    {
+        public CreateConversationCommandValidator()
+        {
+            _ = this.RuleFor(x => x.UserId)
+                .NotEmpty();
+
+            _ = this.RuleFor(x => x.Title)
+                .MaximumLength(500)
+                .When(x => x.Title != null);
+        }
     }
 }

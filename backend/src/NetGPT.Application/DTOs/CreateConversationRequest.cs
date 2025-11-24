@@ -1,5 +1,10 @@
-namespace NetGPT.Application.DTOs;
+// <copyright file="CreateConversationRequest.cs" theepicsaxguy">
+// \
+// </copyright>
 
-public record CreateConversationRequest(
-    string? Title = null,
-    AgentConfigurationDto? Configuration = null);
+namespace NetGPT.Application.DTOs
+{
+    public record CreateConversationRequest(
+        string? Title = null,
+        AgentConfigurationDto? Configuration = null);
+}

@@ -1,39 +1,43 @@
-using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NetGPT.Domain.Aggregates;
+// <copyright file="ConversationConfiguration.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Infrastructure.Persistence.Configurations;
-
-public sealed class ConversationConfiguration : IEntityTypeConfiguration<Conversation>
+namespace NetGPT.Infrastructure.Persistence.Configurations
 {
-    public void Configure(EntityTypeBuilder<Conversation> builder)
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Metadata.Builders;
+    using NetGPT.Domain.Aggregates;
+
+    public sealed class ConversationConfiguration : IEntityTypeConfiguration<Conversation>
     {
-        builder.ToTable("Conversations");
-        
-        builder.HasKey(c => c.Id);
-        
-        builder.Property(c => c.UserId).IsRequired();
-        builder.Property(c => c.Title).IsRequired().HasMaxLength(200);
-        builder.Property(c => c.Status).IsRequired();
-        builder.Property(c => c.TokensUsed).IsRequired();
-        
-        builder.OwnsOne(c => c.AgentConfiguration, config =>
+        public void Configure(EntityTypeBuilder<Conversation> builder)
         {
-            config.Property(a => a.ModelName).HasColumnName("ModelName").HasMaxLength(50);
-            config.Property(a => a.Temperature).HasColumnName("Temperature");
-            config.Property(a => a.MaxTokens).HasColumnName("MaxTokens");
-            config.Property(a => a.TopP).HasColumnName("TopP");
-            config.Property(a => a.FrequencyPenalty).HasColumnName("FrequencyPenalty");
-            config.Property(a => a.PresencePenalty).HasColumnName("PresencePenalty");
-        });
-        
-        builder.HasMany(typeof(Message))
-            .WithOne()
-            .HasForeignKey("ConversationId")
-            .OnDelete(DeleteBehavior.Cascade);
-        
-        builder.HasIndex(c => c.UserId);
-        builder.HasIndex(c => c.CreatedAt);
+            _ = builder.ToTable("Conversations");
+
+            _ = builder.HasKey(c => c.Id);
+
+            _ = builder.Property(c => c.UserId).IsRequired();
+            _ = builder.Property(c => c.Title).IsRequired().HasMaxLength(200);
+            _ = builder.Property(c => c.Status).IsRequired();
+            _ = builder.Property(c => c.TokensUsed).IsRequired();
+
+            _ = builder.OwnsOne(c => c.AgentConfiguration, config =>
+            {
+                _ = config.Property(a => a.ModelName).HasColumnName("ModelName").HasMaxLength(50);
+                _ = config.Property(a => a.Temperature).HasColumnName("Temperature");
+                _ = config.Property(a => a.MaxTokens).HasColumnName("MaxTokens");
+                _ = config.Property(a => a.TopP).HasColumnName("TopP");
+                _ = config.Property(a => a.FrequencyPenalty).HasColumnName("FrequencyPenalty");
+                _ = config.Property(a => a.PresencePenalty).HasColumnName("PresencePenalty");
+            });
+
+            _ = builder.HasMany(typeof(Message))
+                .WithOne()
+                .HasForeignKey("ConversationId")
+                .OnDelete(DeleteBehavior.Cascade);
+
+            _ = builder.HasIndex(c => c.UserId);
+            _ = builder.HasIndex(c => c.CreatedAt);
+        }
     }
 }

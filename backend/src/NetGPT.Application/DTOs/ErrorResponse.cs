@@ -1,8 +1,13 @@
-using System.Collections.Generic;
+// <copyright file="ErrorResponse.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.DTOs;
+namespace NetGPT.Application.DTOs
+{
+    using System.Collections.Generic;
 
-public record ErrorResponse(
-    string Code,
-    string Message,
-    Dictionary<string, string[]>? ValidationErrors = null);
+    public record ErrorResponse(
+        string Code,
+        string Message,
+        Dictionary<string, string[]>? ValidationErrors = null);
+}

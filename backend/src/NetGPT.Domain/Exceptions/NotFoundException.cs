@@ -1,7 +1,10 @@
-namespace NetGPT.Domain.Exceptions;
+// <copyright file="NotFoundException.cs" theepicsaxguy">
+// \
+// </copyright>
 
-public class NotFoundException : DomainException
+namespace NetGPT.Domain.Exceptions
 {
-    public NotFoundException(string entityName, object key)
-        : base($"{entityName} with key {key} not found") { }
+    public class NotFoundException(string entityName, object key) : DomainException($"{entityName} with key {key} not found")
+    {
+    }
 }

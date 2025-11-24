@@ -1,10 +1,15 @@
-namespace NetGPT.Domain.Enums;
+// <copyright file="ToolType.cs" theepicsaxguy">
+// \
+// </copyright>
 
-public enum ToolType
+namespace NetGPT.Domain.Enums
 {
-    WebSearch,
-    CodeExecution,
-    FileProcessing,
-    ImageGeneration,
-    Custom
+    public enum ToolType
+    {
+        WebSearch,
+        CodeExecution,
+        FileProcessing,
+        ImageGeneration,
+        Custom,
+    }
 }

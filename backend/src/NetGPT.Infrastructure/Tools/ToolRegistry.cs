@@ -1,20 +1,30 @@
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using Microsoft.Extensions.AI;
+// <copyright file="ToolRegistry.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Infrastructure.Tools;
-
-public sealed class ToolRegistry : IToolRegistry
+namespace NetGPT.Infrastructure.Tools
 {
-    private readonly ConcurrentDictionary<string, AIFunction> _tools = new();
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using Microsoft.Extensions.AI;
 
-    public void RegisterTool(AIFunction tool)
+    public sealed class ToolRegistry : IToolRegistry
     {
-        _tools.TryAdd(tool.Name, tool);
+        private readonly ConcurrentDictionary<string, AIFunction> tools = new();
+
+        public void RegisterTool(AIFunction tool)
+        {
+            _ = this.tools.TryAdd(tool.Name, tool);
+        }
+
+        public IEnumerable<AIFunction> GetAllTools()
+        {
+            return this.tools.Values;
+        }
+
+        public AIFunction? GetTool(string name)
+        {
+            return this.tools.TryGetValue(name, out AIFunction? tool) ? tool : null;
+        }
     }
-
-    public IEnumerable<AIFunction> GetAllTools() => _tools.Values;
-
-    public AIFunction? GetTool(string name) =>
-        _tools.TryGetValue(name, out var tool) ? tool : null;
 }

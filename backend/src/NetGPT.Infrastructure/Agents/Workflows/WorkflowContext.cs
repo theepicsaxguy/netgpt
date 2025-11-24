@@ -1,13 +1,21 @@
-using System.Collections.Generic;
-using NetGPT.Domain.Aggregates;
-using NetGPT.Infrastructure.Configuration;
+// <copyright file="WorkflowContext.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Infrastructure.Agents.Workflows;
-
-public class WorkflowContext
+namespace NetGPT.Infrastructure.Agents.Workflows
 {
-    public required Conversation Conversation { get; init; }
-    public required string UserMessage { get; init; }
-    public required OpenAISettings Settings { get; init; }
-    public Dictionary<string, object> State { get; } = new();
+    using System.Collections.Generic;
+    using NetGPT.Domain.Aggregates;
+    using NetGPT.Infrastructure.Configuration;
+
+    public class WorkflowContext
+    {
+        public required Conversation Conversation { get; init; }
+
+        public required string UserMessage { get; init; }
+
+        public required OpenAISettings Settings { get; init; }
+
+        public Dictionary<string, object> State { get; } = [];
+    }
 }

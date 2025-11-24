@@ -1,8 +1,13 @@
-using System;
+// <copyright file="IDomainEvent.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Domain.Events;
-
-public interface IDomainEvent
+namespace NetGPT.Domain.Events
 {
-    DateTime OccurredAt { get; }
+    using System;
+
+    public interface IDomainEvent
+    {
+        DateTime OccurredAt { get; }
+    }
 }

@@ -1,51 +1,50 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using NetGPT.Application.DTOs;
-using NetGPT.Application.Interfaces;
-using NetGPT.Application.Queries;
-using NetGPT.Domain.Interfaces;
-using NetGPT.Domain.Primitives;
-using NetGPT.Domain.ValueObjects;
+// <copyright file="GetMessagesHandler.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.Handlers;
-
-public sealed class GetMessagesHandler : IRequestHandler<GetMessagesQuery, Result<List<MessageResponse>>>
+namespace NetGPT.Application.Handlers
 {
-    private readonly IConversationRepository _repository;
-    private readonly IConversationMapper _mapper;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using MediatR;
+    using NetGPT.Application.DTOs;
+    using NetGPT.Application.Interfaces;
+    using NetGPT.Application.Queries;
+    using NetGPT.Domain.Aggregates;
+    using NetGPT.Domain.Interfaces;
+    using NetGPT.Domain.Primitives;
+    using NetGPT.Domain.ValueObjects;
 
-    public GetMessagesHandler(IConversationRepository repository, IConversationMapper mapper)
+    public sealed class GetMessagesHandler(IConversationRepository repository, IConversationMapper mapper) : IRequestHandler<GetMessagesQuery, Result<List<MessageResponse>>>
     {
-        _repository = repository;
-        _mapper = mapper;
-    }
+        private readonly IConversationRepository repository = repository;
+        private readonly IConversationMapper mapper = mapper;
 
-    public async Task<Result<List<MessageResponse>>> Handle(GetMessagesQuery request, CancellationToken cancellationToken)
-    {
-        var conversationId = ConversationId.From(request.ConversationId);
-        var userId = UserId.From(request.UserId);
-
-        var conversation = await _repository.GetByIdAsync(conversationId, cancellationToken);
-        if (conversation is null)
+        public async Task<Result<List<MessageResponse>>> Handle(GetMessagesQuery request, CancellationToken cancellationToken)
         {
-            return Result.Failure<List<MessageResponse>>(
-                new Error("Conversation.NotFound", "Conversation not found"));
+            ConversationId conversationId = ConversationId.From(request.ConversationId);
+            UserId userId = UserId.From(request.UserId);
+
+            Conversation? conversation = await this.repository.GetByIdAsync(conversationId, cancellationToken);
+            if (conversation is null)
+            {
+                return Result.Failure<List<MessageResponse>>(
+                    new Error("Conversation.NotFound", "Conversation not found"));
+            }
+
+            if (conversation.UserId != userId)
+            {
+                return Result.Failure<List<MessageResponse>>(
+                    new Error("Conversation.Unauthorized", "Unauthorized access"));
+            }
+
+            List<MessageResponse> messages = [.. conversation.Messages
+                .OrderBy(m => m.CreatedAt)
+                .Select(this.mapper.ToMessageResponse)];
+
+            return messages;
         }
-
-        if (conversation.UserId != userId)
-        {
-            return Result.Failure<List<MessageResponse>>(
-                new Error("Conversation.Unauthorized", "Unauthorized access"));
-        }
-
-        var messages = conversation.Messages
-            .OrderBy(m => m.CreatedAt)
-            .Select(_mapper.ToMessageResponse)
-            .ToList();
-
-        return messages;
     }
 }

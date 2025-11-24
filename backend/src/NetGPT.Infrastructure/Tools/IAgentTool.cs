@@ -1,12 +1,18 @@
-using System.ComponentModel;
-using System.Threading;
-using System.Threading.Tasks;
+// <copyright file="IAgentTool.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Infrastructure.Tools;
-
-public interface IAgentTool
+namespace NetGPT.Infrastructure.Tools
 {
-    string Name { get; }
-    string Description { get; }
-    Task<string> ExecuteAsync(string arguments, CancellationToken ct = default);
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    public interface IAgentTool
+    {
+        string Name { get; }
+
+        string Description { get; }
+
+        Task<string> ExecuteAsync(string arguments, CancellationToken ct = default);
+    }
 }

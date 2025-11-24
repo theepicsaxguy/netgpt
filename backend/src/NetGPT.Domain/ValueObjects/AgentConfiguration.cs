@@ -1,12 +1,20 @@
-namespace NetGPT.Domain.ValueObjects;
+// <copyright file="AgentConfiguration.cs" theepicsaxguy">
+// \
+// </copyright>
 
-public record AgentConfiguration(
-    string ModelName = "gpt-4o",
-    float Temperature = 0.7f,
-    int MaxTokens = 4000,
-    float? TopP = null,
-    float? FrequencyPenalty = null,
-    float? PresencePenalty = null)
+namespace NetGPT.Domain.ValueObjects
 {
-    public static AgentConfiguration Default() => new();
+    public record AgentConfiguration(
+        string ModelName = "gpt-4o",
+        float Temperature = 0.7f,
+        int MaxTokens = 4000,
+        float? TopP = null,
+        float? FrequencyPenalty = null,
+        float? PresencePenalty = null)
+    {
+        public static AgentConfiguration Default()
+        {
+            return new();
+        }
+    }
 }

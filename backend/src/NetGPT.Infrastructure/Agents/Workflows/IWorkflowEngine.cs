@@ -1,17 +1,22 @@
-using System.Collections.Generic;
-using System.Threading;
-using NetGPT.Application.DTOs;
+// <copyright file="IWorkflowEngine.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Infrastructure.Agents.Workflows;
-
-public interface IWorkflowEngine
+namespace NetGPT.Infrastructure.Agents.Workflows
 {
-    IWorkflow CreateConversationWorkflow();
-}
+    using System.Collections.Generic;
+    using System.Threading;
+    using NetGPT.Application.DTOs;
 
-public interface IWorkflow
-{
-    IAsyncEnumerable<StreamingChunkDto> ExecuteAsync(
-        WorkflowContext context,
-        CancellationToken ct = default);
+    public interface IWorkflowEngine
+    {
+        IWorkflow CreateConversationWorkflow();
+    }
+
+    public interface IWorkflow
+    {
+        IAsyncEnumerable<StreamingChunkDto> ExecuteAsync(
+            WorkflowContext context,
+            CancellationToken ct = default);
+    }
 }

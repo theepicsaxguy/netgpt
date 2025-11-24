@@ -1,16 +1,21 @@
-using FluentValidation;
-using NetGPT.Application.Commands;
+// <copyright file="SendMessageValidator.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.Validators;
-
-public sealed class SendMessageValidator : AbstractValidator<SendMessageCommand>
+namespace NetGPT.Application.Validators
 {
-    public SendMessageValidator()
+    using FluentValidation;
+    using NetGPT.Application.Commands;
+
+    public sealed class SendMessageValidator : AbstractValidator<SendMessageCommand>
     {
-        RuleFor(x => x.ConversationId).NotEmpty();
-        RuleFor(x => x.UserId).NotEmpty();
-        RuleFor(x => x.Content)
-            .NotEmpty()
-            .MaximumLength(32000);
+        public SendMessageValidator()
+        {
+            _ = this.RuleFor(x => x.ConversationId).NotEmpty();
+            _ = this.RuleFor(x => x.UserId).NotEmpty();
+            _ = this.RuleFor(x => x.Content)
+                .NotEmpty()
+                .MaximumLength(32000);
+        }
     }
 }

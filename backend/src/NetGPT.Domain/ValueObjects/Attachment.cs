@@ -1,15 +1,19 @@
-using System;
+// <copyright file="Attachment.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Domain.ValueObjects;
-
-public record Attachment(
-    string FileName,
-    string ContentType,
-    long SizeBytes,
-    string StorageKey)
+namespace NetGPT.Domain.ValueObjects
 {
-    public bool IsImage => ContentType.StartsWith("image/");
-    public bool IsDocument => ContentType == "application/pdf" || 
-                              ContentType.Contains("document") ||
-                              ContentType.Contains("text");
+    public record Attachment(
+        string FileName,
+        string ContentType,
+        long SizeBytes,
+        string StorageKey)
+    {
+        public bool IsImage => this.ContentType.StartsWith("image/");
+
+        public bool IsDocument => this.ContentType == "application/pdf" ||
+                                  this.ContentType.Contains("document") ||
+                                  this.ContentType.Contains("text");
+    }
 }

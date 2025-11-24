@@ -1,13 +1,18 @@
-using System;
-using NetGPT.Domain.ValueObjects;
-using NetGPT.Domain.Enums;
+// <copyright file="MessageAddedEvent.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Domain.Events;
-
-public record MessageAddedEvent(
-    ConversationId ConversationId,
-    MessageId MessageId,
-    MessageRole Role) : IDomainEvent
+namespace NetGPT.Domain.Events
 {
-    public DateTime OccurredAt { get; init; } = DateTime.UtcNow;
+    using System;
+    using NetGPT.Domain.Enums;
+    using NetGPT.Domain.ValueObjects;
+
+    public record MessageAddedEvent(
+        ConversationId ConversationId,
+        MessageId MessageId,
+        MessageRole Role) : IDomainEvent
+    {
+        public DateTime OccurredAt { get; init; } = DateTime.UtcNow;
+    }
 }

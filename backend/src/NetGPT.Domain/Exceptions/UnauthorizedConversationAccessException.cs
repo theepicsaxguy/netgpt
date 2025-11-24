@@ -1,7 +1,10 @@
-namespace NetGPT.Domain.Exceptions;
+// <copyright file="UnauthorizedConversationAccessException.cs" theepicsaxguy">
+// \
+// </copyright>
 
-public sealed class UnauthorizedConversationAccessException : DomainException
+namespace NetGPT.Domain.Exceptions
 {
-    public UnauthorizedConversationAccessException(object conversationId, object userId)
-        : base($"User {userId} is not authorized to access conversation {conversationId}") { }
+    public sealed class UnauthorizedConversationAccessException(object conversationId, object userId) : DomainException($"User {userId} is not authorized to access conversation {conversationId}")
+    {
+    }
 }

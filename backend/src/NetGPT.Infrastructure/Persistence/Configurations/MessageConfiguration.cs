@@ -1,43 +1,48 @@
-using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NetGPT.Domain.Aggregates;
+// <copyright file="MessageConfiguration.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Infrastructure.Persistence.Configurations;
-
-public sealed class MessageConfiguration : IEntityTypeConfiguration<Message>
+namespace NetGPT.Infrastructure.Persistence.Configurations
 {
-    public void Configure(EntityTypeBuilder<Message> builder)
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Metadata.Builders;
+    using NetGPT.Domain.Aggregates;
+
+    public sealed class MessageConfiguration : IEntityTypeConfiguration<Message>
     {
-        builder.ToTable("Messages");
-
-        builder.HasKey(m => m.Id);
-
-        builder.Property(m => m.ConversationId).IsRequired();
-        builder.Property(m => m.Role).IsRequired();
-        builder.Property(m => m.CreatedAt).IsRequired();
-
-        builder.OwnsOne(m => m.Content, content =>
+        public void Configure(EntityTypeBuilder<Message> builder)
         {
-            content.Property(c => c.Text).HasColumnName("Text").IsRequired();
-            content.OwnsMany(c => c.Attachments, attachment =>
+            _ = builder.ToTable("Messages");
+
+            _ = builder.HasKey(m => m.Id);
+
+            _ = builder.Property(m => m.ConversationId).IsRequired();
+            _ = builder.Property(m => m.Role).IsRequired();
+            _ = builder.Property(m => m.CreatedAt).IsRequired();
+
+            _ = builder.OwnsOne(m => m.Content, content =>
             {
-                attachment.ToTable("MessageAttachments");
-                attachment.Property(a => a.FileName).HasMaxLength(255);
-                attachment.Property(a => a.StorageKey).HasColumnName("StorageKey").HasMaxLength(1000);
-                attachment.Property(a => a.ContentType).HasMaxLength(100);
-                attachment.Property(a => a.SizeBytes).HasColumnName("SizeBytes");
+                _ = content.Property(c => c.Text).HasColumnName("Text").IsRequired();
+                _ = content.OwnsMany(c => c.Attachments, attachment =>
+                {
+                    _ = attachment.ToTable("MessageAttachments");
+                    _ = attachment.Property(a => a.FileName).HasMaxLength(255);
+                    _ = attachment.Property(a => a.StorageKey).HasColumnName("StorageKey").HasMaxLength(1000);
+                    _ = attachment.Property(a => a.ContentType).HasMaxLength(100);
+                    _ = attachment.Property(a => a.SizeBytes).HasColumnName("SizeBytes");
+                });
             });
-        });
 
-        builder.OwnsOne(m => m.Metadata, metadata =>
-        {
-            metadata.Property(m => m.TokenCount).HasColumnName("TokenCount");
-            metadata.Property(m => m.AgentName).HasColumnName("AgentName").HasMaxLength(50);
-            // ToolInvocations and CustomProperties are complex types, handle as JSON if needed
-        });
+            _ = builder.OwnsOne(m => m.Metadata, metadata =>
+            {
+                _ = metadata.Property(m => m.TokenCount).HasColumnName("TokenCount");
+                _ = metadata.Property(m => m.AgentName).HasColumnName("AgentName").HasMaxLength(50);
 
-        builder.HasIndex(m => m.ConversationId);
-        builder.HasIndex(m => m.CreatedAt);
+                // ToolInvocations and CustomProperties are complex types, handle as JSON if needed
+            });
+
+            _ = builder.HasIndex(m => m.ConversationId);
+            _ = builder.HasIndex(m => m.CreatedAt);
+        }
     }
 }

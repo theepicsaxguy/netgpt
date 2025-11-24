@@ -1,10 +1,15 @@
-using System;
+// <copyright file="ConversationDto.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Application.DTOs;
+namespace NetGPT.Application.DTOs
+{
+    using System;
 
-public record ConversationDto(
-    Guid Id,
-    string Title,
-    DateTime CreatedAt,
-    DateTime UpdatedAt,
-    int MessageCount);
+    public record ConversationDto(
+        Guid Id,
+        string Title,
+        DateTime CreatedAt,
+        DateTime UpdatedAt,
+        int MessageCount);
+}

@@ -1,22 +1,33 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+// <copyright file="MessageContent.cs" theepicsaxguy">
+// \
+// </copyright>
 
-namespace NetGPT.Domain.ValueObjects;
-
-public record MessageContent
+namespace NetGPT.Domain.ValueObjects
 {
-    public string Text { get; init; }
-    public IReadOnlyList<Attachment> Attachments { get; init; }
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
-    public MessageContent(string text, IEnumerable<Attachment>? attachments = null)
+    public record MessageContent
     {
-        if (string.IsNullOrWhiteSpace(text) && (attachments == null || !attachments.Any()))
-            throw new ArgumentException("Message must have text or attachments");
-            
-        Text = text ?? string.Empty;
-        Attachments = attachments?.ToList() ?? new List<Attachment>();
-    }
+        public string Text { get; init; }
 
-    public static MessageContent FromText(string text) => new(text);
+        public IReadOnlyList<Attachment> Attachments { get; init; }
+
+        public MessageContent(string text, IEnumerable<Attachment>? attachments = null)
+        {
+            if (string.IsNullOrWhiteSpace(text) && (attachments == null || !attachments.Any()))
+            {
+                throw new ArgumentException("Message must have text or attachments");
+            }
+
+            this.Text = text ?? string.Empty;
+            this.Attachments = attachments?.ToList() ?? [];
+        }
+
+        public static MessageContent FromText(string text)
+        {
+            return new(text);
+        }
+    }
 }

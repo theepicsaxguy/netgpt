@@ -1,7 +1,12 @@
-namespace NetGPT.Application.DTOs;
+// <copyright file="AttachmentDto.cs" theepicsaxguy">
+// \
+// </copyright>
 
-public record AttachmentDto(
-    string FileName,
-    string ContentType,
-    long SizeBytes,
-    string Url);
+namespace NetGPT.Application.DTOs
+{
+    public record AttachmentDto(
+        string FileName,
+        string ContentType,
+        long SizeBytes,
+        string Url);
+}
