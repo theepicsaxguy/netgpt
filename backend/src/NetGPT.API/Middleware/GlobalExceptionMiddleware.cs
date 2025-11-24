@@ -16,6 +16,11 @@ namespace NetGPT.API.Middleware
         private readonly RequestDelegate next = next;
         private readonly ILogger<GlobalExceptionMiddleware> logger = logger;
 
+        private static readonly Action<ILogger, Exception?> _unhandledExceptionLogged = LoggerMessage.Define(
+            LogLevel.Error,
+            new EventId(1, "UnhandledException"),
+            "An unhandled exception occurred");
+
         public async Task InvokeAsync(HttpContext context)
         {
             try
@@ -24,7 +29,7 @@ namespace NetGPT.API.Middleware
             }
             catch (Exception exception)
             {
-                logger.LogError(exception, "An unhandled exception occurred");
+                _unhandledExceptionLogged(logger, exception);
                 await HandleExceptionAsync(context, exception);
             }
         }

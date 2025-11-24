@@ -19,6 +19,11 @@ namespace NetGPT.Infrastructure.Agents
 {
     public sealed class AgentOrchestrator(IAgentFactory agentFactory, IToolRegistry toolRegistry, ILogger<AgentOrchestrator> logger) : IAgentOrchestrator
     {
+        private static readonly Action<ILogger, string, double, string, Exception?> EvaluationLogged = LoggerMessage.Define<string, double, string>(
+            LogLevel.Information,
+            new EventId(1, "Evaluation"),
+            "Evaluation {Evaluator}: Score {Score}, Feedback {Feedback}");
+
         private readonly IAgentFactory agentFactory = agentFactory;
         private readonly IToolRegistry toolRegistry = toolRegistry;
         private readonly ILogger<AgentOrchestrator> logger = logger;
@@ -55,6 +60,7 @@ namespace NetGPT.Infrastructure.Agents
                         string agentResponse = result.Messages.LastOrDefault()?.Text ?? string.Empty;
                         responses.Add($"{agent.Name}: {agentResponse}");
                     }
+
                     responseText = string.Join("\n\n", responses);
                 }
                 else
@@ -84,7 +90,7 @@ namespace NetGPT.Infrastructure.Agents
                 foreach (IEvaluator evaluator in evaluators)
                 {
                     EvaluationResult evalResult = await evaluator.EvaluateAsync(conversation, userMessage, response);
-                    logger.LogInformation("Evaluation {Evaluator}: Score {Score}, Feedback {Feedback}", evalResult.EvaluatorName, evalResult.Score, evalResult.Feedback);
+                    EvaluationLogged(logger, evalResult.EvaluatorName, evalResult.Score, evalResult.Feedback, null);
                 }
 
                 return Result.Success(response);
@@ -151,7 +157,7 @@ namespace NetGPT.Infrastructure.Agents
                 foreach (IEvaluator evaluator in evaluators)
                 {
                     EvaluationResult evalResult = await evaluator.EvaluateAsync(conversation, userMessage, fullResult.Value);
-                    logger.LogInformation("Evaluation {Evaluator}: Score {Score}, Feedback {Feedback}", evalResult.EvaluatorName, evalResult.Score, evalResult.Feedback);
+                    EvaluationLogged(logger, evalResult.EvaluatorName, evalResult.Score, evalResult.Feedback, null);
                 }
             }
         }

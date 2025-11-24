@@ -17,14 +17,6 @@ namespace NetGPT.Infrastructure.Persistence
 
         public DbSet<Message> Messages => Set<Message>();
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            _ = modelBuilder.ApplyConfiguration(new ConversationConfiguration());
-            _ = modelBuilder.ApplyConfiguration(new MessageConfiguration());
-
-            base.OnModelCreating(modelBuilder);
-        }
-
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             // Collect domain events from Conversation aggregates
@@ -42,6 +34,14 @@ namespace NetGPT.Infrastructure.Persistence
 
             // TODO: Publish domain events via MediatR
             return result;
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            _ = modelBuilder.ApplyConfiguration(new ConversationConfiguration());
+            _ = modelBuilder.ApplyConfiguration(new MessageConfiguration());
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

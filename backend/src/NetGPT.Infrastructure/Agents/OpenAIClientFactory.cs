@@ -7,12 +7,7 @@ using OpenAI.Chat;
 
 namespace NetGPT.Infrastructure.Agents
 {
-    public interface IOpenAIClientFactory
-    {
-        IChatClient CreateChatClient(string? model = null);
-    }
-
-    public class OpenAIClientFactory(OpenAISettings settings) : IOpenAIClientFactory
+    public sealed class OpenAIClientFactory(OpenAISettings settings) : IOpenAIClientFactory
     {
         private readonly OpenAISettings settings = settings;
 

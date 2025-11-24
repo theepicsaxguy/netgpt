@@ -12,17 +12,6 @@ using OpenAI.Chat;
 
 namespace NetGPT.Infrastructure.Agents
 {
-    public interface IAgentFactory
-    {
-        Task<AIAgent> CreatePrimaryAgentAsync(
-            AgentConfiguration config,
-            IEnumerable<AIFunction> tools);
-
-        Task<AIAgent> CreateAgentAsync(
-            AgentDefinition definition,
-            IEnumerable<AIFunction> tools);
-    }
-
     public sealed class AgentFactory(IOptions<OpenAISettings> settings) : IAgentFactory
     {
         private readonly OpenAISettings settings = settings.Value;
