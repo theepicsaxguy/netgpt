@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
@@ -48,25 +49,23 @@ builder.Services.AddSingleton(sp =>
     var registry = sp.GetRequiredService<IToolRegistry>();
     
     // Web Search Tool
-    var webSearchTools = AIFunctionFactory.Create(new WebSearchToolPlugin());
-    foreach (var tool in webSearchTools)
-    {
-        registry.RegisterTool(tool);
-    }
+    var webSearchPlugin = new WebSearchToolPlugin();
+    var webSearchTool = AIFunctionFactory.Create(webSearchPlugin.SearchWeb);
+    registry.RegisterTool(webSearchTool);
     
     // Code Execution Tools
-    var codeTools = AIFunctionFactory.Create(new CodeExecutionToolPlugin());
-    foreach (var tool in codeTools)
-    {
-        registry.RegisterTool(tool);
-    }
+    var codePlugin = new CodeExecutionToolPlugin();
+    var pythonTool = AIFunctionFactory.Create(codePlugin.ExecutePython);
+    var jsTool = AIFunctionFactory.Create(codePlugin.ExecuteJavaScript);
+    registry.RegisterTool(pythonTool);
+    registry.RegisterTool(jsTool);
     
     // File Processing Tools
-    var fileTools = AIFunctionFactory.Create(new FileProcessingToolPlugin());
-    foreach (var tool in fileTools)
-    {
-        registry.RegisterTool(tool);
-    }
+    var filePlugin = new FileProcessingToolPlugin();
+    var pdfTool = AIFunctionFactory.Create(filePlugin.ExtractPdfText);
+    var imageTool = AIFunctionFactory.Create(filePlugin.AnalyzeImage);
+    registry.RegisterTool(pdfTool);
+    registry.RegisterTool(imageTool);
     
     return registry;
 });

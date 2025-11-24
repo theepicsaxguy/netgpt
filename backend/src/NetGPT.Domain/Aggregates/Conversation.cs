@@ -6,6 +6,8 @@ using NetGPT.Domain.Events;
 using NetGPT.Domain.Exceptions;
 using NetGPT.Domain.ValueObjects;
 
+#pragma warning disable CS8618 // Non-nullable properties not initialized in constructor (EF Core)
+
 namespace NetGPT.Domain.Aggregates;
 
 public sealed class Conversation

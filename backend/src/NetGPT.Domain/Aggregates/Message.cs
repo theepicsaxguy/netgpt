@@ -2,6 +2,8 @@ using System;
 using NetGPT.Domain.Enums;
 using NetGPT.Domain.ValueObjects;
 
+#pragma warning disable CS8618 // Non-nullable properties not initialized in constructor (EF Core)
+
 namespace NetGPT.Domain.Aggregates;
 
 public sealed class Message
