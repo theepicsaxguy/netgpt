@@ -40,7 +40,7 @@ namespace NetGPT.API.Hubs
                 await Clients.Caller.SendAsync("MessageStarted", messageId);
 
                 // Stream agent response
-                await foreach (StreamingChunkDto chunk in StreamAgentResponse(conversation, content))
+                await foreach (StreamingChunkDto chunk in orchestrator.ExecuteStreamingAsync(conversation, content))
                 {
                     await Clients.Caller.SendAsync("MessageChunk", chunk);
                 }
@@ -51,19 +51,6 @@ namespace NetGPT.API.Hubs
             {
                 await Clients.Caller.SendAsync("Error", ex.Message);
             }
-        }
-
-        private static async IAsyncEnumerable<StreamingChunkDto> StreamAgentResponse(
-            Conversation conversation,
-            string userMessage)
-        {
-            // Generate a new messageId for the streaming response
-            Guid messageId = Guid.NewGuid();
-
-            // This would integrate with actual Agent Framework streaming
-            yield return new StreamingChunkDto(messageId, "Hello", null, false);
-            await Task.Delay(100);
-            yield return new StreamingChunkDto(messageId, " World", null, true);
         }
 
         private static Guid GetCurrentUserId()

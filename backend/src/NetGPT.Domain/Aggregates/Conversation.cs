@@ -35,6 +35,8 @@ namespace NetGPT.Domain.Aggregates
 
         public AgentConfiguration AgentConfiguration { get; private set; }
 
+        public Dictionary<string, object> Variables { get; private set; } = new();
+
         public IReadOnlyList<Message> Messages => messages.AsReadOnly();
 
         public IReadOnlyList<IDomainEvent> DomainEvents => domainEvents.AsReadOnly();

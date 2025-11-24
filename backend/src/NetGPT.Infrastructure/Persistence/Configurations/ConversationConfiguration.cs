@@ -27,7 +27,18 @@ namespace NetGPT.Infrastructure.Persistence.Configurations
                 _ = config.Property(a => a.TopP).HasColumnName("TopP");
                 _ = config.Property(a => a.FrequencyPenalty).HasColumnName("FrequencyPenalty");
                 _ = config.Property(a => a.PresencePenalty).HasColumnName("PresencePenalty");
+
+                _ = config.OwnsMany(a => a.Agents, agent =>
+                {
+                    _ = agent.Property(ad => ad.Name).HasColumnName("AgentName").HasMaxLength(100);
+                    _ = agent.Property(ad => ad.Instructions).HasColumnName("AgentInstructions");
+                    _ = agent.Property(ad => ad.ModelName).HasColumnName("AgentModelName").HasMaxLength(50);
+                    _ = agent.Property(ad => ad.Temperature).HasColumnName("AgentTemperature");
+                    _ = agent.Property(ad => ad.MaxTokens).HasColumnName("AgentMaxTokens");
+                });
             });
+
+            _ = builder.Property(c => c.Variables).HasColumnType("jsonb");
 
             _ = builder.HasMany(typeof(Message))
                 .WithOne()

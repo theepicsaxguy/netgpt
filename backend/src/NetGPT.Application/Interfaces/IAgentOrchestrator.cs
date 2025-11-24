@@ -1,5 +1,6 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NetGPT.Application.DTOs;
@@ -11,6 +12,11 @@ namespace NetGPT.Application.Interfaces
     public interface IAgentOrchestrator
     {
         Task<Result<AgentResponse>> ExecuteAsync(
+            Conversation conversation,
+            string userMessage,
+            CancellationToken cancellationToken = default);
+
+        IAsyncEnumerable<StreamingChunkDto> ExecuteStreamingAsync(
             Conversation conversation,
             string userMessage,
             CancellationToken cancellationToken = default);
