@@ -6,7 +6,7 @@
     <LangVersion>latest</LangVersion>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Company>NetGPT</Company>
-    <Copyright>Copyright (c) theepicsaxguy. All rights reserved.</Copyright>
+    <Copyright>Copyright (c) 2025 NetGPT. All rights reserved.</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

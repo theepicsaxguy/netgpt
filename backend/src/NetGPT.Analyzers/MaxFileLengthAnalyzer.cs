@@ -1,3 +1,5 @@
+// Copyright (c) 2025 NetGPT. All rights reserved.
+
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace NetGPT.Analyzers

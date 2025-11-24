@@ -1,3 +1,5 @@
+// Copyright (c) 2025 NetGPT. All rights reserved.
+
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;

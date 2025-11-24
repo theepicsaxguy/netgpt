@@ -17,14 +17,11 @@ dotnet_diagnostic.SA1402.severity = error
 dotnet_diagnostic.SA1633.severity = none
 
 # IDE: file header is missing or incorrect (KEEP THIS ENABLED)
-dotnet_diagnostic.IDE0073.severity = warning
+# IDE: file header is missing or incorrect (KEEP THIS ENABLED)
+dotnet_diagnostic.IDE0073.severity = error
 
 # File header template for C# files
-file_header_template = \
-// <copyright file="{fileName}" company="NetGPT">\n\
-// Copyright (c) 2025 NetGPT. All rights reserved.\n\
-// Repo owner: theepicsaxguy\n\
-// </copyright>
+file_header_template = Copyright (c) 2025 NetGPT. All rights reserved.
 
 # Encourage file-scoped namespaces (SA1500)
 # This is often better handled by Roslyn's IDE0055/IDE0065

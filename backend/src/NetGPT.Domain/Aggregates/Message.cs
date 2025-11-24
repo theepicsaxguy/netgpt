@@ -1,3 +1,4 @@
+// Copyright (c) 2025 NetGPT. All rights reserved.
 
 #pragma warning disable CS8618 // Non-nullable properties not initialized in constructor (EF Core)
 
