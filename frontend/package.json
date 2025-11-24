@@ -1,8 +1,16 @@
 {
   "devDependencies": {
-    "orval": "^7.16.1"
+    "orval": "^7.16.1",
+    "eslint": "^8.49.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0"
+    ,"eslint-plugin-max-classes-per-file": "^1.0.0"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.10"
+  }
+  ,"scripts": {
+    "lint": "eslint \"src/**/*.{ts,tsx,js,jsx}\"",
+    "lint:fix": "npm run lint -- --fix"
   }
 }

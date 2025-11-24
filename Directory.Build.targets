@@ -1,0 +1,32 @@
+<Project>
+  <PropertyGroup>
+    <MaxFileLines>200</MaxFileLines>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <CsFiles Include="**\*.cs" Exclude="**/obj/**;**/bin/**;**/Migrations/**;**/*.g.cs;**/*.designer.cs" />
+  </ItemGroup>
+
+  <Target Name="EnforceMaxFileLines" BeforeTargets="BeforeBuild">
+    <Message Importance="high" Text="Enforcing max file lines: $(MaxFileLines)" />
+    <ReadLinesFromFile Condition="Exists('%(CsFiles.FullPath)')" File="%(CsFiles.FullPath)">
+      <Output TaskParameter="Lines" ItemName="_FileLines_%(CsFiles.Identity)" />
+    </ReadLinesFromFile>
+
+    <PropertyGroup>
+      <_HasError>false</_HasError>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <!-- compute line count per file using ReadLinesFromFile length via batching -->
+      <_CsWithCount Include="%(CsFiles.Identity)">
+        <FullPath>%(CsFiles.FullPath)</FullPath>
+      </_CsWithCount>
+    </ItemGroup>
+
+    <Message Importance="low" Text="Checking files..." />
+
+    <Exec Command="bash -c 'for f in $(git ls-files -- "**/*.cs" | grep -vE "^obj/|^bin/|Migrations|.g.cs|.designer.cs"); do l=$(wc -l < \"$f\" | tr -d \" \" ); if [ $l -gt $(MaxFileLines) ]; then echo \"ERROR: $f has $l lines (max $(MaxFileLines))\"; exit 1; fi; done'" ContinueOnError="false" />
+
+  </Target>
+</Project>

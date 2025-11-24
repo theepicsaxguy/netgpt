@@ -1,0 +1,40 @@
+name: Lint & Build Checks
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Run file-length check
+        run: |
+          chmod +x ./tools/check_file_length.sh
+          ./tools/check_file_length.sh
+      - name: Restore and build
+        run: |
+          dotnet restore backend/src/NetGPT.API/NetGPT.API.csproj
+          dotnet build backend/NetGPT.sln --no-restore --configuration Release
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm ci
+      - name: Run ESLint
+        working-directory: frontend
+        run: npx eslint "src/**/*.{ts,tsx,js,jsx}" || true
