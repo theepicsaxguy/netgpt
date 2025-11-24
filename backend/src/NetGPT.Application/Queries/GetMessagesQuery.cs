@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using MediatR;
+using NetGPT.Application.DTOs;
 using NetGPT.Domain.Primitives;
 
 namespace NetGPT.Application.Queries
