@@ -1,5 +1,6 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,7 +49,7 @@ namespace NetGPT.Application.Handlers
                 return AgentConfiguration.Default();
             }
 
-            var agents = dto.Agents?.Select(a => new AgentDefinition(
+            List<AgentDefinition>? agents = dto.Agents?.Select(a => new AgentDefinition(
                 a.Name,
                 a.Instructions,
                 a.ModelName ?? "gpt-4o",

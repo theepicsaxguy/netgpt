@@ -14,8 +14,8 @@ namespace NetGPT.Application.Services
         public async Task<EvaluationResult> EvaluateAsync(Conversation conversation, string userMessage, AgentResponse response)
         {
             // Simple check: if user message suggests tool use (e.g., contains "search" or "calculate"), check if response mentions tool
-            bool needsTool = userMessage.ToLower().Contains("search") || userMessage.ToLower().Contains("calculate");
-            bool mentionsTool = response.Content.ToLower().Contains("tool") || response.Content.ToLower().Contains("function");
+            bool needsTool = userMessage.ToLower(System.Globalization.CultureInfo.CurrentCulture).Contains("search") || userMessage.ToLower(System.Globalization.CultureInfo.CurrentCulture).Contains("calculate");
+            bool mentionsTool = response.Content.ToLower(System.Globalization.CultureInfo.CurrentCulture).Contains("tool") || response.Content.ToLower(System.Globalization.CultureInfo.CurrentCulture).Contains("function");
 
             double score = needsTool ? (mentionsTool ? 1.0 : 0.0) : 0.5; // Neutral if no tool needed
 
