@@ -37,6 +37,21 @@ export interface AgentConfigurationDto {
   maxTokens?: number | null;
   /** @nullable */
   customProperties?: AgentConfigurationDtoCustomProperties;
+  /** @nullable */
+  agents?: AgentDefinitionDto[] | null;
+}
+
+export interface AgentDefinitionDto {
+  /** @nullable */
+  name?: string | null;
+  /** @nullable */
+  instructions?: string | null;
+  /** @nullable */
+  modelName?: string | null;
+  /** @nullable */
+  temperature?: number | null;
+  /** @nullable */
+  maxTokens?: number | null;
 }
 
 export interface CreateConversationRequest {

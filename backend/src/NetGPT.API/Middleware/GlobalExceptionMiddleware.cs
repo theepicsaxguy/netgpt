@@ -13,13 +13,13 @@ namespace NetGPT.API.Middleware
 {
     public sealed class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExceptionMiddleware> logger)
     {
-        private readonly RequestDelegate next = next;
-        private readonly ILogger<GlobalExceptionMiddleware> logger = logger;
-
-        private static readonly Action<ILogger, Exception?> _unhandledExceptionLogged = LoggerMessage.Define(
+        private static readonly Action<ILogger, Exception?> UnhandledExceptionLogged = LoggerMessage.Define(
             LogLevel.Error,
             new EventId(1, "UnhandledException"),
             "An unhandled exception occurred");
+
+        private readonly RequestDelegate next = next;
+        private readonly ILogger<GlobalExceptionMiddleware> logger = logger;
 
         public async Task InvokeAsync(HttpContext context)
         {
@@ -29,7 +29,7 @@ namespace NetGPT.API.Middleware
             }
             catch (Exception exception)
             {
-                _unhandledExceptionLogged(logger, exception);
+                UnhandledExceptionLogged(logger, exception);
                 await HandleExceptionAsync(context, exception);
             }
         }
