@@ -1,7 +1,3 @@
-// <copyright file="WebSearchToolPlugin.cs" company="NetGPT">
-// Copyright (c) NetGPT. All rights reserved.
-// Repo owner: theepicsaxguy
-// </copyright>
 
 namespace NetGPT.Infrastructure.Tools
 {

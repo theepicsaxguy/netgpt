@@ -1,7 +1,3 @@
-// <copyright file="ConversationHub.cs" company="PlaceholderCompany">
-// \
-// </copyright>
-
 namespace NetGPT.API.Hubs
 {
     using System;

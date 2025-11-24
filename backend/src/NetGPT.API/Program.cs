@@ -1,7 +1,3 @@
-// <copyright file="Program.cs" company="PlaceholderCompany">
-// \
-// </copyright>
-
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;

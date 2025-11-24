@@ -13,24 +13,25 @@ dotnet_analyzer_diagnostic.severity = warning
 # StyleCop: one type per file (DTO rule)
 dotnet_diagnostic.SA1402.severity = error
 
-# StyleCop: file header must be present
-dotnet_diagnostic.SA1633.severity = warning
+# StyleCop: file header must be present (DISABLE THIS)
+dotnet_diagnostic.SA1633.severity = none
 
-# IDE: file header is missing or incorrect
+# IDE: file header is missing or incorrect (KEEP THIS ENABLED)
 dotnet_diagnostic.IDE0073.severity = warning
 
 # File header template for C# files
 file_header_template = \
 // <copyright file="{fileName}" company="NetGPT">\n\
-// Copyright (c) NetGPT. All rights reserved.\n\
+// Copyright (c) 2025 NetGPT. All rights reserved.\n\
 // Repo owner: theepicsaxguy\n\
 // </copyright>
 
-# Encourage file-scoped namespaces (cleaner files)
-dotnet_diagnostic.SA1500.severity = warning
+# Encourage file-scoped namespaces (SA1500)
+# This is often better handled by Roslyn's IDE0055/IDE0065
+dotnet_diagnostic.SA1500.severity = none # DISABLE THIS FOR NOW TO PREVENT CONFLICTS
 
-# Enforce XML docs on public members to help SRP/DDD documentation
-dotnet_diagnostic.SA1600.severity = warning
+# Enforce XML docs on public members (SA1600)
+dotnet_diagnostic.SA1600.severity = none # DISABLE THIS FOR NOW TO PREVENT CONFLICTS
 
 # Prefer readonly or init-only where applicable
 dotnet_diagnostic.CA2104.severity = warning

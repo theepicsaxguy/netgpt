@@ -1,7 +1,3 @@
-// <copyright file="SwaggerConfiguration.cs" company="PlaceholderCompany">
-// \
-// </copyright>
-
 namespace NetGPT.API.Configuration
 {
     using Microsoft.Extensions.DependencyInjection;

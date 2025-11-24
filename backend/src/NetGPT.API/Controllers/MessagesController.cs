@@ -1,7 +1,3 @@
-// <copyright file="MessagesController.cs" company="PlaceholderCompany">
-// \
-// </copyright>
-
 namespace NetGPT.API.Controllers
 {
     using System;

@@ -1,7 +1,3 @@
-// <copyright file="FileStorageService.cs" company="NetGPT">
-// Copyright (c) NetGPT. All rights reserved.
-// Repo owner: theepicsaxguy
-// </copyright>
 
 namespace NetGPT.Infrastructure.Services
 {

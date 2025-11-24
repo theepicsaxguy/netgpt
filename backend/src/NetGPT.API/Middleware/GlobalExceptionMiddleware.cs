@@ -1,7 +1,3 @@
-// <copyright file="GlobalExceptionMiddleware.cs" company="PlaceholderCompany">
-// \
-// </copyright>
-
 namespace NetGPT.API.Middleware
 {
     using System;
