@@ -6,7 +6,7 @@ import ChatModal from './components/ChatModal';
 
 const queryClient = new QueryClient();
 
-export default function App() {
+export default function App(): JSX.Element {
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 

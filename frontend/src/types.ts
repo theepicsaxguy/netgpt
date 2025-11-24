@@ -19,7 +19,7 @@ export interface MessageDto {
   content: string;
   role: 'user' | 'assistant' | 'system';
   createdAt: string;
-  attachments?: any[];
+  attachments?: unknown[];
 }
 
 export interface PagedResult<T> {
@@ -30,4 +30,4 @@ export interface PagedResult<T> {
 }
 
 // Helper to safely cast the void API responses
-export const castTo = <T>(data: any): T => data as unknown as T;
+export const castTo = <T>(data: unknown): T => data as T;

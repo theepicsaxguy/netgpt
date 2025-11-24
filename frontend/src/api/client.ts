@@ -6,7 +6,7 @@ const AXIOS_INSTANCE = axios.create({
 
 AXIOS_INSTANCE.interceptors.response.use(
   (response: AxiosResponse) => response,
-  (error: any) => {
+  (error: unknown) => {
     console.error('API call failed:', error);
     return Promise.reject(error);
   }

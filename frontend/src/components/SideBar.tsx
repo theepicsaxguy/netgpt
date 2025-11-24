@@ -17,7 +17,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedId, onSelect, onNewChat }) =>
     pageSize: 50
   });
 
-  const { data: healthData, isSuccess: isHealthSuccess, isError: isHealthError } = useGetApiHealth({
+  const { isSuccess: isHealthSuccess } = useGetApiHealth({
     query: { refetchInterval: 30000 }
   });
 
