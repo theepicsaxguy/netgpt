@@ -129,5 +129,4 @@ namespace NetGPT.Domain.Primitives
         public static readonly Error NullValue = new("Error.NullValue", "The specified value was null.");
     }
 }
-}
 

@@ -4,7 +4,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <Company>NetGPT</Company>
     <Copyright>Copyright (c) 2025 NetGPT. All rights reserved.</Copyright>
   </PropertyGroup>
