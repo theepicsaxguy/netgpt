@@ -1,5 +1,6 @@
-// <copyright file="GetConversationsHandler.cs" theepicsaxguy">
-// \
+// <copyright file="GetConversationsHandler.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.Handlers
@@ -28,8 +29,8 @@ namespace NetGPT.Application.Handlers
             UserId userId = UserId.From(request.UserId);
 
             List<Conversation> conversations = await this.repository.GetByUserIdAsync(userId, request.Page, request.PageSize, cancellationToken);
-            var totalCount = await this.repository.CountByUserIdAsync(userId, cancellationToken);
-            var totalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize);
+            int totalCount = await this.repository.CountByUserIdAsync(userId, cancellationToken);
+            int totalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize);
 
             List<ConversationResponse> responses = [.. conversations.Select(this.mapper.ToResponse)];
 

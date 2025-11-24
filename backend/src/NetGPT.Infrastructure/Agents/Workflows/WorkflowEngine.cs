@@ -1,5 +1,6 @@
-// <copyright file="WorkflowEngine.cs" theepicsaxguy">
-// \
+// <copyright file="WorkflowEngine.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Infrastructure.Agents.Workflows

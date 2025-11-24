@@ -1,5 +1,6 @@
-// <copyright file="StreamingChunk.cs" theepicsaxguy">
-// \
+// <copyright file="StreamingChunk.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.DTOs

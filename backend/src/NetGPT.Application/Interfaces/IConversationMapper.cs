@@ -1,5 +1,6 @@
-// <copyright file="IConversationMapper.cs" theepicsaxguy">
-// \
+// <copyright file="IConversationMapper.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.Interfaces

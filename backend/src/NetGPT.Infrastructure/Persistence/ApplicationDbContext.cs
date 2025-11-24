@@ -1,5 +1,6 @@
-// <copyright file="ApplicationDbContext.cs" theepicsaxguy">
-// \
+// <copyright file="ApplicationDbContext.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Infrastructure.Persistence
@@ -40,7 +41,7 @@ namespace NetGPT.Infrastructure.Persistence
                     return events;
                 })];
 
-            var result = await base.SaveChangesAsync(cancellationToken);
+            int result = await base.SaveChangesAsync(cancellationToken);
 
             // TODO: Publish domain events via MediatR
             return result;

@@ -1,5 +1,6 @@
-// <copyright file="MessageMetadataDto.cs" theepicsaxguy">
-// \
+// <copyright file="MessageMetadataDto.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.DTOs

@@ -1,5 +1,6 @@
-// <copyright file="PaginatedResponse.cs" theepicsaxguy">
-// \
+// <copyright file="PaginatedResponse.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.DTOs

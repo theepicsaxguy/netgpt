@@ -1,5 +1,6 @@
-// <copyright file="MessageConfiguration.cs" theepicsaxguy">
-// \
+// <copyright file="MessageConfiguration.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Infrastructure.Persistence.Configurations

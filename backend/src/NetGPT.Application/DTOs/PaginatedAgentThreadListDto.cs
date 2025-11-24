@@ -1,5 +1,6 @@
-// <copyright file="PaginatedAgentThreadListDto.cs" theepicsaxguy">
-// \
+// <copyright file="PaginatedAgentThreadListDto.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.DTOs

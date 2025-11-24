@@ -1,5 +1,6 @@
-// <copyright file="CodeExecutionTool.cs" theepicsaxguy">
-// \
+// <copyright file="CodeExecutionTool.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Infrastructure.Tools

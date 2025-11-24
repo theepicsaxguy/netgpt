@@ -1,4 +1,4 @@
-// <copyright file="MessagesController.cs" theepicsaxguy">
+// <copyright file="MessagesController.cs" company="PlaceholderCompany">
 // \
 // </copyright>
 

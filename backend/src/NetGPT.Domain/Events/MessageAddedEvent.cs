@@ -1,5 +1,6 @@
-// <copyright file="MessageAddedEvent.cs" theepicsaxguy">
-// \
+// <copyright file="MessageAddedEvent.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Domain.Events

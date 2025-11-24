@@ -1,5 +1,6 @@
-// <copyright file="AgentThreadDetailDto.cs" theepicsaxguy">
-// \
+// <copyright file="AgentThreadDetailDto.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.DTOs

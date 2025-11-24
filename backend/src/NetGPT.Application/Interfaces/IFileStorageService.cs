@@ -1,5 +1,6 @@
-// <copyright file="IFileStorageService.cs" theepicsaxguy">
-// \
+// <copyright file="IFileStorageService.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.Interfaces

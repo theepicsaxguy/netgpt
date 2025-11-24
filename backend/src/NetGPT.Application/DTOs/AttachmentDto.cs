@@ -1,5 +1,6 @@
-// <copyright file="AttachmentDto.cs" theepicsaxguy">
-// \
+// <copyright file="AttachmentDto.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.DTOs

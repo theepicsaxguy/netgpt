@@ -1,5 +1,6 @@
-// <copyright file="NotFoundException.cs" theepicsaxguy">
-// \
+// <copyright file="NotFoundException.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Domain.Exceptions

@@ -1,5 +1,6 @@
-// <copyright file="UserId.cs" theepicsaxguy">
-// \
+// <copyright file="UserId.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Domain.ValueObjects

@@ -1,5 +1,6 @@
-// <copyright file="CancelAgentThreadHandler.cs" theepicsaxguy">
-// \
+// <copyright file="CancelAgentThreadHandler.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.Handlers.Admin

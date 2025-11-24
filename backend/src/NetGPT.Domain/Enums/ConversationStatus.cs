@@ -1,5 +1,6 @@
-// <copyright file="ConversationStatus.cs" theepicsaxguy">
-// \
+// <copyright file="ConversationStatus.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Domain.Enums

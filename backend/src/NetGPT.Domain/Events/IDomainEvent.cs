@@ -1,5 +1,6 @@
-// <copyright file="IDomainEvent.cs" theepicsaxguy">
-// \
+// <copyright file="IDomainEvent.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Domain.Events

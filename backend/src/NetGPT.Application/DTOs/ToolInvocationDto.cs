@@ -1,5 +1,6 @@
-// <copyright file="ToolInvocationDto.cs" theepicsaxguy">
-// \
+// <copyright file="ToolInvocationDto.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.DTOs

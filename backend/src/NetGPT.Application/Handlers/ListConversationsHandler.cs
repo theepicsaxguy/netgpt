@@ -1,5 +1,6 @@
-// <copyright file="ListConversationsHandler.cs" theepicsaxguy">
-// \
+// <copyright file="ListConversationsHandler.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.Handlers
@@ -23,7 +24,7 @@ namespace NetGPT.Application.Handlers
             ListConversationsQuery request,
             CancellationToken cancellationToken)
         {
-            var skip = (request.Page - 1) * request.PageSize;
+            int skip = (request.Page - 1) * request.PageSize;
 
             List<Conversation> conversations = await this.repository.GetByUserIdAsync(
                 request.UserId,
@@ -31,7 +32,7 @@ namespace NetGPT.Application.Handlers
                 request.PageSize,
                 cancellationToken);
 
-            var totalCount = await this.repository.CountByUserIdAsync(request.UserId, cancellationToken);
+            int totalCount = await this.repository.CountByUserIdAsync(request.UserId, cancellationToken);
 
             List<ConversationDto> items = [.. conversations.Select(c => new ConversationDto(
                 c.Id.Value,

@@ -1,5 +1,6 @@
-// <copyright file="MessageMetadata.cs" theepicsaxguy">
-// \
+// <copyright file="MessageMetadata.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Domain.ValueObjects

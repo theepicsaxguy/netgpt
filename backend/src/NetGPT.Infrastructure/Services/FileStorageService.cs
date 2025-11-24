@@ -1,5 +1,6 @@
-// <copyright file="FileStorageService.cs" theepicsaxguy">
-// \
+// <copyright file="FileStorageService.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Infrastructure.Services
@@ -26,8 +27,8 @@ namespace NetGPT.Infrastructure.Services
             string contentType,
             CancellationToken ct = default)
         {
-            var storageKey = $"{Guid.NewGuid()}_{fileName}";
-            var filePath = Path.Combine(this.storagePath, storageKey);
+            string storageKey = $"{Guid.NewGuid()}_{fileName}";
+            string filePath = Path.Combine(this.storagePath, storageKey);
 
             await using FileStream fileStream = File.Create(filePath);
             await content.CopyToAsync(fileStream, ct);
@@ -37,13 +38,13 @@ namespace NetGPT.Infrastructure.Services
 
         public async Task<Stream> DownloadAsync(string storageKey, CancellationToken ct = default)
         {
-            var filePath = Path.Combine(this.storagePath, storageKey);
+            string filePath = Path.Combine(this.storagePath, storageKey);
             return File.OpenRead(filePath);
         }
 
         public Task DeleteAsync(string storageKey, CancellationToken ct = default)
         {
-            var filePath = Path.Combine(this.storagePath, storageKey);
+            string filePath = Path.Combine(this.storagePath, storageKey);
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);

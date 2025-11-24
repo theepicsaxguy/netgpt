@@ -1,5 +1,6 @@
-// <copyright file="AgentOrchestrator.cs" theepicsaxguy">
-// \
+// <copyright file="AgentOrchestrator.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Infrastructure.Agents
@@ -32,8 +33,8 @@ namespace NetGPT.Infrastructure.Agents
                     this.toolRegistry.GetAllTools());
 
                 DateTime startTime = DateTime.UtcNow;
-                var responseText = string.Empty;
-                var tokenCount = 0;
+                string responseText = string.Empty;
+                int tokenCount = 0;
 
                 // Run agent with user message
                 AgentRunResponse result = await agent.RunAsync(userMessage, cancellationToken: cancellationToken);

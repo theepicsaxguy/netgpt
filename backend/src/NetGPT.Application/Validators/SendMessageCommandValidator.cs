@@ -1,5 +1,6 @@
-// <copyright file="SendMessageCommandValidator.cs" theepicsaxguy">
-// \
+// <copyright file="SendMessageCommandValidator.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.Validators

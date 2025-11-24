@@ -1,5 +1,6 @@
-// <copyright file="IAgentOrchestrator.cs" theepicsaxguy">
-// \
+// <copyright file="IAgentOrchestrator.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.Interfaces

@@ -1,5 +1,6 @@
-// <copyright file="ConversationQueries.cs" theepicsaxguy">
-// \
+// <copyright file="ConversationQueries.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.Queries

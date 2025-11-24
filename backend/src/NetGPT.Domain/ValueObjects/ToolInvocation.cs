@@ -1,5 +1,6 @@
-// <copyright file="ToolInvocation.cs" theepicsaxguy">
-// \
+// <copyright file="ToolInvocation.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Domain.ValueObjects

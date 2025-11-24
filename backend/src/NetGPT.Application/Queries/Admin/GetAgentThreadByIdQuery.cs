@@ -1,5 +1,6 @@
-// <copyright file="GetAgentThreadByIdQuery.cs" theepicsaxguy">
-// \
+// <copyright file="GetAgentThreadByIdQuery.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.Queries.Admin

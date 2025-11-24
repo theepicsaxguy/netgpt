@@ -1,4 +1,4 @@
-// <copyright file="HealthController.cs" theepicsaxguy">
+// <copyright file="HealthController.cs" company="PlaceholderCompany">
 // \
 // </copyright>
 

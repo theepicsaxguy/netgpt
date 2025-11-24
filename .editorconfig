@@ -16,11 +16,14 @@ dotnet_diagnostic.SA1402.severity = error
 # StyleCop: file header must be present
 dotnet_diagnostic.SA1633.severity = warning
 
+# IDE: file header is missing or incorrect
+dotnet_diagnostic.IDE0073.severity = warning
+
 # File header template for C# files
 file_header_template = \
-// <copyright file="{fileName}" company="NetGPT">\
-// Copyright (c) NetGPT. All rights reserved.\
-// Repo owner: theepicsaxguy\
+// <copyright file="{fileName}" company="NetGPT">\n\
+// Copyright (c) NetGPT. All rights reserved.\n\
+// Repo owner: theepicsaxguy\n\
 // </copyright>
 
 # Encourage file-scoped namespaces (cleaner files)

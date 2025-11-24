@@ -1,4 +1,4 @@
-// <copyright file="GlobalExceptionMiddleware.cs" theepicsaxguy">
+// <copyright file="GlobalExceptionMiddleware.cs" company="PlaceholderCompany">
 // \
 // </copyright>
 

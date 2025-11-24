@@ -1,5 +1,6 @@
-// <copyright file="MessageRole.cs" theepicsaxguy">
-// \
+// <copyright file="MessageRole.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Domain.Enums

@@ -1,5 +1,6 @@
-// <copyright file="ToolRegistry.cs" theepicsaxguy">
-// \
+// <copyright file="ToolRegistry.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Infrastructure.Tools

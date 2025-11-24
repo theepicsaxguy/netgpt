@@ -1,5 +1,6 @@
-// <copyright file="IStreamingService.cs" theepicsaxguy">
-// \
+// <copyright file="IStreamingService.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.Interfaces

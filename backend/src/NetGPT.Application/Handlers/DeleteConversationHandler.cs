@@ -1,5 +1,6 @@
-// <copyright file="DeleteConversationHandler.cs" theepicsaxguy">
-// \
+// <copyright file="DeleteConversationHandler.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.Handlers

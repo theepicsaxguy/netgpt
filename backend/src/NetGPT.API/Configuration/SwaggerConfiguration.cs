@@ -1,4 +1,4 @@
-// <copyright file="SwaggerConfiguration.cs" theepicsaxguy">
+// <copyright file="SwaggerConfiguration.cs" company="PlaceholderCompany">
 // \
 // </copyright>
 

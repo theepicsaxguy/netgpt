@@ -1,5 +1,6 @@
-// <copyright file="Result.cs" theepicsaxguy">
-// \
+// <copyright file="Result.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Domain.Primitives

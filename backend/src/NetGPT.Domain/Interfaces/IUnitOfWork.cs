@@ -1,5 +1,6 @@
-// <copyright file="IUnitOfWork.cs" theepicsaxguy">
-// \
+// <copyright file="IUnitOfWork.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Domain.Interfaces

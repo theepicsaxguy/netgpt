@@ -1,5 +1,6 @@
-// <copyright file="ConversationWorkflow.cs" theepicsaxguy">
-// \
+// <copyright file="ConversationWorkflow.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Infrastructure.Agents.Workflows
@@ -34,7 +35,7 @@ namespace NetGPT.Infrastructure.Agents.Workflows
 
             // Simple non-streaming response for now
             AgentRunResponse result = await agent.RunAsync(context.UserMessage, cancellationToken: ct);
-            var responseText = result.Messages.LastOrDefault()?.Text ?? string.Empty;
+            string responseText = result.Messages.LastOrDefault()?.Text ?? string.Empty;
 
             yield return new StreamingChunkDto(
                 MessageId: messageId.Value,

@@ -1,5 +1,6 @@
-// <copyright file="Message.cs" theepicsaxguy">
-// \
+// <copyright file="Message.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 #pragma warning disable CS8618 // Non-nullable properties not initialized in constructor (EF Core)

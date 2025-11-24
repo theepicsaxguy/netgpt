@@ -1,4 +1,3 @@
-// \
 
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
@@ -32,7 +31,7 @@ namespace NetGPT.Analyzers
         {
             SyntaxNode root = context.Tree.GetRoot(context.CancellationToken);
             // Check if path contains DTOs folder - skip otherwise
-            var path = context.Tree.FilePath ?? string.Empty;
+            string path = context.Tree.FilePath ?? string.Empty;
             if (!path.Contains("/DTOs/") && !path.Contains("\\DTOs\\"))
             {
                 return;

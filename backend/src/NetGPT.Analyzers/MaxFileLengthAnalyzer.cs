@@ -1,4 +1,3 @@
-// \
 
 using System.Collections.Immutable;
 using System.IO;
@@ -32,7 +31,7 @@ namespace NetGPT.Analyzers
 
         private static void AnalyzeSyntaxTree(SyntaxTreeAnalysisContext context)
         {
-            var path = context.Tree.FilePath ?? string.Empty;
+            string path = context.Tree.FilePath ?? string.Empty;
             if (path.Contains("/obj/") || path.Contains("/bin/") || path.EndsWith(".g.cs") || path.EndsWith(".designer.cs"))
             {
                 return;

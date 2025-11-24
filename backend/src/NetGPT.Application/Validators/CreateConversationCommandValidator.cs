@@ -1,5 +1,6 @@
-// <copyright file="CreateConversationCommandValidator.cs" theepicsaxguy">
-// \
+// <copyright file="CreateConversationCommandValidator.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.Validators

@@ -1,5 +1,6 @@
-// <copyright file="ConversationDto.cs" theepicsaxguy">
-// \
+// <copyright file="ConversationDto.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.DTOs

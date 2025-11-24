@@ -1,5 +1,6 @@
-// <copyright file="SendMessageHandler.cs" theepicsaxguy">
-// \
+// <copyright file="SendMessageHandler.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Application.Handlers

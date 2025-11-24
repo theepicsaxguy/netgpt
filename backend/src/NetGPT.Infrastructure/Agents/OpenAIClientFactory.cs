@@ -1,5 +1,6 @@
-// <copyright file="OpenAIClientFactory.cs" theepicsaxguy">
-// \
+// <copyright file="OpenAIClientFactory.cs" company="NetGPT">
+// Copyright (c) NetGPT. All rights reserved.
+// Repo owner: theepicsaxguy
 // </copyright>
 
 namespace NetGPT.Infrastructure.Agents
