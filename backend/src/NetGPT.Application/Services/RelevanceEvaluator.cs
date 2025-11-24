@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ namespace NetGPT.Application.Services
     {
         public string Name => "RelevanceEvaluator";
 
+        [SuppressMessage("Performance", "CA1827:Count", Justification = "Need the count of overlaps, not just if any")]
         public async Task<EvaluationResult> EvaluateAsync(Conversation conversation, string userMessage, AgentResponse response)
         {
             // Simple heuristic: check if response contains keywords from user message

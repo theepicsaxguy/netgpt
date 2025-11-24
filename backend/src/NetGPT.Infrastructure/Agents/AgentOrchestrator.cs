@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.Logging;
 using NetGPT.Application.DTOs;
-using NetGPT.Domain.Primitives;
 using NetGPT.Application.Interfaces;
 using NetGPT.Application.Services;
 using NetGPT.Domain.Aggregates;

@@ -1,6 +1,7 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace NetGPT.Domain.Primitives
 {
@@ -8,6 +9,7 @@ namespace NetGPT.Domain.Primitives
     /// Represents the result of an operation with a value, either success or failure.
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>
+    [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1649:FileNameMustMatchTypeName", Justification = "Generic type Result<TValue> in ResultOfT.cs")]
     public class Result<TValue> : Result
     {
         protected internal Result(TValue? value, bool isSuccess, DomainError error)
