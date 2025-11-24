@@ -1,5 +1,8 @@
 {
   "devDependencies": {
     "orval": "^7.16.1"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.10"
   }
 }

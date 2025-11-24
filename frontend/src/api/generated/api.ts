@@ -6,9 +6,14 @@
  */
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
+  QueryClient,
   QueryFunction,
   QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
@@ -122,17 +127,17 @@ export type PostApiV1ConversationsMutationResult = NonNullable<
 export type PostApiV1ConversationsMutationBody = CreateConversationRequest;
 export type PostApiV1ConversationsMutationError = unknown;
 
-export const usePostApiV1Conversations = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postApiV1Conversations>>,
-    TError,
-    { data: CreateConversationRequest },
-    TContext
-  >;
-}): UseMutationResult<
+export const usePostApiV1Conversations = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiV1Conversations>>,
+      TError,
+      { data: CreateConversationRequest },
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
   Awaited<ReturnType<typeof postApiV1Conversations>>,
   TError,
   { data: CreateConversationRequest },
@@ -140,7 +145,7 @@ export const usePostApiV1Conversations = <
 > => {
   const mutationOptions = getPostApiV1ConversationsMutationOptions(options);
 
-  return useMutation(mutationOptions);
+  return useMutation(mutationOptions, queryClient);
 };
 
 export const getApiV1Conversations = (
@@ -167,10 +172,12 @@ export const getGetApiV1ConversationsQueryOptions = <
 >(
   params?: GetApiV1ConversationsParams,
   options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getApiV1Conversations>>,
-      TError,
-      TData
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1Conversations>>,
+        TError,
+        TData
+      >
     >;
   },
 ) => {
@@ -187,7 +194,7 @@ export const getGetApiV1ConversationsQueryOptions = <
     Awaited<ReturnType<typeof getApiV1Conversations>>,
     TError,
     TData
-  > & { queryKey: QueryKey };
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
 export type GetApiV1ConversationsQueryResult = NonNullable<
@@ -199,20 +206,97 @@ export function useGetApiV1Conversations<
   TData = Awaited<ReturnType<typeof getApiV1Conversations>>,
   TError = unknown,
 >(
+  params: undefined | GetApiV1ConversationsParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1Conversations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1Conversations>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1Conversations>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetApiV1Conversations<
+  TData = Awaited<ReturnType<typeof getApiV1Conversations>>,
+  TError = unknown,
+>(
   params?: GetApiV1ConversationsParams,
   options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getApiV1Conversations>>,
-      TError,
-      TData
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1Conversations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1Conversations>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1Conversations>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetApiV1Conversations<
+  TData = Awaited<ReturnType<typeof getApiV1Conversations>>,
+  TError = unknown,
+>(
+  params?: GetApiV1ConversationsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1Conversations>>,
+        TError,
+        TData
+      >
     >;
   },
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useGetApiV1Conversations<
+  TData = Awaited<ReturnType<typeof getApiV1Conversations>>,
+  TError = unknown,
+>(
+  params?: GetApiV1ConversationsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1Conversations>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
   const queryOptions = getGetApiV1ConversationsQueryOptions(params, options);
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-  };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
   query.queryKey = queryOptions.queryKey;
 
@@ -237,10 +321,12 @@ export const getGetApiV1ConversationsIdQueryOptions = <
 >(
   id: string,
   options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getApiV1ConversationsId>>,
-      TError,
-      TData
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+        TError,
+        TData
+      >
     >;
   },
 ) => {
@@ -262,7 +348,7 @@ export const getGetApiV1ConversationsIdQueryOptions = <
     Awaited<ReturnType<typeof getApiV1ConversationsId>>,
     TError,
     TData
-  > & { queryKey: QueryKey };
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
 export type GetApiV1ConversationsIdQueryResult = NonNullable<
@@ -275,19 +361,96 @@ export function useGetApiV1ConversationsId<
   TError = unknown,
 >(
   id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1ConversationsId>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetApiV1ConversationsId<
+  TData = Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+  TError = unknown,
+>(
+  id: string,
   options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getApiV1ConversationsId>>,
-      TError,
-      TData
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1ConversationsId>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetApiV1ConversationsId<
+  TData = Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+  TError = unknown,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+        TError,
+        TData
+      >
     >;
   },
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useGetApiV1ConversationsId<
+  TData = Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+  TError = unknown,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
   const queryOptions = getGetApiV1ConversationsIdQueryOptions(id, options);
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-  };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
   query.queryKey = queryOptions.queryKey;
 
@@ -347,14 +510,17 @@ export type DeleteApiV1ConversationsIdMutationError = unknown;
 export const useDeleteApiV1ConversationsId = <
   TError = unknown,
   TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteApiV1ConversationsId>>,
-    TError,
-    { id: string },
-    TContext
-  >;
-}): UseMutationResult<
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteApiV1ConversationsId>>,
+      TError,
+      { id: string },
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
   Awaited<ReturnType<typeof deleteApiV1ConversationsId>>,
   TError,
   { id: string },
@@ -362,7 +528,7 @@ export const useDeleteApiV1ConversationsId = <
 > => {
   const mutationOptions = getDeleteApiV1ConversationsIdMutationOptions(options);
 
-  return useMutation(mutationOptions);
+  return useMutation(mutationOptions, queryClient);
 };
 
 export const postApiV1ConversationsIdMessages = (
@@ -425,14 +591,17 @@ export type PostApiV1ConversationsIdMessagesMutationError = unknown;
 export const usePostApiV1ConversationsIdMessages = <
   TError = unknown,
   TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postApiV1ConversationsIdMessages>>,
-    TError,
-    { id: string; data: SendMessageRequest },
-    TContext
-  >;
-}): UseMutationResult<
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiV1ConversationsIdMessages>>,
+      TError,
+      { id: string; data: SendMessageRequest },
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
   Awaited<ReturnType<typeof postApiV1ConversationsIdMessages>>,
   TError,
   { id: string; data: SendMessageRequest },
@@ -441,7 +610,7 @@ export const usePostApiV1ConversationsIdMessages = <
   const mutationOptions =
     getPostApiV1ConversationsIdMessagesMutationOptions(options);
 
-  return useMutation(mutationOptions);
+  return useMutation(mutationOptions, queryClient);
 };
 
 export const getApiHealth = (signal?: AbortSignal) => {
@@ -456,10 +625,8 @@ export const getGetApiHealthQueryOptions = <
   TData = Awaited<ReturnType<typeof getApiHealth>>,
   TError = unknown,
 >(options?: {
-  query?: UseQueryOptions<
-    Awaited<ReturnType<typeof getApiHealth>>,
-    TError,
-    TData
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof getApiHealth>>, TError, TData>
   >;
 }) => {
   const { query: queryOptions } = options ?? {};
@@ -474,7 +641,7 @@ export const getGetApiHealthQueryOptions = <
     Awaited<ReturnType<typeof getApiHealth>>,
     TError,
     TData
-  > & { queryKey: QueryKey };
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
 export type GetApiHealthQueryResult = NonNullable<
@@ -485,18 +652,78 @@ export type GetApiHealthQueryError = unknown;
 export function useGetApiHealth<
   TData = Awaited<ReturnType<typeof getApiHealth>>,
   TError = unknown,
->(options?: {
-  query?: UseQueryOptions<
-    Awaited<ReturnType<typeof getApiHealth>>,
-    TError,
-    TData
-  >;
-}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiHealth>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiHealth>>,
+          TError,
+          Awaited<ReturnType<typeof getApiHealth>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetApiHealth<
+  TData = Awaited<ReturnType<typeof getApiHealth>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiHealth>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiHealth>>,
+          TError,
+          Awaited<ReturnType<typeof getApiHealth>>
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetApiHealth<
+  TData = Awaited<ReturnType<typeof getApiHealth>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiHealth>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useGetApiHealth<
+  TData = Awaited<ReturnType<typeof getApiHealth>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiHealth>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
   const queryOptions = getGetApiHealthQueryOptions(options);
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-  };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
   query.queryKey = queryOptions.queryKey;
 
@@ -528,10 +755,12 @@ export const getGetApiV1ConversationsConversationIdMessagesQueryOptions = <
 >(
   conversationId: string,
   options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getApiV1ConversationsConversationIdMessages>>,
-      TError,
-      TData
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1ConversationsConversationIdMessages>>,
+        TError,
+        TData
+      >
     >;
   },
 ) => {
@@ -555,7 +784,7 @@ export const getGetApiV1ConversationsConversationIdMessagesQueryOptions = <
     Awaited<ReturnType<typeof getApiV1ConversationsConversationIdMessages>>,
     TError,
     TData
-  > & { queryKey: QueryKey };
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
 export type GetApiV1ConversationsConversationIdMessagesQueryResult =
@@ -571,23 +800,114 @@ export function useGetApiV1ConversationsConversationIdMessages<
   TError = unknown,
 >(
   conversationId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1ConversationsConversationIdMessages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof getApiV1ConversationsConversationIdMessages>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof getApiV1ConversationsConversationIdMessages>
+          >
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetApiV1ConversationsConversationIdMessages<
+  TData = Awaited<
+    ReturnType<typeof getApiV1ConversationsConversationIdMessages>
+  >,
+  TError = unknown,
+>(
+  conversationId: string,
   options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getApiV1ConversationsConversationIdMessages>>,
-      TError,
-      TData
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1ConversationsConversationIdMessages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof getApiV1ConversationsConversationIdMessages>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof getApiV1ConversationsConversationIdMessages>
+          >
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetApiV1ConversationsConversationIdMessages<
+  TData = Awaited<
+    ReturnType<typeof getApiV1ConversationsConversationIdMessages>
+  >,
+  TError = unknown,
+>(
+  conversationId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1ConversationsConversationIdMessages>>,
+        TError,
+        TData
+      >
     >;
   },
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useGetApiV1ConversationsConversationIdMessages<
+  TData = Awaited<
+    ReturnType<typeof getApiV1ConversationsConversationIdMessages>
+  >,
+  TError = unknown,
+>(
+  conversationId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1ConversationsConversationIdMessages>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
   const queryOptions =
     getGetApiV1ConversationsConversationIdMessagesQueryOptions(
       conversationId,
       options,
     );
 
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-  };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
   query.queryKey = queryOptions.queryKey;
 
