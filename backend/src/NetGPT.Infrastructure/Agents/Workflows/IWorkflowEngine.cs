@@ -1,11 +1,11 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Collections.Generic;
+using System.Threading;
+using NetGPT.Application.DTOs;
+
 namespace NetGPT.Infrastructure.Agents.Workflows
 {
-    using System.Collections.Generic;
-    using System.Threading;
-    using NetGPT.Application.DTOs;
-
     public interface IWorkflowEngine
     {
         IWorkflow CreateConversationWorkflow();

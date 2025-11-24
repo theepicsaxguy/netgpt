@@ -1,17 +1,17 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Microsoft.Agents.AI;
+using Microsoft.Extensions.AI;
+using NetGPT.Application.DTOs;
+using NetGPT.Domain.ValueObjects;
+using NetGPT.Infrastructure.Tools;
+using OpenAI;
+
 namespace NetGPT.Infrastructure.Agents.Workflows
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using Microsoft.Agents.AI;
-    using Microsoft.Extensions.AI;
-    using NetGPT.Application.DTOs;
-    using NetGPT.Domain.ValueObjects;
-    using NetGPT.Infrastructure.Tools;
-    using OpenAI;
-
     public class ConversationWorkflow(
         IOpenAIClientFactory clientFactory,
         ToolRegistry toolRegistry) : IWorkflow
@@ -23,7 +23,7 @@ namespace NetGPT.Infrastructure.Agents.Workflows
             WorkflowContext context,
             [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken ct = default)
         {
-            IChatClient chatClient = this.clientFactory.CreateChatClient();
+            IChatClient chatClient = clientFactory.CreateChatClient();
 
             ChatClientAgent agent = chatClient.CreateAIAgent(
                 instructions: "You are a helpful AI assistant. Use tools when needed.");

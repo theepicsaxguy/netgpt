@@ -1,11 +1,11 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace NetGPT.Application.Interfaces
 {
-    using System.IO;
-    using System.Threading;
-    using System.Threading.Tasks;
-
     public interface IFileStorageService
     {
         Task<string> UploadAsync(Stream content, string fileName, string contentType, CancellationToken ct = default);

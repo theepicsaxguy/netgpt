@@ -1,13 +1,13 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using NetGPT.Domain.Aggregates;
+using NetGPT.Domain.ValueObjects;
+
 namespace NetGPT.Domain.Interfaces
 {
-    using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using NetGPT.Domain.Aggregates;
-    using NetGPT.Domain.ValueObjects;
-
     public interface IConversationRepository
     {
         Task<Conversation?> GetByIdAsync(ConversationId id, CancellationToken ct = default);

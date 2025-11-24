@@ -1,11 +1,11 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using NetGPT.Domain.Aggregates;
+
 namespace NetGPT.Infrastructure.Persistence.Configurations
 {
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using NetGPT.Domain.Aggregates;
-
     public sealed class ConversationConfiguration : IEntityTypeConfiguration<Conversation>
     {
         public void Configure(EntityTypeBuilder<Conversation> builder)

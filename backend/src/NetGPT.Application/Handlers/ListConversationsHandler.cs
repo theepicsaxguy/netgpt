@@ -1,17 +1,17 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
+using NetGPT.Application.DTOs;
+using NetGPT.Application.Queries;
+using NetGPT.Domain.Aggregates;
+using NetGPT.Domain.Interfaces;
+
 namespace NetGPT.Application.Handlers
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using MediatR;
-    using NetGPT.Application.DTOs;
-    using NetGPT.Application.Queries;
-    using NetGPT.Domain.Aggregates;
-    using NetGPT.Domain.Interfaces;
-
     public class ListConversationsHandler(IConversationRepository repository)
             : IRequestHandler<ListConversationsQuery, PaginatedResult<ConversationDto>>
     {
@@ -23,13 +23,13 @@ namespace NetGPT.Application.Handlers
         {
             int skip = (request.Page - 1) * request.PageSize;
 
-            List<Conversation> conversations = await this.repository.GetByUserIdAsync(
+            List<Conversation> conversations = await repository.GetByUserIdAsync(
                 request.UserId,
                 skip,
                 request.PageSize,
                 cancellationToken);
 
-            int totalCount = await this.repository.CountByUserIdAsync(request.UserId, cancellationToken);
+            int totalCount = await repository.CountByUserIdAsync(request.UserId, cancellationToken);
 
             List<ConversationDto> items = [.. conversations.Select(c => new ConversationDto(
                 c.Id.Value,

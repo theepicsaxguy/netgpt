@@ -1,14 +1,14 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
+using NetGPT.Application.DTOs;
+using NetGPT.Application.Queries.Admin;
+
 namespace NetGPT.Application.Handlers.Admin
 {
-    using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using MediatR;
-    using NetGPT.Application.DTOs;
-    using NetGPT.Application.Queries.Admin;
-
     public sealed class GetAgentThreadsHandler : IRequestHandler<GetAgentThreadsQuery, PaginatedAgentThreadListDto>
     {
         public Task<PaginatedAgentThreadListDto> Handle(GetAgentThreadsQuery request, CancellationToken cancellationToken)

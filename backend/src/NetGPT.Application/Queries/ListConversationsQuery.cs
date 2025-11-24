@@ -1,13 +1,13 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System;
+using System.Collections.Generic;
+using MediatR;
+using NetGPT.Application.DTOs;
+using NetGPT.Domain.ValueObjects;
+
 namespace NetGPT.Application.Queries
 {
-    using System;
-    using System.Collections.Generic;
-    using MediatR;
-    using NetGPT.Application.DTOs;
-    using NetGPT.Domain.ValueObjects;
-
     public record ListConversationsQuery(
         UserId UserId,
         int Page = 1,
@@ -19,8 +19,8 @@ namespace NetGPT.Application.Queries
         int Page,
         int PageSize)
     {
-        public int TotalPages => (int)Math.Ceiling(this.TotalCount / (double)this.PageSize);
+        public int TotalPages => (int)Math.Ceiling(TotalCount / (double)PageSize);
 
-        public bool HasNextPage => this.Page < this.TotalPages;
+        public bool HasNextPage => Page < TotalPages;
     }
 }

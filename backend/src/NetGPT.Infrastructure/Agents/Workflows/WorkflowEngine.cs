@@ -1,9 +1,9 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using NetGPT.Infrastructure.Tools;
+
 namespace NetGPT.Infrastructure.Agents.Workflows
 {
-    using NetGPT.Infrastructure.Tools;
-
     public class WorkflowEngine(
         IOpenAIClientFactory clientFactory,
         ToolRegistry toolRegistry) : IWorkflowEngine
@@ -13,7 +13,7 @@ namespace NetGPT.Infrastructure.Agents.Workflows
 
         public IWorkflow CreateConversationWorkflow()
         {
-            return new ConversationWorkflow(this.clientFactory, this.toolRegistry);
+            return new ConversationWorkflow(clientFactory, toolRegistry);
         }
     }
 }

@@ -1,9 +1,10 @@
+
 // Copyright (c) 2025 NetGPT. All rights reserved.
+
+using System;
 
 namespace NetGPT.Application.DTOs
 {
-    using System;
-
     public record StreamingChunkDto(
         Guid MessageId,
         string? Content,

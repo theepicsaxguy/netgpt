@@ -1,13 +1,13 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace NetGPT.Infrastructure.Tools
 {
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Text.Json;
-    using System.Threading;
-    using System.Threading.Tasks;
-
     public class WebSearchTool : IAgentTool
     {
         public string Name => "web_search";

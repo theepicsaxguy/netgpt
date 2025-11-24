@@ -1,18 +1,18 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Agents.AI;
+using NetGPT.Application.DTOs;
+using NetGPT.Application.Interfaces;
+using NetGPT.Domain.Aggregates;
+using NetGPT.Domain.Primitives;
+using NetGPT.Infrastructure.Tools;
+
 namespace NetGPT.Infrastructure.Agents
 {
-    using System;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.Agents.AI;
-    using NetGPT.Application.DTOs;
-    using NetGPT.Application.Interfaces;
-    using NetGPT.Domain.Aggregates;
-    using NetGPT.Domain.Primitives;
-    using NetGPT.Infrastructure.Tools;
-
     public sealed class AgentOrchestrator(IAgentFactory agentFactory, IToolRegistry toolRegistry) : IAgentOrchestrator
     {
         private readonly IAgentFactory agentFactory = agentFactory;
@@ -25,9 +25,9 @@ namespace NetGPT.Infrastructure.Agents
         {
             try
             {
-                AIAgent agent = await this.agentFactory.CreatePrimaryAgentAsync(
+                AIAgent agent = await agentFactory.CreatePrimaryAgentAsync(
                     conversation.AgentConfiguration,
-                    this.toolRegistry.GetAllTools());
+                    toolRegistry.GetAllTools());
 
                 DateTime startTime = DateTime.UtcNow;
                 string responseText = string.Empty;

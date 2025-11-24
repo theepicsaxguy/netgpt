@@ -8,10 +8,10 @@ namespace NetGPT.Domain.ValueObjects
         long SizeBytes,
         string StorageKey)
     {
-        public bool IsImage => this.ContentType.StartsWith("image/");
+        public bool IsImage => ContentType.StartsWith("image/");
 
-        public bool IsDocument => this.ContentType == "application/pdf" ||
-                                  this.ContentType.Contains("document") ||
-                                  this.ContentType.Contains("text");
+        public bool IsDocument => ContentType == "application/pdf" ||
+                                  ContentType.Contains("document") ||
+                                  ContentType.Contains("text");
     }
 }

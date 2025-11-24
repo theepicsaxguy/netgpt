@@ -35,9 +35,9 @@ namespace NetGPT.Domain.Aggregates
 
         public AgentConfiguration AgentConfiguration { get; private set; }
 
-        public IReadOnlyList<Message> Messages => this.messages.AsReadOnly();
+        public IReadOnlyList<Message> Messages => messages.AsReadOnly();
 
-        public IReadOnlyList<IDomainEvent> DomainEvents => this.domainEvents.AsReadOnly();
+        public IReadOnlyList<IDomainEvent> DomainEvents => domainEvents.AsReadOnly();
 
         private Conversation()
         {
@@ -65,15 +65,15 @@ namespace NetGPT.Domain.Aggregates
         public MessageId AddMessage(MessageRole role, MessageContent content)
         {
             Message message = Message.Create(
-                this.Id,
+                Id,
                 role,
                 content,
-                this.messages.LastOrDefault()?.Id);
+                messages.LastOrDefault()?.Id);
 
-            this.messages.Add(message);
-            this.UpdatedAt = DateTime.UtcNow;
+            messages.Add(message);
+            UpdatedAt = DateTime.UtcNow;
 
-            this.AddDomainEvent(new MessageAddedEvent(this.Id, message.Id, role));
+            AddDomainEvent(new MessageAddedEvent(Id, message.Id, role));
             return message.Id;
         }
 
@@ -84,35 +84,35 @@ namespace NetGPT.Domain.Aggregates
                 throw new DomainException("Title cannot be empty");
             }
 
-            this.Title = title;
-            this.UpdatedAt = DateTime.UtcNow;
+            Title = title;
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void UpdateMetadata(ConversationMetadata metadata)
         {
-            this.Metadata = metadata ?? throw new ArgumentNullException(nameof(metadata));
-            this.UpdatedAt = DateTime.UtcNow;
+            Metadata = metadata ?? throw new ArgumentNullException(nameof(metadata));
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public Message GetMessage(MessageId messageId)
         {
-            return this.messages.FirstOrDefault(m => m.Id == messageId)
+            return messages.FirstOrDefault(m => m.Id == messageId)
                 ?? throw new DomainException($"Message {messageId} not found");
         }
 
         public void ClearDomainEvents()
         {
-            this.domainEvents.Clear();
+            domainEvents.Clear();
         }
 
         private void AddDomainEvent(IDomainEvent domainEvent)
         {
-            this.domainEvents.Add(domainEvent);
+            domainEvents.Add(domainEvent);
         }
 
         public void EnsureOwnership(UserId userId)
         {
-            if (this.UserId != userId)
+            if (UserId != userId)
             {
                 throw new UnauthorizedAccessException("User does not own this conversation");
             }
@@ -120,14 +120,14 @@ namespace NetGPT.Domain.Aggregates
 
         public void AddTokens(int tokens)
         {
-            this.TokensUsed += tokens;
-            this.UpdatedAt = DateTime.UtcNow;
+            TokensUsed += tokens;
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void Archive()
         {
-            this.Status = ConversationStatus.Archived;
-            this.UpdatedAt = DateTime.UtcNow;
+            Status = ConversationStatus.Archived;
+            UpdatedAt = DateTime.UtcNow;
         }
     }
 }

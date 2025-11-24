@@ -1,10 +1,11 @@
+
 // Copyright (c) 2025 NetGPT. All rights reserved.
+
+using System;
+using NetGPT.Domain.ValueObjects;
 
 namespace NetGPT.Domain.Events
 {
-    using System;
-    using NetGPT.Domain.ValueObjects;
-
     public record ConversationCreatedEvent(
         ConversationId ConversationId,
         UserId UserId) : IDomainEvent

@@ -1,13 +1,13 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System;
+using System.Collections.Generic;
+using MediatR;
+using NetGPT.Application.DTOs;
+using NetGPT.Domain.Primitives;
+
 namespace NetGPT.Application.Queries
 {
-    using System;
-    using System.Collections.Generic;
-    using MediatR;
-    using NetGPT.Application.DTOs;
-    using NetGPT.Domain.Primitives;
-
     public sealed record GetConversationQuery(
         Guid ConversationId,
         Guid UserId) : IRequest<Result<ConversationResponse>>;

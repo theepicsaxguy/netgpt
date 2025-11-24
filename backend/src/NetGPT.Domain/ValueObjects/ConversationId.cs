@@ -1,9 +1,9 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System;
+
 namespace NetGPT.Domain.ValueObjects
 {
-    using System;
-
     public record ConversationId(Guid Value)
     {
         public static ConversationId CreateNew()
@@ -23,7 +23,7 @@ namespace NetGPT.Domain.ValueObjects
 
         public override string ToString()
         {
-            return this.Value.ToString();
+            return Value.ToString();
         }
     }
 }

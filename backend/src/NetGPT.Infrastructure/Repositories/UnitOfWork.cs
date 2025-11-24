@@ -1,13 +1,13 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Storage;
+using NetGPT.Domain.Interfaces;
+using NetGPT.Infrastructure.Persistence;
+
 namespace NetGPT.Infrastructure.Repositories
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore.Storage;
-    using NetGPT.Domain.Interfaces;
-    using NetGPT.Infrastructure.Persistence;
-
     public sealed class UnitOfWork(ApplicationDbContext context) : IUnitOfWork
     {
         private readonly ApplicationDbContext context = context;
@@ -15,31 +15,31 @@ namespace NetGPT.Infrastructure.Repositories
 
         public async Task<int> SaveChangesAsync(CancellationToken ct = default)
         {
-            return await this.context.SaveChangesAsync(ct);
+            return await context.SaveChangesAsync(ct);
         }
 
         public async Task BeginTransactionAsync(CancellationToken ct = default)
         {
-            this.transaction = await this.context.Database.BeginTransactionAsync(ct);
+            transaction = await context.Database.BeginTransactionAsync(ct);
         }
 
         public async Task CommitTransactionAsync(CancellationToken ct = default)
         {
-            if (this.transaction != null)
+            if (transaction != null)
             {
-                await this.transaction.CommitAsync(ct);
-                await this.transaction.DisposeAsync();
-                this.transaction = null;
+                await transaction.CommitAsync(ct);
+                await transaction.DisposeAsync();
+                transaction = null;
             }
         }
 
         public async Task RollbackTransactionAsync(CancellationToken ct = default)
         {
-            if (this.transaction != null)
+            if (transaction != null)
             {
-                await this.transaction.RollbackAsync(ct);
-                await this.transaction.DisposeAsync();
-                this.transaction = null;
+                await transaction.RollbackAsync(ct);
+                await transaction.DisposeAsync();
+                transaction = null;
             }
         }
     }

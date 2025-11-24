@@ -1,10 +1,10 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace NetGPT.Infrastructure.Tools
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-
     public interface IAgentTool
     {
         string Name { get; }

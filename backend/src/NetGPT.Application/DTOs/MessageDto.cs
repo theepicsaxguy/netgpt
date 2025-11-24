@@ -1,11 +1,11 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System;
+using System.Collections.Generic;
+using NetGPT.Domain.Enums;
+
 namespace NetGPT.Application.DTOs
 {
-    using System;
-    using System.Collections.Generic;
-    using NetGPT.Domain.Enums;
-
     public record MessageDto(
         Guid Id,
         MessageRole Role,

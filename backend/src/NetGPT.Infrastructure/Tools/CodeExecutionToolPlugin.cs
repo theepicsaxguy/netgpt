@@ -1,10 +1,10 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.ComponentModel;
+using System.Threading.Tasks;
+
 namespace NetGPT.Infrastructure.Tools
 {
-    using System.ComponentModel;
-    using System.Threading.Tasks;
-
     public sealed class CodeExecutionToolPlugin
     {
         [Description("Execute Python code in a sandboxed environment")]

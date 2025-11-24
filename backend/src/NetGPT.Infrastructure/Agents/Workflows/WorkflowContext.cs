@@ -1,11 +1,11 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Collections.Generic;
+using NetGPT.Domain.Aggregates;
+using NetGPT.Infrastructure.Configuration;
+
 namespace NetGPT.Infrastructure.Agents.Workflows
 {
-    using System.Collections.Generic;
-    using NetGPT.Domain.Aggregates;
-    using NetGPT.Infrastructure.Configuration;
-
     public class WorkflowContext
     {
         public required Conversation Conversation { get; init; }

@@ -1,18 +1,18 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
+using NetGPT.Application.Commands;
+using NetGPT.Application.DTOs;
+using NetGPT.Domain.Aggregates;
+using NetGPT.Domain.Enums;
+using NetGPT.Domain.Interfaces;
+using NetGPT.Domain.Primitives;
+using NetGPT.Domain.ValueObjects;
+
 namespace NetGPT.Application.Handlers
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-    using MediatR;
-    using NetGPT.Application.Commands;
-    using NetGPT.Application.DTOs;
-    using NetGPT.Domain.Aggregates;
-    using NetGPT.Domain.Enums;
-    using NetGPT.Domain.Interfaces;
-    using NetGPT.Domain.Primitives;
-    using NetGPT.Domain.ValueObjects;
-
     public class SendMessageHandler(
         IConversationRepository repository,
         IUnitOfWork unitOfWork) : IRequestHandler<SendMessageCommand, Result<MessageResponse>>
@@ -25,7 +25,7 @@ namespace NetGPT.Application.Handlers
             ConversationId conversationId = ConversationId.From(request.ConversationId);
             UserId userId = UserId.From(request.UserId);
 
-            Conversation? conversation = await this.repository.GetByIdAsync(conversationId, cancellationToken);
+            Conversation? conversation = await repository.GetByIdAsync(conversationId, cancellationToken);
             if (conversation is null)
             {
                 return Result.Failure<MessageResponse>(new Error("Conversation.NotFound", "Conversation not found"));
@@ -36,7 +36,7 @@ namespace NetGPT.Application.Handlers
             MessageContent content = MessageContent.FromText(request.Content);
             MessageId messageId = conversation.AddMessage(MessageRole.User, content);
 
-            _ = await this.unitOfWork.SaveChangesAsync(cancellationToken);
+            _ = await unitOfWork.SaveChangesAsync(cancellationToken);
 
             Message message = conversation.GetMessage(messageId);
 

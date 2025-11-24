@@ -1,10 +1,10 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Collections.Generic;
+using Microsoft.Extensions.AI;
+
 namespace NetGPT.Infrastructure.Tools
 {
-    using System.Collections.Generic;
-    using Microsoft.Extensions.AI;
-
     public interface IToolRegistry
     {
         void RegisterTool(AIFunction tool);

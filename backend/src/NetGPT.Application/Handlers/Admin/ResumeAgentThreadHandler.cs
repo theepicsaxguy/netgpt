@@ -1,12 +1,12 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
+using NetGPT.Application.Commands.Admin;
+
 namespace NetGPT.Application.Handlers.Admin
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-    using MediatR;
-    using NetGPT.Application.Commands.Admin;
-
     public sealed class ResumeAgentThreadHandler : IRequestHandler<ResumeAgentThreadCommand, Unit>
     {
         public Task<Unit> Handle(ResumeAgentThreadCommand request, CancellationToken cancellationToken)

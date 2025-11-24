@@ -1,18 +1,18 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using MediatR;
+using Microsoft.AspNetCore.SignalR;
+using NetGPT.Application.DTOs;
+using NetGPT.Application.Interfaces;
+using NetGPT.Domain.Aggregates;
+using NetGPT.Domain.Interfaces;
+using NetGPT.Domain.ValueObjects;
+
 namespace NetGPT.API.Hubs
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using MediatR;
-    using Microsoft.AspNetCore.SignalR;
-    using NetGPT.Application.DTOs;
-    using NetGPT.Application.Interfaces;
-    using NetGPT.Domain.Aggregates;
-    using NetGPT.Domain.Interfaces;
-    using NetGPT.Domain.ValueObjects;
-
     public sealed class ConversationHub(
         IMediator mediator,
         IConversationRepository repository,
@@ -28,28 +28,28 @@ namespace NetGPT.API.Hubs
 
             try
             {
-                Conversation? conversation = await this.repository.GetByIdAsync(ConversationId.From(conversationId));
+                Conversation? conversation = await repository.GetByIdAsync(ConversationId.From(conversationId));
                 if (conversation == null || conversation.UserId != UserId.From(userId))
                 {
-                    await this.Clients.Caller.SendAsync("Error", "Conversation not found or unauthorized");
+                    await Clients.Caller.SendAsync("Error", "Conversation not found or unauthorized");
                     return;
                 }
 
                 // Add user message
                 Guid messageId = Guid.NewGuid();
-                await this.Clients.Caller.SendAsync("MessageStarted", messageId);
+                await Clients.Caller.SendAsync("MessageStarted", messageId);
 
                 // Stream agent response
                 await foreach (StreamingChunkDto chunk in StreamAgentResponse(conversation, content))
                 {
-                    await this.Clients.Caller.SendAsync("MessageChunk", chunk);
+                    await Clients.Caller.SendAsync("MessageChunk", chunk);
                 }
 
-                await this.Clients.Caller.SendAsync("MessageCompleted", messageId);
+                await Clients.Caller.SendAsync("MessageCompleted", messageId);
             }
             catch (Exception ex)
             {
-                await this.Clients.Caller.SendAsync("Error", ex.Message);
+                await Clients.Caller.SendAsync("Error", ex.Message);
             }
         }
 

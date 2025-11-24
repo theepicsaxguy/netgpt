@@ -1,21 +1,21 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using NetGPT.Domain.Aggregates;
+using NetGPT.Domain.Events;
+using NetGPT.Infrastructure.Persistence.Configurations;
+
 namespace NetGPT.Infrastructure.Persistence
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore;
-    using NetGPT.Domain.Aggregates;
-    using NetGPT.Domain.Events;
-    using NetGPT.Infrastructure.Persistence.Configurations;
-
     public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
     {
-        public DbSet<Conversation> Conversations => this.Set<Conversation>();
+        public DbSet<Conversation> Conversations => Set<Conversation>();
 
-        public DbSet<Message> Messages => this.Set<Message>();
+        public DbSet<Message> Messages => Set<Message>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -28,7 +28,7 @@ namespace NetGPT.Infrastructure.Persistence
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             // Collect domain events from Conversation aggregates
-            List<IDomainEvent> domainEvents = [.. this.ChangeTracker.Entries<Conversation>()
+            List<IDomainEvent> domainEvents = [.. ChangeTracker.Entries<Conversation>()
                 .Select(e => e.Entity)
                 .Where(c => c.DomainEvents.Any())
                 .SelectMany(c =>

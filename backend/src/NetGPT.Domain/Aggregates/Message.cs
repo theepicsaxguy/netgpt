@@ -1,13 +1,13 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System;
+using NetGPT.Domain.Enums;
+using NetGPT.Domain.ValueObjects;
+
 #pragma warning disable CS8618 // Non-nullable properties not initialized in constructor (EF Core)
 
 namespace NetGPT.Domain.Aggregates
 {
-    using System;
-    using NetGPT.Domain.Enums;
-    using NetGPT.Domain.ValueObjects;
-
     public sealed class Message
     {
         public MessageId Id { get; private set; }
@@ -47,7 +47,7 @@ namespace NetGPT.Domain.Aggregates
 
         public void AddMetadata(MessageMetadata metadata)
         {
-            this.Metadata = metadata;
+            Metadata = metadata;
         }
     }
 }

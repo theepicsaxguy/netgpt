@@ -1,10 +1,10 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace NetGPT.Domain.Interfaces
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-
     public interface IUnitOfWork
     {
         Task<int> SaveChangesAsync(CancellationToken ct = default);

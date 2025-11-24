@@ -1,10 +1,10 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System;
+using System.Collections.Generic;
+
 namespace NetGPT.Application.DTOs
 {
-    using System;
-    using System.Collections.Generic;
-
     public record MessageResponse(
         Guid Id,
         string Role,

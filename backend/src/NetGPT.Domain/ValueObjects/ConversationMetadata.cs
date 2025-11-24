@@ -1,9 +1,9 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Collections.Generic;
+
 namespace NetGPT.Domain.ValueObjects
 {
-    using System.Collections.Generic;
-
     public record ConversationMetadata(
         string? ModelName = null,
         float? Temperature = null,

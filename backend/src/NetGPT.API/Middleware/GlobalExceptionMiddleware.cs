@@ -1,16 +1,16 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System;
+using System.Net;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using NetGPT.Application.DTOs;
+using NetGPT.Domain.Exceptions;
+
 namespace NetGPT.API.Middleware
 {
-    using System;
-    using System.Net;
-    using System.Text.Json;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Extensions.Logging;
-    using NetGPT.Application.DTOs;
-    using NetGPT.Domain.Exceptions;
-
     public sealed class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExceptionMiddleware> logger)
     {
         private readonly RequestDelegate next = next;
@@ -20,11 +20,11 @@ namespace NetGPT.API.Middleware
         {
             try
             {
-                await this.next(context);
+                await next(context);
             }
             catch (Exception exception)
             {
-                this.logger.LogError(exception, "An unhandled exception occurred");
+                logger.LogError(exception, "An unhandled exception occurred");
                 await HandleExceptionAsync(context, exception);
             }
         }

@@ -1,9 +1,9 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System;
+
 namespace NetGPT.Domain.Exceptions
 {
-    using System;
-
     public class DomainException : Exception
     {
         public DomainException(string message)

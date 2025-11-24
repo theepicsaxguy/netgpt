@@ -1,11 +1,11 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System;
+using NetGPT.Domain.Enums;
+using NetGPT.Domain.ValueObjects;
+
 namespace NetGPT.Domain.Events
 {
-    using System;
-    using NetGPT.Domain.Enums;
-    using NetGPT.Domain.ValueObjects;
-
     public record MessageAddedEvent(
         ConversationId ConversationId,
         MessageId MessageId,

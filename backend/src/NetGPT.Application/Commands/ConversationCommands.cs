@@ -1,13 +1,13 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System;
+using System.Collections.Generic;
+using MediatR;
+using NetGPT.Application.DTOs;
+using NetGPT.Domain.Primitives;
+
 namespace NetGPT.Application.Commands
 {
-    using System;
-    using System.Collections.Generic;
-    using MediatR;
-    using NetGPT.Application.DTOs;
-    using NetGPT.Domain.Primitives;
-
     public sealed record CreateConversationCommand(
         Guid UserId,
         string? Title,

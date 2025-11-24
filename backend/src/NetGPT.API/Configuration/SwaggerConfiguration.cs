@@ -1,10 +1,10 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
+
 namespace NetGPT.API.Configuration
 {
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.OpenApi.Models;
-
     public static class SwaggerConfiguration
     {
         public static IServiceCollection AddSwaggerConfiguration(this IServiceCollection services)

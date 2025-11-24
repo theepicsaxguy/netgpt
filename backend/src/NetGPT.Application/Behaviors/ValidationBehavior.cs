@@ -1,15 +1,15 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using FluentValidation;
+using FluentValidation.Results;
+using MediatR;
+
 namespace NetGPT.Application.Behaviors
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using FluentValidation;
-    using FluentValidation.Results;
-    using MediatR;
-
     public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators) : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
     {
@@ -20,14 +20,14 @@ namespace NetGPT.Application.Behaviors
             RequestHandlerDelegate<TResponse> next,
             CancellationToken cancellationToken)
         {
-            if (!this.validators.Any())
+            if (!validators.Any())
             {
                 return await next(cancellationToken);
             }
 
             ValidationContext<TRequest> context = new(request);
 
-            List<ValidationFailure> failures = [.. this.validators
+            List<ValidationFailure> failures = [.. validators
                 .Select(v => v.Validate(context))
                 .SelectMany(result => result.Errors)
                 .Where(f => f != null)];

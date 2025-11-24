@@ -1,17 +1,17 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
+using NetGPT.Application.Commands;
+using NetGPT.Application.DTOs;
+using NetGPT.Domain.Aggregates;
+using NetGPT.Domain.Interfaces;
+using NetGPT.Domain.Primitives;
+using NetGPT.Domain.ValueObjects;
+
 namespace NetGPT.Application.Handlers
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-    using MediatR;
-    using NetGPT.Application.Commands;
-    using NetGPT.Application.DTOs;
-    using NetGPT.Domain.Aggregates;
-    using NetGPT.Domain.Interfaces;
-    using NetGPT.Domain.Primitives;
-    using NetGPT.Domain.ValueObjects;
-
     public class CreateConversationHandler(
         IConversationRepository repository,
         IUnitOfWork unitOfWork) : IRequestHandler<CreateConversationCommand, Result<ConversationResponse>>
@@ -26,8 +26,8 @@ namespace NetGPT.Application.Handlers
             UserId userId = UserId.From(request.UserId);
             Conversation conversation = Conversation.Create(userId, request.Title);
 
-            _ = await this.repository.AddAsync(conversation, cancellationToken);
-            _ = await this.unitOfWork.SaveChangesAsync(cancellationToken);
+            _ = await repository.AddAsync(conversation, cancellationToken);
+            _ = await unitOfWork.SaveChangesAsync(cancellationToken);
 
             ConversationResponse response = new(
                 conversation.Id.Value,

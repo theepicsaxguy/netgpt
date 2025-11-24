@@ -1,13 +1,13 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Collections.Generic;
+using System.Linq;
+using NetGPT.Application.DTOs;
+using NetGPT.Application.Interfaces;
+using NetGPT.Domain.Aggregates;
+
 namespace NetGPT.Application.Services
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using NetGPT.Application.DTOs;
-    using NetGPT.Application.Interfaces;
-    using NetGPT.Domain.Aggregates;
-
     public sealed class ConversationMapper : IConversationMapper
     {
         public ConversationResponse ToResponse(Conversation conversation)

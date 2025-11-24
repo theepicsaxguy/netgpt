@@ -1,11 +1,11 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace NetGPT.Domain.ValueObjects
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
     public record MessageContent
     {
         public string Text { get; init; }
@@ -19,8 +19,8 @@ namespace NetGPT.Domain.ValueObjects
                 throw new ArgumentException("Message must have text or attachments");
             }
 
-            this.Text = text ?? string.Empty;
-            this.Attachments = attachments?.ToList() ?? [];
+            Text = text ?? string.Empty;
+            Attachments = attachments?.ToList() ?? [];
         }
 
         public static MessageContent FromText(string text)

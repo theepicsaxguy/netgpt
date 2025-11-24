@@ -1,10 +1,10 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System;
+using Microsoft.AspNetCore.Mvc;
+
 namespace NetGPT.API.Controllers
 {
-    using System;
-    using Microsoft.AspNetCore.Mvc;
-
     [ApiController]
     [Route("api/[controller]")]
     public sealed class HealthController : ControllerBase
@@ -12,7 +12,7 @@ namespace NetGPT.API.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return this.Ok(new { status = "healthy", timestamp = DateTime.UtcNow });
+            return Ok(new { status = "healthy", timestamp = DateTime.UtcNow });
         }
     }
 }

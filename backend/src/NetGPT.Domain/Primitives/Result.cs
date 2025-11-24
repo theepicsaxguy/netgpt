@@ -1,9 +1,9 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System;
+
 namespace NetGPT.Domain.Primitives
 {
-    using System;
-
     /// <summary>
     /// Represents the result of an operation, either success or failure.
     /// </summary>
@@ -17,7 +17,7 @@ namespace NetGPT.Domain.Primitives
         /// <summary>
         /// Gets a value indicating whether the operation failed.
         /// </summary>
-        public bool IsFailure => !this.IsSuccess;
+        public bool IsFailure => !IsSuccess;
 
         /// <summary>
         /// Gets the error associated with the failure.
@@ -36,8 +36,8 @@ namespace NetGPT.Domain.Primitives
                 throw new InvalidOperationException();
             }
 
-            this.IsSuccess = isSuccess;
-            this.Error = error;
+            IsSuccess = isSuccess;
+            Error = error;
         }
 
         /// <summary>
@@ -91,14 +91,14 @@ namespace NetGPT.Domain.Primitives
         /// <summary>
         /// Gets the value.
         /// </summary>
-        public TValue Value => this.IsSuccess
+        public TValue Value => IsSuccess
             ? field!
             : throw new InvalidOperationException("The value of a failure result cannot be accessed.");
 
         protected internal Result(TValue? value, bool isSuccess, Error error)
             : base(isSuccess, error)
         {
-            this.Value = value;
+            Value = value;
         }
 
         /// <summary>

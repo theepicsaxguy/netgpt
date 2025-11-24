@@ -1,17 +1,17 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using NetGPT.Application.Commands;
+using NetGPT.Application.DTOs;
+using NetGPT.Application.Queries;
+using NetGPT.Domain.Primitives;
+
 namespace NetGPT.API.Controllers
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using MediatR;
-    using Microsoft.AspNetCore.Mvc;
-    using NetGPT.Application.Commands;
-    using NetGPT.Application.DTOs;
-    using NetGPT.Application.Queries;
-    using NetGPT.Domain.Primitives;
-
     [ApiController]
     [Route("api/v1/[controller]")]
     public sealed class ConversationsController(IMediator mediator) : ControllerBase
@@ -25,11 +25,11 @@ namespace NetGPT.API.Controllers
         {
             Guid userId = GetCurrentUserId();
             CreateConversationCommand command = new(userId, request.Title, request.Configuration);
-            Result<ConversationResponse> result = await this.mediator.Send(command, cancellationToken);
+            Result<ConversationResponse> result = await mediator.Send(command, cancellationToken);
 
             return result.IsSuccess
-                ? this.Ok(result.Value)
-                : this.BadRequest(new { error = result.Error.Message });
+                ? Ok(result.Value)
+                : BadRequest(new { error = result.Error.Message });
         }
 
         [HttpGet("{id}")]
@@ -39,11 +39,11 @@ namespace NetGPT.API.Controllers
         {
             Guid userId = GetCurrentUserId();
             GetConversationQuery query = new(id, userId);
-            Result<ConversationResponse> result = await this.mediator.Send(query, cancellationToken);
+            Result<ConversationResponse> result = await mediator.Send(query, cancellationToken);
 
             return result.IsSuccess
-                ? this.Ok(result.Value)
-                : this.NotFound(new { error = result.Error.Message });
+                ? Ok(result.Value)
+                : NotFound(new { error = result.Error.Message });
         }
 
         [HttpGet]
@@ -54,11 +54,11 @@ namespace NetGPT.API.Controllers
         {
             Guid userId = GetCurrentUserId();
             GetConversationsQuery query = new(userId, page, pageSize);
-            Result<PaginatedResponse<ConversationResponse>> result = await this.mediator.Send(query, cancellationToken);
+            Result<PaginatedResponse<ConversationResponse>> result = await mediator.Send(query, cancellationToken);
 
             return result.IsSuccess
-                ? this.Ok(result.Value)
-                : this.BadRequest(new { error = result.Error.Message });
+                ? Ok(result.Value)
+                : BadRequest(new { error = result.Error.Message });
         }
 
         [HttpPost("{id}/messages")]
@@ -69,11 +69,11 @@ namespace NetGPT.API.Controllers
         {
             Guid userId = GetCurrentUserId();
             SendMessageCommand command = new(id, userId, request.Content, request.Attachments);
-            Result<MessageResponse> result = await this.mediator.Send(command, cancellationToken);
+            Result<MessageResponse> result = await mediator.Send(command, cancellationToken);
 
             return result.IsSuccess
-                ? this.Ok(result.Value)
-                : this.BadRequest(new { error = result.Error.Message });
+                ? Ok(result.Value)
+                : BadRequest(new { error = result.Error.Message });
         }
 
         [HttpDelete("{id}")]
@@ -83,11 +83,11 @@ namespace NetGPT.API.Controllers
         {
             Guid userId = GetCurrentUserId();
             DeleteConversationCommand command = new(id, userId);
-            Result result = await this.mediator.Send(command, cancellationToken);
+            Result result = await mediator.Send(command, cancellationToken);
 
             return result.IsSuccess
-                ? this.NoContent()
-                : this.BadRequest(new { error = result.Error.Message });
+                ? NoContent()
+                : BadRequest(new { error = result.Error.Message });
         }
 
         private static Guid GetCurrentUserId()

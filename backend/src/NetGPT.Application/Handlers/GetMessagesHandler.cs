@@ -1,20 +1,20 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
+using NetGPT.Application.DTOs;
+using NetGPT.Application.Interfaces;
+using NetGPT.Application.Queries;
+using NetGPT.Domain.Aggregates;
+using NetGPT.Domain.Interfaces;
+using NetGPT.Domain.Primitives;
+using NetGPT.Domain.ValueObjects;
+
 namespace NetGPT.Application.Handlers
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using MediatR;
-    using NetGPT.Application.DTOs;
-    using NetGPT.Application.Interfaces;
-    using NetGPT.Application.Queries;
-    using NetGPT.Domain.Aggregates;
-    using NetGPT.Domain.Interfaces;
-    using NetGPT.Domain.Primitives;
-    using NetGPT.Domain.ValueObjects;
-
     public sealed class GetMessagesHandler(IConversationRepository repository, IConversationMapper mapper) : IRequestHandler<GetMessagesQuery, Result<List<MessageResponse>>>
     {
         private readonly IConversationRepository repository = repository;
@@ -25,7 +25,7 @@ namespace NetGPT.Application.Handlers
             ConversationId conversationId = ConversationId.From(request.ConversationId);
             UserId userId = UserId.From(request.UserId);
 
-            Conversation? conversation = await this.repository.GetByIdAsync(conversationId, cancellationToken);
+            Conversation? conversation = await repository.GetByIdAsync(conversationId, cancellationToken);
             if (conversation is null)
             {
                 return Result.Failure<List<MessageResponse>>(
@@ -40,7 +40,7 @@ namespace NetGPT.Application.Handlers
 
             List<MessageResponse> messages = [.. conversation.Messages
                 .OrderBy(m => m.CreatedAt)
-                .Select(this.mapper.ToMessageResponse)];
+                .Select(mapper.ToMessageResponse)];
 
             return messages;
         }
