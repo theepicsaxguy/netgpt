@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { usePostApiV1Conversations } from '../openapi/generated/api';
+import { usePostConversations } from '../openapi/generated/api';
 import { useQueryClient } from '@tanstack/react-query';
 import { X, Loader2, MessageSquarePlus, Terminal, ChevronRight } from 'lucide-react';
 import { castTo } from '../types';
@@ -14,7 +14,7 @@ const NewChatModal: React.FC<NewChatModalProps> = ({ onClose, onCreated }) => {
   const [systemPrompt, setSystemPrompt] = useState('');
   const queryClient = useQueryClient();
 
-  const { mutate, isPending } = usePostApiV1Conversations({
+  const { mutate, isPending } = usePostConversations({
     mutation: {
       onSuccess: (data: unknown) => {
         queryClient.invalidateQueries({ queryKey: ['/Conversations'] });

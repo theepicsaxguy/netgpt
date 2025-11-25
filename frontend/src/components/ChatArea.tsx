@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { useGetApiV1ConversationsConversationIdMessages, useGetApiV1ConversationsId } from '../openapi/generated/api';
+import { useGetConversationsConversationIdMessages, useGetConversationsId } from '../openapi/generated/api';
 import { MessageDto, ConversationDto, castTo } from '../types';
 import InputArea from './InputArea';
 import MessageBubble from './MessageBubble';
@@ -14,14 +14,14 @@ const ChatArea: React.FC<ChatAreaProps> = ({ conversationId }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   
   // Fetch messages
-  const { data: rawMessagesData, isLoading: isMessagesLoading, isError: isMessagesError, refetch: refetchMessages } = useGetApiV1ConversationsConversationIdMessages(conversationId, {
+  const { data: rawMessagesData, isLoading: isMessagesLoading, isError: isMessagesError, refetch: refetchMessages } = useGetConversationsConversationIdMessages(conversationId, {
     query: {
         refetchInterval: 3000, 
     }
   });
 
   // Fetch conversation details for header info
-  const { data: rawConversationData } = useGetApiV1ConversationsId(conversationId);
+  const { data: rawConversationData } = useGetConversationsId(conversationId);
 
   const messages = castTo<MessageDto[]>(rawMessagesData) || [];
   const conversation = castTo<ConversationDto>(rawConversationData);

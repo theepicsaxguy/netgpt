@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { usePostApiV1ConversationsIdMessages } from '../openapi/generated/api';
+import { usePostConversationsIdMessages } from '../openapi/generated/api';
 import { useQueryClient } from '@tanstack/react-query';
 import { Paperclip, Loader2, ArrowUp } from 'lucide-react';
 
@@ -11,7 +11,7 @@ const InputArea: React.FC<InputAreaProps> = ({ conversationId }) => {
   const [content, setContent] = useState('');
   const queryClient = useQueryClient();
 
-  const { mutate, isPending } = usePostApiV1ConversationsIdMessages({
+  const { mutate, isPending } = usePostConversationsIdMessages({
     mutation: {
       onSuccess: () => {
         setContent('');
