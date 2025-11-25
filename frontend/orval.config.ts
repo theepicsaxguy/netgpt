@@ -1,6 +1,17 @@
 import { defineConfig } from 'orval';
+import fs from 'fs';
+import path from 'path';
 
-const appApiUrl = require('./public/runtime.json').api.app;
+// Read runtime.json from the public folder synchronously so orval can use it
+const runtimePath = path.resolve(process.cwd(), 'public', 'runtime.json');
+let appApiUrl = 'http://localhost:5000';
+try {
+  const raw = fs.readFileSync(runtimePath, { encoding: 'utf8' });
+  const parsed = JSON.parse(raw);
+  appApiUrl = parsed?.api?.app ?? appApiUrl;
+} catch (e) {
+  // fallback to default
+}
 
 export default defineConfig({
   netgpt: {
