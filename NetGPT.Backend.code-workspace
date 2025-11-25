@@ -1,0 +1,28 @@
+{
+	"folders": [
+		{
+			"name": "root",
+			"path": "."
+		},
+		{	"name": "backend",
+			"path": "backend/src/"
+		},
+		{	"name": "API",
+			"path": "backend/src/NetGPT.API"
+		},
+		{
+			"name": "frontend",
+			"path": "frontend"
+		}
+	],
+	"settings": {
+		"github.copilot.chat.alternateGptPrompt.enabled": true,
+		"github.copilot.chat.anthropic.thinking.enabled": true,
+		"github.copilot.chat.anthropic.tools.websearch.enabled": true,
+		"github.copilot.chat.codesearch.enabled": true,
+		"github.copilot.chat.editor.temporalContext.enabled": true,
+		"github.copilot.chat.edits.temporalContext.enabled": true,
+		"github.copilot.chat.newWorkspace.useContext7": true,
+		"github.copilot.chat.tools.memory.enabled": true
+	}
+}
