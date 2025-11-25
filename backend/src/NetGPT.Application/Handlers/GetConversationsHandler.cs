@@ -25,7 +25,8 @@ namespace NetGPT.Application.Handlers
         {
             UserId userId = UserId.From(request.UserId);
 
-            List<Conversation> conversations = await repository.GetByUserIdAsync(userId, request.Page, request.PageSize, cancellationToken);
+            int skip = (request.Page - 1) * request.PageSize;
+            List<Conversation> conversations = await repository.GetByUserIdAsync(userId, skip, request.PageSize, cancellationToken);
             int totalCount = await repository.CountByUserIdAsync(userId, cancellationToken);
             int totalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize);
 

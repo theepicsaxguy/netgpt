@@ -1,12 +1,14 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
 using System;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using NetGPT.API.Configuration;
 using NetGPT.API.Hubs;
 using NetGPT.Application.Handlers;
@@ -20,6 +22,20 @@ using NetGPT.Infrastructure.Persistence.Repositories;
 using NetGPT.Infrastructure.Tools;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+// If ASPNETCORE_ENVIRONMENT isn't explicitly set, auto-detect Development
+// by checking for an `appsettings.Development.json` file in the content root.
+// This allows `dotnet run` to pick up the Development environment without
+// requiring the caller to export environment variables.
+if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")))
+{
+    string devSettingsPath = Path.Combine(builder.Environment.ContentRootPath, "appsettings.Development.json");
+    if (File.Exists(devSettingsPath))
+    {
+        builder.Environment.EnvironmentName = Environments.Development;
+        Console.WriteLine("ASPNETCORE_ENVIRONMENT not set - defaulting to Development based on appsettings.Development.json");
+    }
+}
 
 // Bind to URLs from configuration if present (no environment exports required).
 IConfigurationSection kestrelSectionAll = builder.Configuration.GetSection("Kestrel:Endpoints");
@@ -142,7 +158,12 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseCors("AllowAll");
-app.UseHttpsRedirection();
+
+if (!builder.Environment.IsDevelopment())
+{
+    _ = app.UseHttpsRedirection();
+}
+
 app.UseAuthorization();
 
 app.MapControllers();
