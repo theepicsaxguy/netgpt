@@ -25,45 +25,57 @@ import { customInstance } from "../client";
 /**
  * @nullable
  */
-export type CreateConversationRequestConfigurationCustomProperties = {
-  [key: string]: { [key: string]: unknown };
+export type AgentConfigurationDtoCustomProperties = {
+  [key: string]: unknown;
 } | null;
 
-/**
- * @nullable
- */
-export type CreateConversationRequestConfiguration = {
+export interface AgentConfigurationDto {
   /** @nullable */
-  ModelName?: string | null;
+  modelName?: string | null;
   /** @nullable */
-  Temperature?: number | null;
+  temperature?: number | null;
   /** @nullable */
-  MaxTokens?: number | null;
+  maxTokens?: number | null;
   /** @nullable */
-  CustomProperties?: CreateConversationRequestConfigurationCustomProperties;
+  customProperties?: AgentConfigurationDtoCustomProperties;
   /** @nullable */
-  Agents?: AgentDefinitionDto[] | null;
-} | null;
+  agents?: AgentDefinitionDto[] | null;
+}
+
+export interface AgentDefinitionDto {
+  /** @nullable */
+  name?: string | null;
+  /** @nullable */
+  instructions?: string | null;
+  /** @nullable */
+  modelName?: string | null;
+  /** @nullable */
+  temperature?: number | null;
+  /** @nullable */
+  maxTokens?: number | null;
+}
 
 export interface CreateConversationRequest {
   /** @nullable */
   title?: string | null;
-  /** @nullable */
-  configuration?: CreateConversationRequestConfiguration;
+  configuration?: AgentConfigurationDto;
 }
 
-export type SendMessageRequestAttachmentsItem = {
-  url: string;
-  name: string;
-  size: number;
-  contentType: string;
-};
+export interface FileAttachmentDto {
+  /** @nullable */
+  url?: string | null;
+  /** @nullable */
+  name?: string | null;
+  size?: number;
+  /** @nullable */
+  contentType?: string | null;
+}
 
 export interface SendMessageRequest {
   /** @nullable */
   content?: string | null;
   /** @nullable */
-  attachments?: SendMessageRequestAttachmentsItem[] | null;
+  attachments?: FileAttachmentDto[] | null;
 }
 
 export type GetApiV1AdminAgentThreadsParams = {
