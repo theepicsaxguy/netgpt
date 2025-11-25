@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NetGPT.Application.Commands;
@@ -19,11 +20,12 @@ namespace NetGPT.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public sealed class ConversationsController(IMediator mediator, IAgentOrchestrator orchestrator, IConversationRepository repository) : ControllerBase
+    public sealed class ConversationsController(IMediator mediator, IAgentOrchestrator orchestrator, IConversationRepository repository, Microsoft.Extensions.Logging.ILogger<ConversationsController> logger) : ControllerBase
     {
         private readonly IMediator mediator = mediator;
         private readonly IAgentOrchestrator orchestrator = orchestrator;
         private readonly IConversationRepository repository = repository;
+        private readonly Microsoft.Extensions.Logging.ILogger<ConversationsController> logger = logger;
 
         [HttpPost]
         public async Task<IActionResult> CreateConversation(
@@ -32,7 +34,19 @@ namespace NetGPT.API.Controllers
         {
             Guid userId = GetCurrentUserId();
             CreateConversationCommand command = new(userId, request.Title, request.Configuration);
-            Result<ConversationResponse> result = await mediator.Send(command, cancellationToken);
+            logger.LogInformation("CreateConversation received for user {UserId}", userId);
+            Result<ConversationResponse> result;
+            try
+            {
+                result = await mediator.Send(command, cancellationToken);
+            }
+            catch (System.Exception ex)
+            {
+                logger.LogError(ex, "Exception while handling CreateConversation for user {UserId}", userId);
+                throw;
+            }
+
+            logger.LogInformation("CreateConversation handler returned for user {UserId} with success={IsSuccess}", userId, result.IsSuccess);
 
             return result.IsSuccess
                 ? Ok(result.Value)

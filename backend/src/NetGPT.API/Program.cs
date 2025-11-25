@@ -12,6 +12,8 @@ using Microsoft.Extensions.Hosting;
 using NetGPT.API.Configuration;
 using NetGPT.API.Hubs;
 using NetGPT.Application.Handlers;
+using NetGPT.Application.Behaviors;
+using MediatR;
 using NetGPT.Application.Interfaces;
 using NetGPT.Application.Services;
 using NetGPT.Domain.Interfaces;
@@ -60,6 +62,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // MediatR
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblyContaining<CreateConversationHandler>());
+
+// MediatR pipeline behaviors (FluentValidation)
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 // Repositories
 builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
