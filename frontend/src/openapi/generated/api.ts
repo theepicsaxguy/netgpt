@@ -78,48 +78,48 @@ export interface SendMessageRequest {
   attachments?: FileAttachmentDto[] | null;
 }
 
-export type GetApiV1AdminAgentThreadsParams = {
+export type GetAdminAgentThreadsParams = {
   page?: number;
   pageSize?: number;
 };
 
-export type PostApiV1AttachmentsBody = {
+export type PostAttachmentsBody = {
   file?: Blob;
 };
 
-export type GetApiV1ConversationsParams = {
+export type GetConversationsParams = {
   page?: number;
   pageSize?: number;
 };
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
-export const getApiV1AdminAgentThreads = (
-  params?: GetApiV1AdminAgentThreadsParams,
+export const getAdminAgentThreads = (
+  params?: GetAdminAgentThreadsParams,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
   return customInstance<void>(
-    { url: `admin/agent-threads`, method: "GET", params, signal },
+    { url: `/admin/agent-threads`, method: "GET", params, signal },
     options,
   );
 };
 
-export const getGetApiV1AdminAgentThreadsQueryKey = (
-  params?: GetApiV1AdminAgentThreadsParams,
+export const getGetAdminAgentThreadsQueryKey = (
+  params?: GetAdminAgentThreadsParams,
 ) => {
-  return [`admin/agent-threads`, ...(params ? [params] : [])] as const;
+  return [`/admin/agent-threads`, ...(params ? [params] : [])] as const;
 };
 
-export const getGetApiV1AdminAgentThreadsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getApiV1AdminAgentThreads>>,
+export const getGetAdminAgentThreadsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAdminAgentThreads>>,
   TError = unknown,
 >(
-  params?: GetApiV1AdminAgentThreadsParams,
+  params?: GetAdminAgentThreadsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1AdminAgentThreads>>,
+        Awaited<ReturnType<typeof getAdminAgentThreads>>,
         TError,
         TData
       >
@@ -130,42 +130,42 @@ export const getGetApiV1AdminAgentThreadsQueryOptions = <
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getGetApiV1AdminAgentThreadsQueryKey(params);
+    queryOptions?.queryKey ?? getGetAdminAgentThreadsQueryKey(params);
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getApiV1AdminAgentThreads>>
-  > = ({ signal }) => getApiV1AdminAgentThreads(params, requestOptions, signal);
+    Awaited<ReturnType<typeof getAdminAgentThreads>>
+  > = ({ signal }) => getAdminAgentThreads(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getApiV1AdminAgentThreads>>,
+    Awaited<ReturnType<typeof getAdminAgentThreads>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetApiV1AdminAgentThreadsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getApiV1AdminAgentThreads>>
+export type GetAdminAgentThreadsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAdminAgentThreads>>
 >;
-export type GetApiV1AdminAgentThreadsQueryError = unknown;
+export type GetAdminAgentThreadsQueryError = unknown;
 
-export function useGetApiV1AdminAgentThreads<
-  TData = Awaited<ReturnType<typeof getApiV1AdminAgentThreads>>,
+export function useGetAdminAgentThreads<
+  TData = Awaited<ReturnType<typeof getAdminAgentThreads>>,
   TError = unknown,
 >(
-  params: undefined | GetApiV1AdminAgentThreadsParams,
+  params: undefined | GetAdminAgentThreadsParams,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1AdminAgentThreads>>,
+        Awaited<ReturnType<typeof getAdminAgentThreads>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminAgentThreads>>,
+          Awaited<ReturnType<typeof getAdminAgentThreads>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminAgentThreads>>
+          Awaited<ReturnType<typeof getAdminAgentThreads>>
         >,
         "initialData"
       >;
@@ -175,24 +175,24 @@ export function useGetApiV1AdminAgentThreads<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetApiV1AdminAgentThreads<
-  TData = Awaited<ReturnType<typeof getApiV1AdminAgentThreads>>,
+export function useGetAdminAgentThreads<
+  TData = Awaited<ReturnType<typeof getAdminAgentThreads>>,
   TError = unknown,
 >(
-  params?: GetApiV1AdminAgentThreadsParams,
+  params?: GetAdminAgentThreadsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1AdminAgentThreads>>,
+        Awaited<ReturnType<typeof getAdminAgentThreads>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminAgentThreads>>,
+          Awaited<ReturnType<typeof getAdminAgentThreads>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminAgentThreads>>
+          Awaited<ReturnType<typeof getAdminAgentThreads>>
         >,
         "initialData"
       >;
@@ -202,15 +202,15 @@ export function useGetApiV1AdminAgentThreads<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetApiV1AdminAgentThreads<
-  TData = Awaited<ReturnType<typeof getApiV1AdminAgentThreads>>,
+export function useGetAdminAgentThreads<
+  TData = Awaited<ReturnType<typeof getAdminAgentThreads>>,
   TError = unknown,
 >(
-  params?: GetApiV1AdminAgentThreadsParams,
+  params?: GetAdminAgentThreadsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1AdminAgentThreads>>,
+        Awaited<ReturnType<typeof getAdminAgentThreads>>,
         TError,
         TData
       >
@@ -222,15 +222,15 @@ export function useGetApiV1AdminAgentThreads<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetApiV1AdminAgentThreads<
-  TData = Awaited<ReturnType<typeof getApiV1AdminAgentThreads>>,
+export function useGetAdminAgentThreads<
+  TData = Awaited<ReturnType<typeof getAdminAgentThreads>>,
   TError = unknown,
 >(
-  params?: GetApiV1AdminAgentThreadsParams,
+  params?: GetAdminAgentThreadsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1AdminAgentThreads>>,
+        Awaited<ReturnType<typeof getAdminAgentThreads>>,
         TError,
         TData
       >
@@ -241,10 +241,7 @@ export function useGetApiV1AdminAgentThreads<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetApiV1AdminAgentThreadsQueryOptions(
-    params,
-    options,
-  );
+  const queryOptions = getGetAdminAgentThreadsQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -256,30 +253,30 @@ export function useGetApiV1AdminAgentThreads<
   return query;
 }
 
-export const getApiV1AdminAgentThreadsId = (
+export const getAdminAgentThreadsId = (
   id: string,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
   return customInstance<void>(
-    { url: `admin/agent-threads/${id}`, method: "GET", signal },
+    { url: `/admin/agent-threads/${id}`, method: "GET", signal },
     options,
   );
 };
 
-export const getGetApiV1AdminAgentThreadsIdQueryKey = (id?: string) => {
-  return [`admin/agent-threads/${id}`] as const;
+export const getGetAdminAgentThreadsIdQueryKey = (id?: string) => {
+  return [`/admin/agent-threads/${id}`] as const;
 };
 
-export const getGetApiV1AdminAgentThreadsIdQueryOptions = <
-  TData = Awaited<ReturnType<typeof getApiV1AdminAgentThreadsId>>,
+export const getGetAdminAgentThreadsIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAdminAgentThreadsId>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1AdminAgentThreadsId>>,
+        Awaited<ReturnType<typeof getAdminAgentThreadsId>>,
         TError,
         TData
       >
@@ -290,11 +287,11 @@ export const getGetApiV1AdminAgentThreadsIdQueryOptions = <
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getGetApiV1AdminAgentThreadsIdQueryKey(id);
+    queryOptions?.queryKey ?? getGetAdminAgentThreadsIdQueryKey(id);
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getApiV1AdminAgentThreadsId>>
-  > = ({ signal }) => getApiV1AdminAgentThreadsId(id, requestOptions, signal);
+    Awaited<ReturnType<typeof getAdminAgentThreadsId>>
+  > = ({ signal }) => getAdminAgentThreadsId(id, requestOptions, signal);
 
   return {
     queryKey,
@@ -302,35 +299,35 @@ export const getGetApiV1AdminAgentThreadsIdQueryOptions = <
     enabled: !!id,
     ...queryOptions,
   } as UseQueryOptions<
-    Awaited<ReturnType<typeof getApiV1AdminAgentThreadsId>>,
+    Awaited<ReturnType<typeof getAdminAgentThreadsId>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetApiV1AdminAgentThreadsIdQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getApiV1AdminAgentThreadsId>>
+export type GetAdminAgentThreadsIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAdminAgentThreadsId>>
 >;
-export type GetApiV1AdminAgentThreadsIdQueryError = unknown;
+export type GetAdminAgentThreadsIdQueryError = unknown;
 
-export function useGetApiV1AdminAgentThreadsId<
-  TData = Awaited<ReturnType<typeof getApiV1AdminAgentThreadsId>>,
+export function useGetAdminAgentThreadsId<
+  TData = Awaited<ReturnType<typeof getAdminAgentThreadsId>>,
   TError = unknown,
 >(
   id: string,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1AdminAgentThreadsId>>,
+        Awaited<ReturnType<typeof getAdminAgentThreadsId>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminAgentThreadsId>>,
+          Awaited<ReturnType<typeof getAdminAgentThreadsId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminAgentThreadsId>>
+          Awaited<ReturnType<typeof getAdminAgentThreadsId>>
         >,
         "initialData"
       >;
@@ -340,24 +337,24 @@ export function useGetApiV1AdminAgentThreadsId<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetApiV1AdminAgentThreadsId<
-  TData = Awaited<ReturnType<typeof getApiV1AdminAgentThreadsId>>,
+export function useGetAdminAgentThreadsId<
+  TData = Awaited<ReturnType<typeof getAdminAgentThreadsId>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1AdminAgentThreadsId>>,
+        Awaited<ReturnType<typeof getAdminAgentThreadsId>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1AdminAgentThreadsId>>,
+          Awaited<ReturnType<typeof getAdminAgentThreadsId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1AdminAgentThreadsId>>
+          Awaited<ReturnType<typeof getAdminAgentThreadsId>>
         >,
         "initialData"
       >;
@@ -367,15 +364,15 @@ export function useGetApiV1AdminAgentThreadsId<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetApiV1AdminAgentThreadsId<
-  TData = Awaited<ReturnType<typeof getApiV1AdminAgentThreadsId>>,
+export function useGetAdminAgentThreadsId<
+  TData = Awaited<ReturnType<typeof getAdminAgentThreadsId>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1AdminAgentThreadsId>>,
+        Awaited<ReturnType<typeof getAdminAgentThreadsId>>,
         TError,
         TData
       >
@@ -387,15 +384,15 @@ export function useGetApiV1AdminAgentThreadsId<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetApiV1AdminAgentThreadsId<
-  TData = Awaited<ReturnType<typeof getApiV1AdminAgentThreadsId>>,
+export function useGetAdminAgentThreadsId<
+  TData = Awaited<ReturnType<typeof getAdminAgentThreadsId>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1AdminAgentThreadsId>>,
+        Awaited<ReturnType<typeof getAdminAgentThreadsId>>,
         TError,
         TData
       >
@@ -406,7 +403,7 @@ export function useGetApiV1AdminAgentThreadsId<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetApiV1AdminAgentThreadsIdQueryOptions(id, options);
+  const queryOptions = getGetAdminAgentThreadsIdQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -418,35 +415,35 @@ export function useGetApiV1AdminAgentThreadsId<
   return query;
 }
 
-export const postApiV1AdminAgentThreadsIdCancel = (
+export const postAdminAgentThreadsIdCancel = (
   id: string,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
   return customInstance<void>(
-    { url: `admin/agent-threads/${id}/cancel`, method: "POST", signal },
+    { url: `/admin/agent-threads/${id}/cancel`, method: "POST", signal },
     options,
   );
 };
 
-export const getPostApiV1AdminAgentThreadsIdCancelMutationOptions = <
+export const getPostAdminAgentThreadsIdCancelMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postApiV1AdminAgentThreadsIdCancel>>,
+    Awaited<ReturnType<typeof postAdminAgentThreadsIdCancel>>,
     TError,
     { id: string },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof postApiV1AdminAgentThreadsIdCancel>>,
+  Awaited<ReturnType<typeof postAdminAgentThreadsIdCancel>>,
   TError,
   { id: string },
   TContext
 > => {
-  const mutationKey = ["postApiV1AdminAgentThreadsIdCancel"];
+  const mutationKey = ["postAdminAgentThreadsIdCancel"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -456,30 +453,30 @@ export const getPostApiV1AdminAgentThreadsIdCancelMutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postApiV1AdminAgentThreadsIdCancel>>,
+    Awaited<ReturnType<typeof postAdminAgentThreadsIdCancel>>,
     { id: string }
   > = (props) => {
     const { id } = props ?? {};
 
-    return postApiV1AdminAgentThreadsIdCancel(id, requestOptions);
+    return postAdminAgentThreadsIdCancel(id, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type PostApiV1AdminAgentThreadsIdCancelMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postApiV1AdminAgentThreadsIdCancel>>
+export type PostAdminAgentThreadsIdCancelMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postAdminAgentThreadsIdCancel>>
 >;
 
-export type PostApiV1AdminAgentThreadsIdCancelMutationError = unknown;
+export type PostAdminAgentThreadsIdCancelMutationError = unknown;
 
-export const usePostApiV1AdminAgentThreadsIdCancel = <
+export const usePostAdminAgentThreadsIdCancel = <
   TError = unknown,
   TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postApiV1AdminAgentThreadsIdCancel>>,
+      Awaited<ReturnType<typeof postAdminAgentThreadsIdCancel>>,
       TError,
       { id: string },
       TContext
@@ -488,46 +485,46 @@ export const usePostApiV1AdminAgentThreadsIdCancel = <
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof postApiV1AdminAgentThreadsIdCancel>>,
+  Awaited<ReturnType<typeof postAdminAgentThreadsIdCancel>>,
   TError,
   { id: string },
   TContext
 > => {
   const mutationOptions =
-    getPostApiV1AdminAgentThreadsIdCancelMutationOptions(options);
+    getPostAdminAgentThreadsIdCancelMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
 
-export const postApiV1AdminAgentThreadsIdResume = (
+export const postAdminAgentThreadsIdResume = (
   id: string,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
   return customInstance<void>(
-    { url: `admin/agent-threads/${id}/resume`, method: "POST", signal },
+    { url: `/admin/agent-threads/${id}/resume`, method: "POST", signal },
     options,
   );
 };
 
-export const getPostApiV1AdminAgentThreadsIdResumeMutationOptions = <
+export const getPostAdminAgentThreadsIdResumeMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postApiV1AdminAgentThreadsIdResume>>,
+    Awaited<ReturnType<typeof postAdminAgentThreadsIdResume>>,
     TError,
     { id: string },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof postApiV1AdminAgentThreadsIdResume>>,
+  Awaited<ReturnType<typeof postAdminAgentThreadsIdResume>>,
   TError,
   { id: string },
   TContext
 > => {
-  const mutationKey = ["postApiV1AdminAgentThreadsIdResume"];
+  const mutationKey = ["postAdminAgentThreadsIdResume"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -537,30 +534,30 @@ export const getPostApiV1AdminAgentThreadsIdResumeMutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postApiV1AdminAgentThreadsIdResume>>,
+    Awaited<ReturnType<typeof postAdminAgentThreadsIdResume>>,
     { id: string }
   > = (props) => {
     const { id } = props ?? {};
 
-    return postApiV1AdminAgentThreadsIdResume(id, requestOptions);
+    return postAdminAgentThreadsIdResume(id, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type PostApiV1AdminAgentThreadsIdResumeMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postApiV1AdminAgentThreadsIdResume>>
+export type PostAdminAgentThreadsIdResumeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postAdminAgentThreadsIdResume>>
 >;
 
-export type PostApiV1AdminAgentThreadsIdResumeMutationError = unknown;
+export type PostAdminAgentThreadsIdResumeMutationError = unknown;
 
-export const usePostApiV1AdminAgentThreadsIdResume = <
+export const usePostAdminAgentThreadsIdResume = <
   TError = unknown,
   TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postApiV1AdminAgentThreadsIdResume>>,
+      Awaited<ReturnType<typeof postAdminAgentThreadsIdResume>>,
       TError,
       { id: string },
       TContext
@@ -569,46 +566,46 @@ export const usePostApiV1AdminAgentThreadsIdResume = <
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof postApiV1AdminAgentThreadsIdResume>>,
+  Awaited<ReturnType<typeof postAdminAgentThreadsIdResume>>,
   TError,
   { id: string },
   TContext
 > => {
   const mutationOptions =
-    getPostApiV1AdminAgentThreadsIdResumeMutationOptions(options);
+    getPostAdminAgentThreadsIdResumeMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
 
-export const postApiV1AdminAgentThreadsIdRerun = (
+export const postAdminAgentThreadsIdRerun = (
   id: string,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
   return customInstance<void>(
-    { url: `admin/agent-threads/${id}/rerun`, method: "POST", signal },
+    { url: `/admin/agent-threads/${id}/rerun`, method: "POST", signal },
     options,
   );
 };
 
-export const getPostApiV1AdminAgentThreadsIdRerunMutationOptions = <
+export const getPostAdminAgentThreadsIdRerunMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postApiV1AdminAgentThreadsIdRerun>>,
+    Awaited<ReturnType<typeof postAdminAgentThreadsIdRerun>>,
     TError,
     { id: string },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof postApiV1AdminAgentThreadsIdRerun>>,
+  Awaited<ReturnType<typeof postAdminAgentThreadsIdRerun>>,
   TError,
   { id: string },
   TContext
 > => {
-  const mutationKey = ["postApiV1AdminAgentThreadsIdRerun"];
+  const mutationKey = ["postAdminAgentThreadsIdRerun"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -618,30 +615,30 @@ export const getPostApiV1AdminAgentThreadsIdRerunMutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postApiV1AdminAgentThreadsIdRerun>>,
+    Awaited<ReturnType<typeof postAdminAgentThreadsIdRerun>>,
     { id: string }
   > = (props) => {
     const { id } = props ?? {};
 
-    return postApiV1AdminAgentThreadsIdRerun(id, requestOptions);
+    return postAdminAgentThreadsIdRerun(id, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type PostApiV1AdminAgentThreadsIdRerunMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postApiV1AdminAgentThreadsIdRerun>>
+export type PostAdminAgentThreadsIdRerunMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postAdminAgentThreadsIdRerun>>
 >;
 
-export type PostApiV1AdminAgentThreadsIdRerunMutationError = unknown;
+export type PostAdminAgentThreadsIdRerunMutationError = unknown;
 
-export const usePostApiV1AdminAgentThreadsIdRerun = <
+export const usePostAdminAgentThreadsIdRerun = <
   TError = unknown,
   TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postApiV1AdminAgentThreadsIdRerun>>,
+      Awaited<ReturnType<typeof postAdminAgentThreadsIdRerun>>,
       TError,
       { id: string },
       TContext
@@ -650,30 +647,30 @@ export const usePostApiV1AdminAgentThreadsIdRerun = <
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof postApiV1AdminAgentThreadsIdRerun>>,
+  Awaited<ReturnType<typeof postAdminAgentThreadsIdRerun>>,
   TError,
   { id: string },
   TContext
 > => {
   const mutationOptions =
-    getPostApiV1AdminAgentThreadsIdRerunMutationOptions(options);
+    getPostAdminAgentThreadsIdRerunMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
 
-export const postApiV1Attachments = (
-  postApiV1AttachmentsBody: PostApiV1AttachmentsBody,
+export const postAttachments = (
+  postAttachmentsBody: PostAttachmentsBody,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
   const formData = new FormData();
-  if (postApiV1AttachmentsBody.file !== undefined) {
-    formData.append(`file`, postApiV1AttachmentsBody.file);
+  if (postAttachmentsBody.file !== undefined) {
+    formData.append(`file`, postAttachmentsBody.file);
   }
 
   return customInstance<void>(
     {
-      url: `attachments`,
+      url: `/attachments`,
       method: "POST",
       headers: { "Content-Type": "multipart/form-data" },
       data: formData,
@@ -683,24 +680,24 @@ export const postApiV1Attachments = (
   );
 };
 
-export const getPostApiV1AttachmentsMutationOptions = <
+export const getPostAttachmentsMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postApiV1Attachments>>,
+    Awaited<ReturnType<typeof postAttachments>>,
     TError,
-    { data: PostApiV1AttachmentsBody },
+    { data: PostAttachmentsBody },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof postApiV1Attachments>>,
+  Awaited<ReturnType<typeof postAttachments>>,
   TError,
-  { data: PostApiV1AttachmentsBody },
+  { data: PostAttachmentsBody },
   TContext
 > => {
-  const mutationKey = ["postApiV1Attachments"];
+  const mutationKey = ["postAttachments"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -710,53 +707,53 @@ export const getPostApiV1AttachmentsMutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postApiV1Attachments>>,
-    { data: PostApiV1AttachmentsBody }
+    Awaited<ReturnType<typeof postAttachments>>,
+    { data: PostAttachmentsBody }
   > = (props) => {
     const { data } = props ?? {};
 
-    return postApiV1Attachments(data, requestOptions);
+    return postAttachments(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type PostApiV1AttachmentsMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postApiV1Attachments>>
+export type PostAttachmentsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postAttachments>>
 >;
-export type PostApiV1AttachmentsMutationBody = PostApiV1AttachmentsBody;
-export type PostApiV1AttachmentsMutationError = unknown;
+export type PostAttachmentsMutationBody = PostAttachmentsBody;
+export type PostAttachmentsMutationError = unknown;
 
-export const usePostApiV1Attachments = <TError = unknown, TContext = unknown>(
+export const usePostAttachments = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postApiV1Attachments>>,
+      Awaited<ReturnType<typeof postAttachments>>,
       TError,
-      { data: PostApiV1AttachmentsBody },
+      { data: PostAttachmentsBody },
       TContext
     >;
     request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof postApiV1Attachments>>,
+  Awaited<ReturnType<typeof postAttachments>>,
   TError,
-  { data: PostApiV1AttachmentsBody },
+  { data: PostAttachmentsBody },
   TContext
 > => {
-  const mutationOptions = getPostApiV1AttachmentsMutationOptions(options);
+  const mutationOptions = getPostAttachmentsMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
 
-export const postApiV1Conversations = (
+export const postConversations = (
   createConversationRequest: CreateConversationRequest,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
   return customInstance<void>(
     {
-      url: `Conversations`,
+      url: `/Conversations`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: createConversationRequest,
@@ -766,24 +763,24 @@ export const postApiV1Conversations = (
   );
 };
 
-export const getPostApiV1ConversationsMutationOptions = <
+export const getPostConversationsMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postApiV1Conversations>>,
+    Awaited<ReturnType<typeof postConversations>>,
     TError,
     { data: CreateConversationRequest },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof postApiV1Conversations>>,
+  Awaited<ReturnType<typeof postConversations>>,
   TError,
   { data: CreateConversationRequest },
   TContext
 > => {
-  const mutationKey = ["postApiV1Conversations"];
+  const mutationKey = ["postConversations"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -793,27 +790,27 @@ export const getPostApiV1ConversationsMutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postApiV1Conversations>>,
+    Awaited<ReturnType<typeof postConversations>>,
     { data: CreateConversationRequest }
   > = (props) => {
     const { data } = props ?? {};
 
-    return postApiV1Conversations(data, requestOptions);
+    return postConversations(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type PostApiV1ConversationsMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postApiV1Conversations>>
+export type PostConversationsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postConversations>>
 >;
-export type PostApiV1ConversationsMutationBody = CreateConversationRequest;
-export type PostApiV1ConversationsMutationError = unknown;
+export type PostConversationsMutationBody = CreateConversationRequest;
+export type PostConversationsMutationError = unknown;
 
-export const usePostApiV1Conversations = <TError = unknown, TContext = unknown>(
+export const usePostConversations = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postApiV1Conversations>>,
+      Awaited<ReturnType<typeof postConversations>>,
       TError,
       { data: CreateConversationRequest },
       TContext
@@ -822,42 +819,42 @@ export const usePostApiV1Conversations = <TError = unknown, TContext = unknown>(
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof postApiV1Conversations>>,
+  Awaited<ReturnType<typeof postConversations>>,
   TError,
   { data: CreateConversationRequest },
   TContext
 > => {
-  const mutationOptions = getPostApiV1ConversationsMutationOptions(options);
+  const mutationOptions = getPostConversationsMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
 
-export const getApiV1Conversations = (
-  params?: GetApiV1ConversationsParams,
+export const getConversations = (
+  params?: GetConversationsParams,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
   return customInstance<void>(
-    { url: `Conversations`, method: "GET", params, signal },
+    { url: `/Conversations`, method: "GET", params, signal },
     options,
   );
 };
 
-export const getGetApiV1ConversationsQueryKey = (
-  params?: GetApiV1ConversationsParams,
+export const getGetConversationsQueryKey = (
+  params?: GetConversationsParams,
 ) => {
-  return [`Conversations`, ...(params ? [params] : [])] as const;
+  return [`/Conversations`, ...(params ? [params] : [])] as const;
 };
 
-export const getGetApiV1ConversationsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getApiV1Conversations>>,
+export const getGetConversationsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getConversations>>,
   TError = unknown,
 >(
-  params?: GetApiV1ConversationsParams,
+  params?: GetConversationsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1Conversations>>,
+        Awaited<ReturnType<typeof getConversations>>,
         TError,
         TData
       >
@@ -868,42 +865,42 @@ export const getGetApiV1ConversationsQueryOptions = <
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getGetApiV1ConversationsQueryKey(params);
+    queryOptions?.queryKey ?? getGetConversationsQueryKey(params);
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getApiV1Conversations>>
-  > = ({ signal }) => getApiV1Conversations(params, requestOptions, signal);
+    Awaited<ReturnType<typeof getConversations>>
+  > = ({ signal }) => getConversations(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getApiV1Conversations>>,
+    Awaited<ReturnType<typeof getConversations>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetApiV1ConversationsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getApiV1Conversations>>
+export type GetConversationsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getConversations>>
 >;
-export type GetApiV1ConversationsQueryError = unknown;
+export type GetConversationsQueryError = unknown;
 
-export function useGetApiV1Conversations<
-  TData = Awaited<ReturnType<typeof getApiV1Conversations>>,
+export function useGetConversations<
+  TData = Awaited<ReturnType<typeof getConversations>>,
   TError = unknown,
 >(
-  params: undefined | GetApiV1ConversationsParams,
+  params: undefined | GetConversationsParams,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1Conversations>>,
+        Awaited<ReturnType<typeof getConversations>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1Conversations>>,
+          Awaited<ReturnType<typeof getConversations>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1Conversations>>
+          Awaited<ReturnType<typeof getConversations>>
         >,
         "initialData"
       >;
@@ -913,24 +910,24 @@ export function useGetApiV1Conversations<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetApiV1Conversations<
-  TData = Awaited<ReturnType<typeof getApiV1Conversations>>,
+export function useGetConversations<
+  TData = Awaited<ReturnType<typeof getConversations>>,
   TError = unknown,
 >(
-  params?: GetApiV1ConversationsParams,
+  params?: GetConversationsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1Conversations>>,
+        Awaited<ReturnType<typeof getConversations>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1Conversations>>,
+          Awaited<ReturnType<typeof getConversations>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1Conversations>>
+          Awaited<ReturnType<typeof getConversations>>
         >,
         "initialData"
       >;
@@ -940,15 +937,15 @@ export function useGetApiV1Conversations<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetApiV1Conversations<
-  TData = Awaited<ReturnType<typeof getApiV1Conversations>>,
+export function useGetConversations<
+  TData = Awaited<ReturnType<typeof getConversations>>,
   TError = unknown,
 >(
-  params?: GetApiV1ConversationsParams,
+  params?: GetConversationsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1Conversations>>,
+        Awaited<ReturnType<typeof getConversations>>,
         TError,
         TData
       >
@@ -960,15 +957,15 @@ export function useGetApiV1Conversations<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetApiV1Conversations<
-  TData = Awaited<ReturnType<typeof getApiV1Conversations>>,
+export function useGetConversations<
+  TData = Awaited<ReturnType<typeof getConversations>>,
   TError = unknown,
 >(
-  params?: GetApiV1ConversationsParams,
+  params?: GetConversationsParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1Conversations>>,
+        Awaited<ReturnType<typeof getConversations>>,
         TError,
         TData
       >
@@ -979,7 +976,7 @@ export function useGetApiV1Conversations<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetApiV1ConversationsQueryOptions(params, options);
+  const queryOptions = getGetConversationsQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -991,30 +988,30 @@ export function useGetApiV1Conversations<
   return query;
 }
 
-export const getApiV1ConversationsId = (
+export const getConversationsId = (
   id: string,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
   return customInstance<void>(
-    { url: `Conversations/${id}`, method: "GET", signal },
+    { url: `/Conversations/${id}`, method: "GET", signal },
     options,
   );
 };
 
-export const getGetApiV1ConversationsIdQueryKey = (id?: string) => {
-  return [`Conversations/${id}`] as const;
+export const getGetConversationsIdQueryKey = (id?: string) => {
+  return [`/Conversations/${id}`] as const;
 };
 
-export const getGetApiV1ConversationsIdQueryOptions = <
-  TData = Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+export const getGetConversationsIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getConversationsId>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+        Awaited<ReturnType<typeof getConversationsId>>,
         TError,
         TData
       >
@@ -1024,12 +1021,11 @@ export const getGetApiV1ConversationsIdQueryOptions = <
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetApiV1ConversationsIdQueryKey(id);
+  const queryKey = queryOptions?.queryKey ?? getGetConversationsIdQueryKey(id);
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getApiV1ConversationsId>>
-  > = ({ signal }) => getApiV1ConversationsId(id, requestOptions, signal);
+    Awaited<ReturnType<typeof getConversationsId>>
+  > = ({ signal }) => getConversationsId(id, requestOptions, signal);
 
   return {
     queryKey,
@@ -1037,35 +1033,35 @@ export const getGetApiV1ConversationsIdQueryOptions = <
     enabled: !!id,
     ...queryOptions,
   } as UseQueryOptions<
-    Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+    Awaited<ReturnType<typeof getConversationsId>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetApiV1ConversationsIdQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getApiV1ConversationsId>>
+export type GetConversationsIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getConversationsId>>
 >;
-export type GetApiV1ConversationsIdQueryError = unknown;
+export type GetConversationsIdQueryError = unknown;
 
-export function useGetApiV1ConversationsId<
-  TData = Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+export function useGetConversationsId<
+  TData = Awaited<ReturnType<typeof getConversationsId>>,
   TError = unknown,
 >(
   id: string,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+        Awaited<ReturnType<typeof getConversationsId>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+          Awaited<ReturnType<typeof getConversationsId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1ConversationsId>>
+          Awaited<ReturnType<typeof getConversationsId>>
         >,
         "initialData"
       >;
@@ -1075,24 +1071,24 @@ export function useGetApiV1ConversationsId<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetApiV1ConversationsId<
-  TData = Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+export function useGetConversationsId<
+  TData = Awaited<ReturnType<typeof getConversationsId>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+        Awaited<ReturnType<typeof getConversationsId>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+          Awaited<ReturnType<typeof getConversationsId>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1ConversationsId>>
+          Awaited<ReturnType<typeof getConversationsId>>
         >,
         "initialData"
       >;
@@ -1102,15 +1098,15 @@ export function useGetApiV1ConversationsId<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetApiV1ConversationsId<
-  TData = Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+export function useGetConversationsId<
+  TData = Awaited<ReturnType<typeof getConversationsId>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+        Awaited<ReturnType<typeof getConversationsId>>,
         TError,
         TData
       >
@@ -1122,15 +1118,15 @@ export function useGetApiV1ConversationsId<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetApiV1ConversationsId<
-  TData = Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+export function useGetConversationsId<
+  TData = Awaited<ReturnType<typeof getConversationsId>>,
   TError = unknown,
 >(
   id: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ConversationsId>>,
+        Awaited<ReturnType<typeof getConversationsId>>,
         TError,
         TData
       >
@@ -1141,7 +1137,7 @@ export function useGetApiV1ConversationsId<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getGetApiV1ConversationsIdQueryOptions(id, options);
+  const queryOptions = getGetConversationsIdQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -1153,34 +1149,34 @@ export function useGetApiV1ConversationsId<
   return query;
 }
 
-export const deleteApiV1ConversationsId = (
+export const deleteConversationsId = (
   id: string,
   options?: SecondParameter<typeof customInstance>,
 ) => {
   return customInstance<void>(
-    { url: `Conversations/${id}`, method: "DELETE" },
+    { url: `/Conversations/${id}`, method: "DELETE" },
     options,
   );
 };
 
-export const getDeleteApiV1ConversationsIdMutationOptions = <
+export const getDeleteConversationsIdMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof deleteApiV1ConversationsId>>,
+    Awaited<ReturnType<typeof deleteConversationsId>>,
     TError,
     { id: string },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof deleteApiV1ConversationsId>>,
+  Awaited<ReturnType<typeof deleteConversationsId>>,
   TError,
   { id: string },
   TContext
 > => {
-  const mutationKey = ["deleteApiV1ConversationsId"];
+  const mutationKey = ["deleteConversationsId"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -1190,30 +1186,27 @@ export const getDeleteApiV1ConversationsIdMutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof deleteApiV1ConversationsId>>,
+    Awaited<ReturnType<typeof deleteConversationsId>>,
     { id: string }
   > = (props) => {
     const { id } = props ?? {};
 
-    return deleteApiV1ConversationsId(id, requestOptions);
+    return deleteConversationsId(id, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type DeleteApiV1ConversationsIdMutationResult = NonNullable<
-  Awaited<ReturnType<typeof deleteApiV1ConversationsId>>
+export type DeleteConversationsIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteConversationsId>>
 >;
 
-export type DeleteApiV1ConversationsIdMutationError = unknown;
+export type DeleteConversationsIdMutationError = unknown;
 
-export const useDeleteApiV1ConversationsId = <
-  TError = unknown,
-  TContext = unknown,
->(
+export const useDeleteConversationsId = <TError = unknown, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof deleteApiV1ConversationsId>>,
+      Awaited<ReturnType<typeof deleteConversationsId>>,
       TError,
       { id: string },
       TContext
@@ -1222,17 +1215,17 @@ export const useDeleteApiV1ConversationsId = <
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof deleteApiV1ConversationsId>>,
+  Awaited<ReturnType<typeof deleteConversationsId>>,
   TError,
   { id: string },
   TContext
 > => {
-  const mutationOptions = getDeleteApiV1ConversationsIdMutationOptions(options);
+  const mutationOptions = getDeleteConversationsIdMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
 
-export const postApiV1ConversationsIdMessages = (
+export const postConversationsIdMessages = (
   id: string,
   sendMessageRequest: SendMessageRequest,
   options?: SecondParameter<typeof customInstance>,
@@ -1240,7 +1233,7 @@ export const postApiV1ConversationsIdMessages = (
 ) => {
   return customInstance<void>(
     {
-      url: `Conversations/${id}/messages`,
+      url: `/Conversations/${id}/messages`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: sendMessageRequest,
@@ -1250,24 +1243,24 @@ export const postApiV1ConversationsIdMessages = (
   );
 };
 
-export const getPostApiV1ConversationsIdMessagesMutationOptions = <
+export const getPostConversationsIdMessagesMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postApiV1ConversationsIdMessages>>,
+    Awaited<ReturnType<typeof postConversationsIdMessages>>,
     TError,
     { id: string; data: SendMessageRequest },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof postApiV1ConversationsIdMessages>>,
+  Awaited<ReturnType<typeof postConversationsIdMessages>>,
   TError,
   { id: string; data: SendMessageRequest },
   TContext
 > => {
-  const mutationKey = ["postApiV1ConversationsIdMessages"];
+  const mutationKey = ["postConversationsIdMessages"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -1277,30 +1270,30 @@ export const getPostApiV1ConversationsIdMessagesMutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postApiV1ConversationsIdMessages>>,
+    Awaited<ReturnType<typeof postConversationsIdMessages>>,
     { id: string; data: SendMessageRequest }
   > = (props) => {
     const { id, data } = props ?? {};
 
-    return postApiV1ConversationsIdMessages(id, data, requestOptions);
+    return postConversationsIdMessages(id, data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type PostApiV1ConversationsIdMessagesMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postApiV1ConversationsIdMessages>>
+export type PostConversationsIdMessagesMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postConversationsIdMessages>>
 >;
-export type PostApiV1ConversationsIdMessagesMutationBody = SendMessageRequest;
-export type PostApiV1ConversationsIdMessagesMutationError = unknown;
+export type PostConversationsIdMessagesMutationBody = SendMessageRequest;
+export type PostConversationsIdMessagesMutationError = unknown;
 
-export const usePostApiV1ConversationsIdMessages = <
+export const usePostConversationsIdMessages = <
   TError = unknown,
   TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postApiV1ConversationsIdMessages>>,
+      Awaited<ReturnType<typeof postConversationsIdMessages>>,
       TError,
       { id: string; data: SendMessageRequest },
       TContext
@@ -1309,18 +1302,18 @@ export const usePostApiV1ConversationsIdMessages = <
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof postApiV1ConversationsIdMessages>>,
+  Awaited<ReturnType<typeof postConversationsIdMessages>>,
   TError,
   { id: string; data: SendMessageRequest },
   TContext
 > => {
   const mutationOptions =
-    getPostApiV1ConversationsIdMessagesMutationOptions(options);
+    getPostConversationsIdMessagesMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
 
-export const postApiV1ConversationsIdMessagesStream = (
+export const postConversationsIdMessagesStream = (
   id: string,
   sendMessageRequest: SendMessageRequest,
   options?: SecondParameter<typeof customInstance>,
@@ -1328,7 +1321,7 @@ export const postApiV1ConversationsIdMessagesStream = (
 ) => {
   return customInstance<void>(
     {
-      url: `Conversations/${id}/messages/stream`,
+      url: `/Conversations/${id}/messages/stream`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: sendMessageRequest,
@@ -1338,24 +1331,24 @@ export const postApiV1ConversationsIdMessagesStream = (
   );
 };
 
-export const getPostApiV1ConversationsIdMessagesStreamMutationOptions = <
+export const getPostConversationsIdMessagesStreamMutationOptions = <
   TError = unknown,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postApiV1ConversationsIdMessagesStream>>,
+    Awaited<ReturnType<typeof postConversationsIdMessagesStream>>,
     TError,
     { id: string; data: SendMessageRequest },
     TContext
   >;
   request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof postApiV1ConversationsIdMessagesStream>>,
+  Awaited<ReturnType<typeof postConversationsIdMessagesStream>>,
   TError,
   { id: string; data: SendMessageRequest },
   TContext
 > => {
-  const mutationKey = ["postApiV1ConversationsIdMessagesStream"];
+  const mutationKey = ["postConversationsIdMessagesStream"];
   const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       "mutationKey" in options.mutation &&
@@ -1365,31 +1358,30 @@ export const getPostApiV1ConversationsIdMessagesStreamMutationOptions = <
     : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postApiV1ConversationsIdMessagesStream>>,
+    Awaited<ReturnType<typeof postConversationsIdMessagesStream>>,
     { id: string; data: SendMessageRequest }
   > = (props) => {
     const { id, data } = props ?? {};
 
-    return postApiV1ConversationsIdMessagesStream(id, data, requestOptions);
+    return postConversationsIdMessagesStream(id, data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type PostApiV1ConversationsIdMessagesStreamMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postApiV1ConversationsIdMessagesStream>>
+export type PostConversationsIdMessagesStreamMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postConversationsIdMessagesStream>>
 >;
-export type PostApiV1ConversationsIdMessagesStreamMutationBody =
-  SendMessageRequest;
-export type PostApiV1ConversationsIdMessagesStreamMutationError = unknown;
+export type PostConversationsIdMessagesStreamMutationBody = SendMessageRequest;
+export type PostConversationsIdMessagesStreamMutationError = unknown;
 
-export const usePostApiV1ConversationsIdMessagesStream = <
+export const usePostConversationsIdMessagesStream = <
   TError = unknown,
   TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postApiV1ConversationsIdMessagesStream>>,
+      Awaited<ReturnType<typeof postConversationsIdMessagesStream>>,
       TError,
       { id: string; data: SendMessageRequest },
       TContext
@@ -1398,13 +1390,13 @@ export const usePostApiV1ConversationsIdMessagesStream = <
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof postApiV1ConversationsIdMessagesStream>>,
+  Awaited<ReturnType<typeof postConversationsIdMessagesStream>>,
   TError,
   { id: string; data: SendMessageRequest },
   TContext
 > => {
   const mutationOptions =
-    getPostApiV1ConversationsIdMessagesStreamMutationOptions(options);
+    getPostConversationsIdMessagesStreamMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };
@@ -1537,38 +1529,32 @@ export function useGetApiHealth<
   return query;
 }
 
-export const getApiV1ConversationsConversationIdMessages = (
+export const getConversationsConversationIdMessages = (
   conversationId: string,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
   return customInstance<void>(
-    {
-      url: `conversations/${conversationId}/messages`,
-      method: "GET",
-      signal,
-    },
+    { url: `/conversations/${conversationId}/messages`, method: "GET", signal },
     options,
   );
 };
 
-export const getGetApiV1ConversationsConversationIdMessagesQueryKey = (
+export const getGetConversationsConversationIdMessagesQueryKey = (
   conversationId?: string,
 ) => {
-  return [`conversations/${conversationId}/messages`] as const;
+  return [`/conversations/${conversationId}/messages`] as const;
 };
 
-export const getGetApiV1ConversationsConversationIdMessagesQueryOptions = <
-  TData = Awaited<
-    ReturnType<typeof getApiV1ConversationsConversationIdMessages>
-  >,
+export const getGetConversationsConversationIdMessagesQueryOptions = <
+  TData = Awaited<ReturnType<typeof getConversationsConversationIdMessages>>,
   TError = unknown,
 >(
   conversationId: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ConversationsConversationIdMessages>>,
+        Awaited<ReturnType<typeof getConversationsConversationIdMessages>>,
         TError,
         TData
       >
@@ -1580,12 +1566,12 @@ export const getGetApiV1ConversationsConversationIdMessagesQueryOptions = <
 
   const queryKey =
     queryOptions?.queryKey ??
-    getGetApiV1ConversationsConversationIdMessagesQueryKey(conversationId);
+    getGetConversationsConversationIdMessagesQueryKey(conversationId);
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getApiV1ConversationsConversationIdMessages>>
+    Awaited<ReturnType<typeof getConversationsConversationIdMessages>>
   > = ({ signal }) =>
-    getApiV1ConversationsConversationIdMessages(
+    getConversationsConversationIdMessages(
       conversationId,
       requestOptions,
       signal,
@@ -1597,42 +1583,35 @@ export const getGetApiV1ConversationsConversationIdMessagesQueryOptions = <
     enabled: !!conversationId,
     ...queryOptions,
   } as UseQueryOptions<
-    Awaited<ReturnType<typeof getApiV1ConversationsConversationIdMessages>>,
+    Awaited<ReturnType<typeof getConversationsConversationIdMessages>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type GetApiV1ConversationsConversationIdMessagesQueryResult =
-  NonNullable<
-    Awaited<ReturnType<typeof getApiV1ConversationsConversationIdMessages>>
-  >;
-export type GetApiV1ConversationsConversationIdMessagesQueryError = unknown;
+export type GetConversationsConversationIdMessagesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getConversationsConversationIdMessages>>
+>;
+export type GetConversationsConversationIdMessagesQueryError = unknown;
 
-export function useGetApiV1ConversationsConversationIdMessages<
-  TData = Awaited<
-    ReturnType<typeof getApiV1ConversationsConversationIdMessages>
-  >,
+export function useGetConversationsConversationIdMessages<
+  TData = Awaited<ReturnType<typeof getConversationsConversationIdMessages>>,
   TError = unknown,
 >(
   conversationId: string,
   options: {
     query: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ConversationsConversationIdMessages>>,
+        Awaited<ReturnType<typeof getConversationsConversationIdMessages>>,
         TError,
         TData
       >
     > &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<
-            ReturnType<typeof getApiV1ConversationsConversationIdMessages>
-          >,
+          Awaited<ReturnType<typeof getConversationsConversationIdMessages>>,
           TError,
-          Awaited<
-            ReturnType<typeof getApiV1ConversationsConversationIdMessages>
-          >
+          Awaited<ReturnType<typeof getConversationsConversationIdMessages>>
         >,
         "initialData"
       >;
@@ -1642,30 +1621,24 @@ export function useGetApiV1ConversationsConversationIdMessages<
 ): DefinedUseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetApiV1ConversationsConversationIdMessages<
-  TData = Awaited<
-    ReturnType<typeof getApiV1ConversationsConversationIdMessages>
-  >,
+export function useGetConversationsConversationIdMessages<
+  TData = Awaited<ReturnType<typeof getConversationsConversationIdMessages>>,
   TError = unknown,
 >(
   conversationId: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ConversationsConversationIdMessages>>,
+        Awaited<ReturnType<typeof getConversationsConversationIdMessages>>,
         TError,
         TData
       >
     > &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<
-            ReturnType<typeof getApiV1ConversationsConversationIdMessages>
-          >,
+          Awaited<ReturnType<typeof getConversationsConversationIdMessages>>,
           TError,
-          Awaited<
-            ReturnType<typeof getApiV1ConversationsConversationIdMessages>
-          >
+          Awaited<ReturnType<typeof getConversationsConversationIdMessages>>
         >,
         "initialData"
       >;
@@ -1675,17 +1648,15 @@ export function useGetApiV1ConversationsConversationIdMessages<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 };
-export function useGetApiV1ConversationsConversationIdMessages<
-  TData = Awaited<
-    ReturnType<typeof getApiV1ConversationsConversationIdMessages>
-  >,
+export function useGetConversationsConversationIdMessages<
+  TData = Awaited<ReturnType<typeof getConversationsConversationIdMessages>>,
   TError = unknown,
 >(
   conversationId: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ConversationsConversationIdMessages>>,
+        Awaited<ReturnType<typeof getConversationsConversationIdMessages>>,
         TError,
         TData
       >
@@ -1697,17 +1668,15 @@ export function useGetApiV1ConversationsConversationIdMessages<
   queryKey: DataTag<QueryKey, TData, TError>;
 };
 
-export function useGetApiV1ConversationsConversationIdMessages<
-  TData = Awaited<
-    ReturnType<typeof getApiV1ConversationsConversationIdMessages>
-  >,
+export function useGetConversationsConversationIdMessages<
+  TData = Awaited<ReturnType<typeof getConversationsConversationIdMessages>>,
   TError = unknown,
 >(
   conversationId: string,
   options?: {
     query?: Partial<
       UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ConversationsConversationIdMessages>>,
+        Awaited<ReturnType<typeof getConversationsConversationIdMessages>>,
         TError,
         TData
       >
@@ -1718,11 +1687,10 @@ export function useGetApiV1ConversationsConversationIdMessages<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions =
-    getGetApiV1ConversationsConversationIdMessagesQueryOptions(
-      conversationId,
-      options,
-    );
+  const queryOptions = getGetConversationsConversationIdMessagesQueryOptions(
+    conversationId,
+    options,
+  );
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
