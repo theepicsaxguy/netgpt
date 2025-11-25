@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using NetGPT.Application.DTOs.Auth;
 using NetGPT.Application.Services;
 using NetGPT.Infrastructure.Persistence.Entities;
@@ -19,45 +20,96 @@ namespace NetGPT.API.Controllers
         private readonly RefreshTokenRepository refreshRepo;
         private readonly IConfiguration configuration;
         private readonly Microsoft.Extensions.Logging.ILogger<AuthController> logger;
+        private readonly NetGPT.Application.Interfaces.IUserRepository userRepo;
+        private readonly NetGPT.Infrastructure.Services.IPasswordHasher hasher;
 
-        public AuthController(ITokenService tokenService, RefreshTokenRepository refreshRepo, IConfiguration configuration, Microsoft.Extensions.Logging.ILogger<AuthController> logger)
+        public AuthController(ITokenService tokenService, RefreshTokenRepository refreshRepo, IConfiguration configuration, Microsoft.Extensions.Logging.ILogger<AuthController> logger, NetGPT.Application.Interfaces.IUserRepository userRepo, NetGPT.Infrastructure.Services.IPasswordHasher hasher)
         {
             this.tokenService = tokenService;
             this.refreshRepo = refreshRepo;
             this.configuration = configuration;
             this.logger = logger;
+            this.userRepo = userRepo;
+            this.hasher = hasher;
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
-            // Deterministic user id derived from username (useful for testing).
-            Guid userId = DeriveDeterministicGuid(request.Username);
+            if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
+                return BadRequest();
 
-            // Build a minimal user object for TokenService to include name and roles claims
-            var userObj = new { Id = userId, Name = request.Username, Roles = Array.Empty<string>() };
+            var user = await userRepo.GetByUsernameAsync(request.Username);
+            if (user == null)
+            {
+                // user does not exist
+                return Unauthorized();
+            }
+
+            if (!hasher.Verify(request.Password, user.PasswordHash, user.PasswordSalt))
+            {
+                return Unauthorized();
+            }
+
+            // Build user object to include claims
+            string[] roles = string.IsNullOrEmpty(user.Roles) ? Array.Empty<string>() : user.Roles.Split(',');
+            object userObj = new { Id = user.Id, Name = user.Name ?? user.Username, Roles = roles };
 
             string accessToken = tokenService.CreateAccessToken(userObj);
-            var (refreshTokenPlain, refreshExpiresAt) = tokenService.CreateRefreshToken();
+            (string refreshTokenPlain, DateTime refreshExpiresAt) = tokenService.CreateRefreshToken();
             string refreshHash = tokenService.HashRefreshToken(refreshTokenPlain);
 
-            var refreshEntity = new RefreshToken
+            RefreshToken refreshEntity = new RefreshToken
             {
                 Id = Guid.NewGuid(),
-                UserId = userId,
+                UserId = user.Id,
                 TokenHash = refreshHash,
                 CreatedAt = DateTime.UtcNow,
                 ExpiresAt = refreshExpiresAt,
             };
 
             await refreshRepo.AddAsync(refreshEntity);
-            await refreshRepo.SaveChangesAsync();
+            _ = await refreshRepo.SaveChangesAsync();
 
-            logger.LogInformation("Login: issued refresh token for user {UserId}", userId);
+            logger.LogInformation("Login: issued refresh token for user {UserId}", user.Id);
 
             SetRefreshCookie(refreshTokenPlain, refreshExpiresAt);
 
             return Ok(new AccessTokenResponseDto { AccessToken = accessToken, ExpiresAt = DateTime.UtcNow.AddMinutes(15) });
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] NetGPT.Application.DTOs.Auth.RegisterRequestDto request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
+            {
+                return BadRequest();
+            }
+
+            var existing = await userRepo.GetByUsernameAsync(request.Username);
+            if (existing != null)
+            {
+                return Conflict();
+            }
+
+            hasher.CreateHash(request.Password, out byte[] hash, out byte[] salt);
+
+            NetGPT.Infrastructure.Persistence.Entities.User user = new NetGPT.Infrastructure.Persistence.Entities.User
+            {
+                Id = Guid.NewGuid(),
+                Username = request.Username,
+                PasswordHash = hash,
+                PasswordSalt = salt,
+                Name = request.Name,
+                CreatedAt = DateTime.UtcNow,
+            };
+
+            await userRepo.AddAsync(user);
+            _ = await refreshRepo.SaveChangesAsync();
+
+            logger.LogInformation("User registered: {Username}", user.Username);
+
+            return Ok();
         }
 
         [HttpPost("refresh")]
@@ -70,7 +122,7 @@ namespace NetGPT.API.Controllers
             }
 
             string hash = tokenService.HashRefreshToken(refreshTokenPlain);
-            var existing = await refreshRepo.GetByHashAsync(hash);
+            RefreshToken? existing = await refreshRepo.GetByHashAsync(hash);
             if (existing == null)
             {
                 logger.LogWarning("Refresh failed: token not found");
@@ -96,10 +148,10 @@ namespace NetGPT.API.Controllers
             }
 
             // Rotate
-            var (newRefreshPlain, newExpiresAt) = tokenService.CreateRefreshToken();
+            (string newRefreshPlain, DateTime newExpiresAt) = tokenService.CreateRefreshToken();
             string newHash = tokenService.HashRefreshToken(newRefreshPlain);
 
-            var newEntity = new RefreshToken
+            RefreshToken newEntity = new RefreshToken
             {
                 Id = Guid.NewGuid(),
                 UserId = existing.UserId,
@@ -110,9 +162,9 @@ namespace NetGPT.API.Controllers
 
             await refreshRepo.AddAsync(newEntity);
             await refreshRepo.RevokeAsync(existing, newEntity.Id);
-            await refreshRepo.SaveChangesAsync();
+            _ = await refreshRepo.SaveChangesAsync();
 
-            var userObj = new { Id = existing.UserId, Name = existing.UserId.ToString(), Roles = Array.Empty<string>() };
+            object userObj = new { Id = existing.UserId, Name = existing.UserId.ToString(), Roles = Array.Empty<string>() };
             string accessToken = tokenService.CreateAccessToken(userObj);
             SetRefreshCookie(newRefreshPlain, newExpiresAt);
 
@@ -125,12 +177,12 @@ namespace NetGPT.API.Controllers
             if (Request.Cookies.TryGetValue("refresh_token", out string? refreshTokenPlain) && !string.IsNullOrWhiteSpace(refreshTokenPlain))
             {
                 string hash = tokenService.HashRefreshToken(refreshTokenPlain);
-                var existing = await refreshRepo.GetByHashAsync(hash);
-                if (existing != null)
+                RefreshToken? existingLogout = await refreshRepo.GetByHashAsync(hash);
+                if (existingLogout != null)
                 {
-                    await refreshRepo.RevokeAsync(existing, null);
-                    await refreshRepo.SaveChangesAsync();
-                    logger.LogInformation("Logout: revoked refresh token for user {UserId}", existing.UserId);
+                    await refreshRepo.RevokeAsync(existingLogout, null);
+                    _ = await refreshRepo.SaveChangesAsync();
+                    logger.LogInformation("Logout: revoked refresh token for user {UserId}", existingLogout.UserId);
                 }
             }
 
@@ -140,12 +192,12 @@ namespace NetGPT.API.Controllers
 
         private void SetRefreshCookie(string token, DateTime expiresAt)
         {
-            var cookieOptions = new Microsoft.AspNetCore.Http.CookieOptions
+            Microsoft.AspNetCore.Http.CookieOptions cookieOptions = new Microsoft.AspNetCore.Http.CookieOptions
             {
                 HttpOnly = true,
                 Secure = !string.Equals(configuration["ASPNETCORE_ENVIRONMENT"], "Development", StringComparison.OrdinalIgnoreCase),
                 SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict,
-                Expires = expiresAt
+                Expires = expiresAt,
             };
             Response.Cookies.Append("refresh_token", token, cookieOptions);
         }
@@ -155,14 +207,6 @@ namespace NetGPT.API.Controllers
             Response.Cookies.Delete("refresh_token");
         }
 
-        private static Guid DeriveDeterministicGuid(string input)
-        {
-            // Use SHA-1 and take first 16 bytes for a deterministic GUID from username
-            using var sha = System.Security.Cryptography.SHA1.Create();
-            byte[] hash = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input ?? string.Empty));
-            byte[] guidBytes = new byte[16];
-            Array.Copy(hash, guidBytes, 16);
-            return new Guid(guidBytes);
-        }
+        // (Removed deterministic GUID helper — user registration now uses real users table)
     }
 }

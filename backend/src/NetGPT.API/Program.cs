@@ -97,6 +97,13 @@ builder.Services.AddSingleton<IToolRegistry, ToolRegistry>();
 builder.Services.AddScoped<IAgentFactory, AgentFactory>();
 builder.Services.AddScoped<IAgentOrchestrator, AgentOrchestrator>();
 
+// OpenAI client factory used by SDK-backed adapter
+builder.Services.AddSingleton<NetGPT.Infrastructure.Agents.IOpenAIClientFactory, NetGPT.Infrastructure.Agents.OpenAIClientFactory>();
+
+// Register SDK-backed OpenAI adapter and map the abstract base to it
+builder.Services.AddScoped<NetGPT.Infrastructure.Agents.OpenAIResponsesSdkAgentClient>();
+builder.Services.AddScoped<NetGPT.Infrastructure.Agents.AgentClientBase>(sp => sp.GetRequiredService<NetGPT.Infrastructure.Agents.OpenAIResponsesSdkAgentClient>());
+
 // Register SDK-backed OpenAIResponsesAgentClient using configured settings.
 builder.Services.AddScoped<NetGPT.Infrastructure.Agents.OpenAIResponsesAgentClient>();
 
