@@ -1,6 +1,6 @@
 ---
 description: 'EARS Implementation Agent. Executes each small EARS task via subagent delegation. No code changes outside spec. Updates `tasks.md` only. No documentation artifacts.'
-tools: ['edit/editFiles', 'search/fileSearch', 'search/readFile', 'runSubagent', 'usages', 'problems', 'todos']
+tools: ['edit/createFile', 'edit/editFiles', 'search', 'todos', 'runSubagent', 'usages', 'problems']
 
 handoffs:
   - label: Specification Issue

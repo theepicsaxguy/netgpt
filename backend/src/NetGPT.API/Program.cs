@@ -5,9 +5,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using NetGPT.API.Configuration;
 using NetGPT.API.Hubs;
 using NetGPT.Application.Handlers;
@@ -86,6 +85,9 @@ builder.Services.AddSingleton(sp =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfiguration();
+
+// Authorization placeholder: AdminOnly policy (implementation of roles/claims is out of scope)
+builder.Services.AddAuthorizationBuilder().AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
 
 // SignalR
 builder.Services.AddSignalR();

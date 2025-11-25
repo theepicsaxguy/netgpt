@@ -1,22 +1,29 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NetGPT.Application.Commands;
 using NetGPT.Application.DTOs;
+using NetGPT.Application.Interfaces;
 using NetGPT.Application.Queries;
+using NetGPT.Domain.Aggregates;
+using NetGPT.Domain.Interfaces;
 using NetGPT.Domain.Primitives;
 
 namespace NetGPT.API.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    public sealed class ConversationsController(IMediator mediator) : ControllerBase
+    public sealed class ConversationsController(IMediator mediator, IAgentOrchestrator orchestrator, IConversationRepository repository) : ControllerBase
     {
         private readonly IMediator mediator = mediator;
+        private readonly IAgentOrchestrator orchestrator = orchestrator;
+        private readonly IConversationRepository repository = repository;
 
         [HttpPost]
         public async Task<IActionResult> CreateConversation(
@@ -74,6 +81,38 @@ namespace NetGPT.API.Controllers
             return result.IsSuccess
                 ? Ok(result.Value)
                 : BadRequest(new { error = result.Error.Message });
+        }
+
+        [HttpPost("{id}/messages/stream")]
+        public async Task StreamMessage(
+            Guid id,
+            [FromBody] SendMessageRequest request,
+            CancellationToken cancellationToken)
+        {
+            Guid userId = GetCurrentUserId();
+
+            // Retrieve the domain conversation to ensure permissions and configuration
+            Conversation? conversation = await repository.GetByIdAsync(Domain.ValueObjects.ConversationId.From(id), cancellationToken);
+            if (conversation == null || conversation.UserId != Domain.ValueObjects.UserId.From(userId))
+            {
+                Response.StatusCode = StatusCodes.Status404NotFound;
+                await Response.WriteAsync(JsonSerializer.Serialize(new { error = "Conversation not found or unauthorized" }), cancellationToken);
+                return;
+            }
+
+            // Set NDJSON response headers
+            Response.ContentType = "application/x-ndjson";
+
+            // Execute orchestrator streaming and write each chunk as a JSON line
+            await foreach (StreamingChunkDto chunk in orchestrator.ExecuteStreamingAsync(
+                conversation,
+                request.Content,
+                cancellationToken))
+            {
+                string json = JsonSerializer.Serialize(chunk);
+                await Response.WriteAsync(json + "\n", cancellationToken);
+                await Response.Body.FlushAsync(cancellationToken);
+            }
         }
 
         [HttpDelete("{id}")]

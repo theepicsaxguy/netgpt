@@ -2,8 +2,9 @@
 
 using System;
 using MediatR;
+using NetGPT.Application.DTOs;
 
 namespace NetGPT.Application.Commands.Admin
 {
-    public sealed record RerunAgentThreadCommand(Guid ThreadId) : IRequest<Guid>;
+    public sealed record RerunAgentThreadCommand(Guid ThreadId) : IRequest<AgentThreadSummaryDto>;
 }

@@ -28,9 +28,7 @@ namespace NetGPT.API.Controllers.Admin
             GetAgentThreadsQuery query = new(page, pageSize);
             var result = await mediator.Send(query, cancellationToken);
 
-            return result.IsSuccess
-                ? Ok(result.Value)
-                : BadRequest(new { error = result.Error.Message });
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
@@ -38,17 +36,10 @@ namespace NetGPT.API.Controllers.Admin
             Guid id,
             CancellationToken cancellationToken = default)
         {
-            GetAgentThreadQuery query = new(id);
+            GetAgentThreadByIdQuery query = new(id);
             var result = await mediator.Send(query, cancellationToken);
 
-            if (result.IsSuccess)
-            {
-                return Ok(result.Value);
-            }
-
-            return result.Error is not null && result.Error.Code == "NotFound"
-                ? NotFound(new { error = result.Error.Message })
-                : BadRequest(new { error = result.Error?.Message });
+            return Ok(result);
         }
 
         [HttpPost("{id}/cancel")]
@@ -57,16 +48,9 @@ namespace NetGPT.API.Controllers.Admin
             CancellationToken cancellationToken = default)
         {
             CancelAgentThreadCommand command = new(id);
-            Result result = await mediator.Send(command, cancellationToken);
+            await mediator.Send(command, cancellationToken);
 
-            if (result.IsSuccess)
-            {
-                return NoContent();
-            }
-
-            return result.Error is not null && result.Error.Code == "NotFound"
-                ? NotFound(new { error = result.Error.Message })
-                : BadRequest(new { error = result.Error?.Message });
+            return NoContent();
         }
 
         [HttpPost("{id}/resume")]
@@ -75,16 +59,9 @@ namespace NetGPT.API.Controllers.Admin
             CancellationToken cancellationToken = default)
         {
             ResumeAgentThreadCommand command = new(id);
-            var result = await mediator.Send(command, cancellationToken);
+            await mediator.Send(command, cancellationToken);
 
-            if (result.IsSuccess)
-            {
-                return Ok(result.Value);
-            }
-
-            return result.Error is not null && result.Error.Code == "NotFound"
-                ? NotFound(new { error = result.Error.Message })
-                : BadRequest(new { error = result.Error?.Message });
+            return NoContent();
         }
 
         [HttpPost("{id}/rerun")]
@@ -95,14 +72,7 @@ namespace NetGPT.API.Controllers.Admin
             RerunAgentThreadCommand command = new(id);
             var result = await mediator.Send(command, cancellationToken);
 
-            if (result.IsSuccess)
-            {
-                return Ok(result.Value);
-            }
-
-            return result.Error is not null && result.Error.Code == "NotFound"
-                ? NotFound(new { error = result.Error.Message })
-                : BadRequest(new { error = result.Error?.Message });
+            return Ok(result);
         }
     }
 }

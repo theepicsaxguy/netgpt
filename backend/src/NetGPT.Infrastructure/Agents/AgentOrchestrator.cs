@@ -127,7 +127,7 @@ namespace NetGPT.Infrastructure.Agents
                     AgentRunResponse result = await agent.RunAsync(userMessage, cancellationToken: cancellationToken);
                     string agentResponse = result.Messages.LastOrDefault()?.Text ?? string.Empty;
                     string chunk = $"{agent.Name}: {agentResponse}\n\n";
-                    yield return new StreamingChunkDto(messageId, chunk, null, false);
+                    yield return new StreamingChunkDto(messageId, chunk, false, DateTime.UtcNow);
                 }
             }
             else
@@ -145,7 +145,7 @@ namespace NetGPT.Infrastructure.Agents
                 for (int i = 0; i < chunks.Length; i++)
                 {
                     string chunk = chunks[i] + (i < chunks.Length - 1 ? "." : string.Empty);
-                    yield return new StreamingChunkDto(messageId, chunk, null, i == chunks.Length - 1);
+                    yield return new StreamingChunkDto(messageId, chunk, i == chunks.Length - 1, DateTime.UtcNow);
                     await Task.Delay(50, cancellationToken); // Simulate streaming delay
                 }
             }
