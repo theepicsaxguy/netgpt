@@ -21,7 +21,16 @@ using NetGPT.Infrastructure.Agents;
 using NetGPT.Infrastructure.Configuration;
 using NetGPT.Infrastructure.Persistence;
 using NetGPT.Infrastructure.Persistence.Repositories;
+using NetGPT.Infrastructure.Services;
 using NetGPT.Infrastructure.Tools;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Net.Http.Headers;
+using Microsoft.Extensions.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -70,6 +79,16 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBeh
 builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+// Token service for JWT and refresh tokens
+builder.Services.AddScoped<ITokenService, TokenService>();
+// Refresh token repository
+builder.Services.AddScoped<NetGPT.Infrastructure.Persistence.Repositories.RefreshTokenRepository>();
+// User repository
+builder.Services.AddScoped<NetGPT.Application.Interfaces.IUserRepository, NetGPT.Infrastructure.Persistence.Repositories.UserRepository>();
+
+// Simple password hasher
+builder.Services.AddSingleton<NetGPT.Infrastructure.Services.IPasswordHasher, NetGPT.Infrastructure.Services.PasswordHasher>();
+
 // Mappers
 builder.Services.AddSingleton<IConversationMapper, ConversationMapper>();
 
@@ -77,6 +96,13 @@ builder.Services.AddSingleton<IConversationMapper, ConversationMapper>();
 builder.Services.AddSingleton<IToolRegistry, ToolRegistry>();
 builder.Services.AddScoped<IAgentFactory, AgentFactory>();
 builder.Services.AddScoped<IAgentOrchestrator, AgentOrchestrator>();
+
+// Register SDK-backed OpenAIResponsesAgentClient using configured settings.
+builder.Services.AddScoped<NetGPT.Infrastructure.Agents.OpenAIResponsesAgentClient>();
+
+// Map the abstract base so other components can depend on it.
+builder.Services.AddScoped<NetGPT.Infrastructure.Agents.AgentClientBase>(sp =>
+    sp.GetRequiredService<NetGPT.Infrastructure.Agents.OpenAIResponsesAgentClient>());
 
 // Register Tool Plugins at Runtime (Flexible DI)
 builder.Services.AddSingleton(sp =>
@@ -107,9 +133,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerConfiguration();
 
+// Authentication is configured below (single registration block)
+
 // Authorization placeholder: AdminOnly policy (implementation of roles/claims is out of scope)
 builder.Services.AddAuthorizationBuilder().AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-
 // SignalR
 builder.Services.AddSignalR();
 
@@ -169,6 +196,7 @@ if (!builder.Environment.IsDevelopment())
     _ = app.UseHttpsRedirection();
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

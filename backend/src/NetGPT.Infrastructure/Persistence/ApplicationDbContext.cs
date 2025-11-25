@@ -17,6 +17,9 @@ namespace NetGPT.Infrastructure.Persistence
 
         public DbSet<Message> Messages => Set<Message>();
 
+        public DbSet<NetGPT.Infrastructure.Persistence.Entities.RefreshToken> RefreshTokens => Set<NetGPT.Infrastructure.Persistence.Entities.RefreshToken>();
+        public DbSet<NetGPT.Infrastructure.Persistence.Entities.User> Users => Set<NetGPT.Infrastructure.Persistence.Entities.User>();
+
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             // Collect domain events from Conversation aggregates
@@ -40,6 +43,7 @@ namespace NetGPT.Infrastructure.Persistence
         {
             _ = modelBuilder.ApplyConfiguration(new ConversationConfiguration());
             _ = modelBuilder.ApplyConfiguration(new MessageConfiguration());
+            // RefreshToken uses default conventions - explicit configuration may be added later
 
             base.OnModelCreating(modelBuilder);
         }

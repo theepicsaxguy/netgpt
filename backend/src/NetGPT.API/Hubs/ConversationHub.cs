@@ -13,7 +13,9 @@ using NetGPT.Domain.ValueObjects;
 
 namespace NetGPT.API.Hubs
 {
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public sealed class ConversationHub(
+        [Microsoft.AspNetCore.Authorization.Authorize]
         IMediator mediator,
         IConversationRepository repository,
         IAgentOrchestrator orchestrator) : Hub
@@ -53,10 +55,33 @@ namespace NetGPT.API.Hubs
             }
         }
 
-        private static Guid GetCurrentUserId()
+        private Guid GetCurrentUserId()
         {
-            // TODO: Get from JWT claims
-            return Guid.Parse("00000000-0000-0000-0000-000000000001");
+            var user = Context.User;
+            if (user == null)
+            {
+                throw new InvalidOperationException("User context is not available");
+            }
+                var httpContext = Context.GetHttpContext();
+                if (httpContext?.User?.Identity?.IsAuthenticated == true)
+                {
+                    var sub = httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                        ?? httpContext.User.FindFirst("sub")?.Value;
+                    if (Guid.TryParse(sub, out Guid userId))
+                    {
+                        return userId;
+                    }
+                }
+
+                throw new InvalidOperationException("Unable to determine current user from claims");
+                          ?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(sub) || !Guid.TryParse(sub, out Guid id))
+            {
+                throw new InvalidOperationException("User id claim is missing or invalid");
+            }
+
+            return id;
         }
     }
 }

@@ -40,3 +40,4 @@ Thumbs.db
 appsettings.Development.json
 .github/specs/
 frontend/dist/
+backend/keys/
