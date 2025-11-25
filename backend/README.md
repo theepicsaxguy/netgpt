@@ -122,13 +122,13 @@ docker-compose up -d
 ## API Endpoints
 
 ### Conversations
-- `POST /api/v1/v1/conversations` - Create conversation
-- `GET /api/v1/v1/conversations` - List conversations (paginated)
-- `GET /api/v1/v1/conversations/{id}` - Get conversation
-- `DELETE /api/v1/v1/conversations/{id}` - Delete conversation
+- `POST /conversations` - Create conversation
+- `GET /conversations` - List conversations (paginated)
+- `GET /conversations/{id}` - Get conversation
+- `DELETE /conversations/{id}` - Delete conversation
 
 ### Messages
-- `POST /api/v1/v1/conversations/{id}/messages` - Send message (REST)
+- `POST /conversations/{id}/messages` - Send message (REST)
 - WebSocket: `/hubs/conversation` - Streaming messages
 
 ## Adding Custom Tools/Plugins

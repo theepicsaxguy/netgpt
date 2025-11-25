@@ -12,7 +12,7 @@ using NetGPT.Application.Interfaces;
 namespace NetGPT.API.Controllers
 {
     [ApiController]
-    [Route("api/v1/attachments")]
+    [Route("attachments")]
     [Authorize]
     public sealed class AttachmentsController(IConfiguration configuration, IFileStorageService fileStorageService) : ControllerBase
     {

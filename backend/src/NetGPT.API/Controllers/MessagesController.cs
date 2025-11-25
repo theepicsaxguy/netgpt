@@ -13,7 +13,7 @@ using NetGPT.Domain.Primitives;
 namespace NetGPT.API.Controllers
 {
     [ApiController]
-    [Route("api/v1/conversations/{conversationId}/messages")]
+    [Route("conversations/{conversationId}/messages")]
     public sealed class MessagesController(IMediator mediator) : ControllerBase
     {
         private readonly IMediator mediator = mediator;

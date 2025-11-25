@@ -13,7 +13,7 @@ using NetGPT.Domain.Primitives;
 namespace NetGPT.API.Controllers.Admin
 {
     [ApiController]
-    [Route("api/v1/admin/agent-threads")]
+    [Route("admin/agent-threads")]
     [Authorize(Policy = "AdminOnly")]
     public sealed class AgentThreadsController(IMediator mediator) : ControllerBase
     {

@@ -18,7 +18,7 @@ using NetGPT.Domain.Primitives;
 namespace NetGPT.API.Controllers
 {
     [ApiController]
-    [Route("api/v1/[controller]")]
+    [Route("[controller]")]
     public sealed class ConversationsController(IMediator mediator, IAgentOrchestrator orchestrator, IConversationRepository repository) : ControllerBase
     {
         private readonly IMediator mediator = mediator;

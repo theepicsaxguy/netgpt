@@ -100,7 +100,7 @@ export const getApiV1AdminAgentThreads = (
   signal?: AbortSignal,
 ) => {
   return customInstance<void>(
-    { url: `/api/v1/admin/agent-threads`, method: "GET", params, signal },
+    { url: `admin/agent-threads`, method: "GET", params, signal },
     options,
   );
 };
@@ -108,7 +108,7 @@ export const getApiV1AdminAgentThreads = (
 export const getGetApiV1AdminAgentThreadsQueryKey = (
   params?: GetApiV1AdminAgentThreadsParams,
 ) => {
-  return [`/api/v1/admin/agent-threads`, ...(params ? [params] : [])] as const;
+  return [`admin/agent-threads`, ...(params ? [params] : [])] as const;
 };
 
 export const getGetApiV1AdminAgentThreadsQueryOptions = <
@@ -262,13 +262,13 @@ export const getApiV1AdminAgentThreadsId = (
   signal?: AbortSignal,
 ) => {
   return customInstance<void>(
-    { url: `/api/v1/admin/agent-threads/${id}`, method: "GET", signal },
+    { url: `admin/agent-threads/${id}`, method: "GET", signal },
     options,
   );
 };
 
 export const getGetApiV1AdminAgentThreadsIdQueryKey = (id?: string) => {
-  return [`/api/v1/admin/agent-threads/${id}`] as const;
+  return [`admin/agent-threads/${id}`] as const;
 };
 
 export const getGetApiV1AdminAgentThreadsIdQueryOptions = <
@@ -424,7 +424,7 @@ export const postApiV1AdminAgentThreadsIdCancel = (
   signal?: AbortSignal,
 ) => {
   return customInstance<void>(
-    { url: `/api/v1/admin/agent-threads/${id}/cancel`, method: "POST", signal },
+    { url: `admin/agent-threads/${id}/cancel`, method: "POST", signal },
     options,
   );
 };
@@ -505,7 +505,7 @@ export const postApiV1AdminAgentThreadsIdResume = (
   signal?: AbortSignal,
 ) => {
   return customInstance<void>(
-    { url: `/api/v1/admin/agent-threads/${id}/resume`, method: "POST", signal },
+    { url: `admin/agent-threads/${id}/resume`, method: "POST", signal },
     options,
   );
 };
@@ -586,7 +586,7 @@ export const postApiV1AdminAgentThreadsIdRerun = (
   signal?: AbortSignal,
 ) => {
   return customInstance<void>(
-    { url: `/api/v1/admin/agent-threads/${id}/rerun`, method: "POST", signal },
+    { url: `admin/agent-threads/${id}/rerun`, method: "POST", signal },
     options,
   );
 };
@@ -673,7 +673,7 @@ export const postApiV1Attachments = (
 
   return customInstance<void>(
     {
-      url: `/api/v1/attachments`,
+      url: `attachments`,
       method: "POST",
       headers: { "Content-Type": "multipart/form-data" },
       data: formData,
@@ -756,7 +756,7 @@ export const postApiV1Conversations = (
 ) => {
   return customInstance<void>(
     {
-      url: `/api/v1/Conversations`,
+      url: `Conversations`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: createConversationRequest,
@@ -838,7 +838,7 @@ export const getApiV1Conversations = (
   signal?: AbortSignal,
 ) => {
   return customInstance<void>(
-    { url: `/api/v1/Conversations`, method: "GET", params, signal },
+    { url: `Conversations`, method: "GET", params, signal },
     options,
   );
 };
@@ -846,7 +846,7 @@ export const getApiV1Conversations = (
 export const getGetApiV1ConversationsQueryKey = (
   params?: GetApiV1ConversationsParams,
 ) => {
-  return [`/api/v1/Conversations`, ...(params ? [params] : [])] as const;
+  return [`Conversations`, ...(params ? [params] : [])] as const;
 };
 
 export const getGetApiV1ConversationsQueryOptions = <
@@ -997,13 +997,13 @@ export const getApiV1ConversationsId = (
   signal?: AbortSignal,
 ) => {
   return customInstance<void>(
-    { url: `/api/v1/Conversations/${id}`, method: "GET", signal },
+    { url: `Conversations/${id}`, method: "GET", signal },
     options,
   );
 };
 
 export const getGetApiV1ConversationsIdQueryKey = (id?: string) => {
-  return [`/api/v1/Conversations/${id}`] as const;
+  return [`Conversations/${id}`] as const;
 };
 
 export const getGetApiV1ConversationsIdQueryOptions = <
@@ -1158,7 +1158,7 @@ export const deleteApiV1ConversationsId = (
   options?: SecondParameter<typeof customInstance>,
 ) => {
   return customInstance<void>(
-    { url: `/api/v1/Conversations/${id}`, method: "DELETE" },
+    { url: `Conversations/${id}`, method: "DELETE" },
     options,
   );
 };
@@ -1240,7 +1240,7 @@ export const postApiV1ConversationsIdMessages = (
 ) => {
   return customInstance<void>(
     {
-      url: `/api/v1/Conversations/${id}/messages`,
+      url: `Conversations/${id}/messages`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: sendMessageRequest,
@@ -1328,7 +1328,7 @@ export const postApiV1ConversationsIdMessagesStream = (
 ) => {
   return customInstance<void>(
     {
-      url: `/api/v1/Conversations/${id}/messages/stream`,
+      url: `Conversations/${id}/messages/stream`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: sendMessageRequest,
@@ -1544,7 +1544,7 @@ export const getApiV1ConversationsConversationIdMessages = (
 ) => {
   return customInstance<void>(
     {
-      url: `/api/v1/conversations/${conversationId}/messages`,
+      url: `conversations/${conversationId}/messages`,
       method: "GET",
       signal,
     },
@@ -1555,7 +1555,7 @@ export const getApiV1ConversationsConversationIdMessages = (
 export const getGetApiV1ConversationsConversationIdMessagesQueryKey = (
   conversationId?: string,
 ) => {
-  return [`/api/v1/conversations/${conversationId}/messages`] as const;
+  return [`conversations/${conversationId}/messages`] as const;
 };
 
 export const getGetApiV1ConversationsConversationIdMessagesQueryOptions = <

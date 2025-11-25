@@ -143,7 +143,7 @@ Update these before running the application.
 
 ## API Endpoints
 
-All endpoints under `/api/v1/v1`:
+All endpoints under ``:
 - `POST /conversations` - Create new conversation
 - `GET /conversations` - List conversations (paginated)
 - `GET /conversations/{id}` - Get single conversation

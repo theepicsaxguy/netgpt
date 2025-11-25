@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { usePostApiV1ConversationsIdMessages } from '../api/v1/generated/api';
+import { usePostApiV1ConversationsIdMessages } from '../openapi/generated/api';
 import { useQueryClient } from '@tanstack/react-query';
 import { Paperclip, Loader2, ArrowUp } from 'lucide-react';
 
@@ -16,7 +16,7 @@ const InputArea: React.FC<InputAreaProps> = ({ conversationId }) => {
       onSuccess: () => {
         setContent('');
         queryClient.invalidateQueries({ 
-          queryKey: [`/api/v1/v1/conversations/${conversationId}/messages`] 
+          queryKey: [`/conversations/${conversationId}/messages`] 
         });
       },
       onError: (err: unknown) => {
