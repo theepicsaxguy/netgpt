@@ -20,19 +20,27 @@ namespace NetGPT.Application.Behaviors
             RequestHandlerDelegate<TResponse> next,
             CancellationToken cancellationToken)
         {
+            // If there are no validators, continue to the next handler.
             if (!validators.Any())
             {
-                return await next(cancellationToken);
+                return await next();
             }
 
             ValidationContext<TRequest> context = new(request);
 
-            List<ValidationFailure> failures = [.. validators
+            // Run validators synchronously (FluentValidation sync API) and collect failures.
+            List<ValidationFailure> failures = validators
                 .Select(v => v.Validate(context))
                 .SelectMany(result => result.Errors)
-                .Where(f => f != null)];
+                .Where(f => f != null)
+                .ToList();
 
-            return failures.Count != 0 ? throw new ValidationException(failures) : await next(cancellationToken);
+            if (failures.Count != 0)
+            {
+                throw new ValidationException(failures);
+            }
+
+            return await next();
         }
     }
 }
