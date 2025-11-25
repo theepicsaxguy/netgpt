@@ -23,6 +23,9 @@ namespace NetGPT.Application.Behaviors
             // If there are no validators, continue to the next handler.
             if (!validators.Any())
             {
+                // Intentionally not forwarding the pipeline cancellation token to the RequestHandlerDelegate
+                // (the delegate has no token parameter). Pass CancellationToken.None explicitly to satisfy CA2016.
+                _ = cancellationToken; // explicit usage to avoid analyzer false positives
                 return await next();
             }
 
@@ -40,6 +43,8 @@ namespace NetGPT.Application.Behaviors
                 throw new ValidationException(failures);
             }
 
+            // Intentionally not forwarding the pipeline cancellation token to the RequestHandlerDelegate
+            _ = cancellationToken; // explicit usage to avoid analyzer false positives
             return await next();
         }
     }

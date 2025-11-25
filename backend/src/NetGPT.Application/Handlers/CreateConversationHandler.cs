@@ -16,21 +16,26 @@ namespace NetGPT.Application.Handlers
 {
     public class CreateConversationHandler(
         IConversationRepository repository,
-        IUnitOfWork unitOfWork) : IRequestHandler<CreateConversationCommand, Result<ConversationResponse>>
+        IUnitOfWork unitOfWork,
+        Microsoft.Extensions.Logging.ILogger<CreateConversationHandler> logger) : IRequestHandler<CreateConversationCommand, Result<ConversationResponse>>
     {
         private readonly IConversationRepository repository = repository;
         private readonly IUnitOfWork unitOfWork = unitOfWork;
+        private readonly Microsoft.Extensions.Logging.ILogger<CreateConversationHandler> logger = logger;
 
         public async Task<Result<ConversationResponse>> Handle(
             CreateConversationCommand request,
             CancellationToken cancellationToken)
         {
+            logger.LogDebug("CreateConversationHandler.Handle start for user {UserId}", request.UserId);
             UserId userId = UserId.From(request.UserId);
             AgentConfiguration agentConfig = MapToAgentConfiguration(request.Configuration);
             Conversation conversation = Conversation.Create(userId, request.Title, agentConfig);
 
             _ = await repository.AddAsync(conversation, cancellationToken);
+            logger.LogDebug("Conversation added to repository, saving changes...");
             _ = await unitOfWork.SaveChangesAsync(cancellationToken);
+            logger.LogDebug("SaveChangesAsync completed for conversation {ConversationId}", conversation.Id.Value);
 
             ConversationResponse response = new(
                 conversation.Id.Value,
