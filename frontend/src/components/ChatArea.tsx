@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { useGetApiV1ConversationsConversationIdMessages, useGetApiV1ConversationsId } from '../api/generated/api';
+import { useGetApiV1ConversationsConversationIdMessages, useGetApiV1ConversationsId } from '../api/v1/generated/api';
 import { MessageDto, ConversationDto, castTo } from '../types';
 import InputArea from './InputArea';
 import MessageBubble from './MessageBubble';

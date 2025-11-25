@@ -52,7 +52,7 @@ namespace NetGPT.Infrastructure.Services
 
         public string GetPublicUrl(string storageKey)
         {
-            return $"/api/v1/files/{storageKey}";
+            return $"/api/v1/v1/files/{storageKey}";
         }
     }
 }

@@ -7,14 +7,14 @@ module.exports = defineConfig({
     input: `${appApiUrl}/swagger/v1/swagger.json`,
     output: {
       mode: 'single',
-      target: './src/api/generated/api.ts',
+      target: './src/api/v1/generated/api.ts',
       client: 'react-query',
       mock: false,
       prettier: true,
       override: {
         useDates: true,
         mutator: {
-          path: './src/api/client.ts',
+          path: './src/api/v1/client.ts',
           name: 'customInstance',
         },
         operations: {

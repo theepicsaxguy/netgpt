@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGetApiV1Conversations, useDeleteApiV1ConversationsId, useGetApiHealth } from '../api/generated/api';
+import { useGetApiV1Conversations, useDeleteApiV1ConversationsId, useGetApiHealth } from '../api/v1/generated/api';
 import { ConversationDto, PagedResult, castTo } from '../types';
 import { Plus, MessageSquare, Trash2, Loader2, RefreshCw, Terminal, Activity, Search } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -24,7 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedId, onSelect, onNewChat }) =>
   const { mutate: deleteConversation } = useDeleteApiV1ConversationsId({
     mutation: {
       onSuccess: (_: unknown, variables: { id: string }) => {
-        queryClient.invalidateQueries({ queryKey: ['/api/v1/Conversations'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/v1/v1/Conversations'] });
         if (selectedId === variables.id) {
           onSelect('');
         }

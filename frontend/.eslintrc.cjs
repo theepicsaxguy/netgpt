@@ -44,7 +44,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['src/api/generated/**'],
+      files: ['src/api/v1/generated/**'],
       rules: {
         'max-lines': 'off',
         'local/single-type-per-file': 'off',

@@ -1,4 +1,4 @@
-import { AgentConfigurationDto } from './api/generated/api';
+import { AgentConfigurationDto } from './api/v1/generated/api';
 
 /**
  * The generated API client uses `void` for return types due to missing response schemas.

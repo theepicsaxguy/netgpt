@@ -130,7 +130,7 @@ AgentOrchestrator
 ### API Layer (Interface)
 
 **REST API:**
-- Versioned endpoints (`/api/v1/...`)
+- Versioned endpoints (`/api/v1/v1/...`)
 - Standard HTTP verbs
 - Result<T> → HTTP status mapping
 

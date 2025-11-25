@@ -91,7 +91,7 @@ export const postApiV1Conversations = (
   signal?: AbortSignal,
 ) => {
   return customInstance<void>({
-    url: `/api/v1/Conversations`,
+    url: `/api/v1/v1/Conversations`,
     method: "POST",
     headers: { "Content-Type": "application/json" },
     data: createConversationRequest,
@@ -168,7 +168,7 @@ export const getApiV1Conversations = (
   signal?: AbortSignal,
 ) => {
   return customInstance<void>({
-    url: `/api/v1/Conversations`,
+    url: `/api/v1/v1/Conversations`,
     method: "GET",
     params,
     signal,
@@ -178,7 +178,7 @@ export const getApiV1Conversations = (
 export const getGetApiV1ConversationsQueryKey = (
   params?: GetApiV1ConversationsParams,
 ) => {
-  return [`/api/v1/Conversations`, ...(params ? [params] : [])] as const;
+  return [`/api/v1/v1/Conversations`, ...(params ? [params] : [])] as const;
 };
 
 export const getGetApiV1ConversationsQueryOptions = <
@@ -320,14 +320,14 @@ export function useGetApiV1Conversations<
 
 export const getApiV1ConversationsId = (id: string, signal?: AbortSignal) => {
   return customInstance<void>({
-    url: `/api/v1/Conversations/${id}`,
+    url: `/api/v1/v1/Conversations/${id}`,
     method: "GET",
     signal,
   });
 };
 
 export const getGetApiV1ConversationsIdQueryKey = (id?: string) => {
-  return [`/api/v1/Conversations/${id}`] as const;
+  return [`/api/v1/v1/Conversations/${id}`] as const;
 };
 
 export const getGetApiV1ConversationsIdQueryOptions = <
@@ -474,7 +474,7 @@ export function useGetApiV1ConversationsId<
 
 export const deleteApiV1ConversationsId = (id: string) => {
   return customInstance<void>({
-    url: `/api/v1/Conversations/${id}`,
+    url: `/api/v1/v1/Conversations/${id}`,
     method: "DELETE",
   });
 };
@@ -552,7 +552,7 @@ export const postApiV1ConversationsIdMessages = (
   signal?: AbortSignal,
 ) => {
   return customInstance<void>({
-    url: `/api/v1/Conversations/${id}/messages`,
+    url: `/api/v1/v1/Conversations/${id}/messages`,
     method: "POST",
     headers: { "Content-Type": "application/json" },
     data: sendMessageRequest,
@@ -629,11 +629,11 @@ export const usePostApiV1ConversationsIdMessages = <
 };
 
 export const getApiHealth = (signal?: AbortSignal) => {
-  return customInstance<void>({ url: `/api/Health`, method: "GET", signal });
+  return customInstance<void>({ url: `/api/v1/Health`, method: "GET", signal });
 };
 
 export const getGetApiHealthQueryKey = () => {
-  return [`/api/Health`] as const;
+  return [`/api/v1/Health`] as const;
 };
 
 export const getGetApiHealthQueryOptions = <
@@ -750,7 +750,7 @@ export const getApiV1ConversationsConversationIdMessages = (
   signal?: AbortSignal,
 ) => {
   return customInstance<void>({
-    url: `/api/v1/conversations/${conversationId}/messages`,
+    url: `/api/v1/v1/conversations/${conversationId}/messages`,
     method: "GET",
     signal,
   });
@@ -759,7 +759,7 @@ export const getApiV1ConversationsConversationIdMessages = (
 export const getGetApiV1ConversationsConversationIdMessagesQueryKey = (
   conversationId?: string,
 ) => {
-  return [`/api/v1/conversations/${conversationId}/messages`] as const;
+  return [`/api/v1/v1/conversations/${conversationId}/messages`] as const;
 };
 
 export const getGetApiV1ConversationsConversationIdMessagesQueryOptions = <
