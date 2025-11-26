@@ -8,5 +8,6 @@ namespace NetGPT.Application.DTOs
         Guid ChunkId,
         string Text,
         bool IsFinal,
-        DateTime CreatedAt);
+        DateTime CreatedAt,
+        ChunkMetadataDto? Metadata = null);
 }
