@@ -1,3 +1,5 @@
+// Copyright (c) 2025 NetGPT. All rights reserved.
+
 using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -9,7 +11,7 @@ namespace NetGPT.Infrastructure.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "Definitions",
                 columns: table => new
                 {
@@ -20,17 +22,17 @@ namespace NetGPT.Infrastructure.Migrations
                     ContentYaml = table.Column<string>(type: "text", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     CreatedAtUtc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    ContentHash = table.Column<string>(type: "text", nullable: true)
+                    ContentHash = table.Column<string>(type: "text", nullable: true),
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Definitions", x => x.Id);
+                    _ = table.PrimaryKey("PK_Definitions", x => x.Id);
                 });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "Definitions");
         }
     }

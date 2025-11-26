@@ -1,13 +1,17 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NetGPT.Application.DTOs;
 using NetGPT.Application.Interfaces;
 using NetGPT.Domain.Entities;
+using NetGPT.Domain.Primitives;
+using NetGPT.Infrastructure.Declarative;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -16,7 +20,11 @@ namespace NetGPT.API.Controllers
 {
     [ApiController]
     [Route("api/declarative/definitions")]
-    public sealed class DeclarativeDefinitionsController(
+
+    /// <summary>
+    /// Controller for managing declarative definitions.
+    /// </summary>
+    public sealed partial class DeclarativeDefinitionsController(
         IDefinitionRepository repo,
         IDeclarativeLoader loader,
         IAgentOrchestrator orchestrator,
@@ -26,10 +34,6 @@ namespace NetGPT.API.Controllers
         private readonly IDeclarativeLoader loader = loader;
         private readonly IAgentOrchestrator orchestrator = orchestrator;
         private readonly ILogger<DeclarativeDefinitionsController> logger = logger;
-
-        public record CreateDefinitionRequest(string Name, string Kind, string ContentYaml);
-        public record DefinitionDto(Guid Id, string Name, string Kind, int Version, string CreatedBy, DateTime CreatedAtUtc);
-        public record ExecuteRequest(string? Input);
 
         [HttpPost]
         [Authorize(Policy = "AdminOnly")]
@@ -65,7 +69,7 @@ namespace NetGPT.API.Controllers
 
             try
             {
-                await loader.LoadAsync(def);
+                _ = await loader.LoadAsync(def);
             }
             catch (InvalidOperationException ex)
             {
@@ -74,7 +78,7 @@ namespace NetGPT.API.Controllers
 
             try
             {
-                var created = await repo.CreateAsync(def);
+                DefinitionEntity created = await repo.CreateAsync(def);
                 DefinitionDto dto = new(created.Id, created.Name, created.Kind, created.Version, created.CreatedBy, created.CreatedAtUtc);
                 return CreatedAtAction(nameof(Get), new { id = created.Id }, dto);
             }
@@ -85,7 +89,7 @@ namespace NetGPT.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to create declarative definition {Name}", request.Name);
+                LogCreateError(logger, ex, request.Name);
                 throw;
             }
         }
@@ -93,15 +97,15 @@ namespace NetGPT.API.Controllers
         [HttpGet]
         public async Task<IActionResult> List([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
         {
-            var items = await repo.ListLatestAsync(page, pageSize);
-            var dtos = items.Select(d => new DefinitionDto(d.Id, d.Name, d.Kind, d.Version, d.CreatedBy, d.CreatedAtUtc));
+            IEnumerable<DefinitionEntity> items = await repo.ListLatestAsync(page, pageSize);
+            IEnumerable<DefinitionDto> dtos = items.Select(d => new DefinitionDto(d.Id, d.Name, d.Kind, d.Version, d.CreatedBy, d.CreatedAtUtc));
             return Ok(dtos);
         }
 
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get([FromRoute] Guid id)
         {
-            var def = await repo.GetByIdAsync(id);
+            DefinitionEntity? def = await repo.GetByIdAsync(id);
             if (def == null)
             {
                 return NotFound();
@@ -115,7 +119,7 @@ namespace NetGPT.API.Controllers
         [Authorize]
         public async Task<IActionResult> Execute([FromRoute] Guid id, [FromBody] ExecuteRequest? request)
         {
-            var def = await repo.GetByIdAsync(id);
+            DefinitionEntity? def = await repo.GetByIdAsync(id);
             if (def == null)
             {
                 return NotFound();
@@ -125,35 +129,54 @@ namespace NetGPT.API.Controllers
             DateTime startTime = DateTime.UtcNow;
             try
             {
-                var exec = await loader.LoadAsync(def);
+                IAgentExecutable exec = await loader.LoadAsync(def);
 
-                var result = await orchestrator.ExecuteDefinitionAsync(def, exec, request?.Input ?? string.Empty);
+                Result<AgentResponse> result = await orchestrator.ExecuteDefinitionAsync(def, exec, request?.Input ?? string.Empty);
 
                 DateTime endTime = DateTime.UtcNow;
 
                 if (result.IsSuccess)
                 {
-                    logger.LogInformation("Declarative execution completed: definitionId={DefinitionId} version={Version} executionId={ExecutionId} start={Start} end={End} outcome={Outcome}", def.Id, def.Version, executionId, startTime, endTime, "success");
+                    LogExecutionCompleted(logger, def.Id, def.Version, executionId, startTime, endTime, "success");
                     return Ok(new { definitionId = def.Id, version = def.Version, executionId, startTime, endTime, result = result.Value });
                 }
                 else
                 {
-                    logger.LogWarning("Declarative execution failed: definitionId={DefinitionId} version={Version} executionId={ExecutionId} start={Start} end={End} outcome=failure", def.Id, def.Version, executionId, startTime, endTime);
-                    return UnprocessableEntity(new { definitionId = def.Id, executionId, error = result.Errors.Select(e => e.Message) });
+                    LogExecutionFailed(logger, def.Id, def.Version, executionId, startTime, endTime);
+                    return UnprocessableEntity(new { definitionId = def.Id, executionId, error = result.Error.Message });
                 }
             }
             catch (InvalidOperationException inv)
             {
-                DateTime endTime = DateTime.UtcNow;
-                logger.LogWarning(inv, "Declarative execution failed for {DefinitionId} v{Version} executionId={ExecutionId}", def.Id, def.Version, executionId);
+                LogExecutionFailedInvalidOp(logger, inv, def.Id, def.Version, executionId);
                 return UnprocessableEntity(new { definitionId = def.Id, executionId, error = inv.Message });
             }
             catch (Exception ex)
             {
-                DateTime endTime = DateTime.UtcNow;
-                logger.LogError(ex, "Declarative execution error for {DefinitionId} v{Version} executionId={ExecutionId}", def.Id, def.Version, executionId);
+                LogExecutionError(logger, ex, def.Id, def.Version, executionId);
                 return StatusCode(500, new { definitionId = def.Id, executionId, error = ex.Message });
             }
         }
+
+        [LoggerMessage(EventId = 1, Level = LogLevel.Error, Message = "Failed to create declarative definition {Name}")]
+        private static partial void LogCreateError(ILogger logger, Exception? ex, string name);
+
+        [LoggerMessage(EventId = 2, Level = LogLevel.Information, Message = "Declarative execution completed: definitionId={DefinitionId} version={Version} executionId={ExecutionId} start={Start} end={End} outcome={Outcome}")]
+        private static partial void LogExecutionCompleted(ILogger logger, Guid definitionId, int version, Guid executionId, DateTime start, DateTime end, string outcome);
+
+        [LoggerMessage(EventId = 3, Level = LogLevel.Warning, Message = "Declarative execution failed: definitionId={DefinitionId} version={Version} executionId={ExecutionId} start={Start} end={End} outcome=failure")]
+        private static partial void LogExecutionFailed(ILogger logger, Guid definitionId, int version, Guid executionId, DateTime start, DateTime end);
+
+        [LoggerMessage(EventId = 4, Level = LogLevel.Warning, Message = "Declarative execution failed for {DefinitionId} v{Version} executionId={ExecutionId}")]
+        private static partial void LogExecutionFailedInvalidOp(ILogger logger, Exception? ex, Guid definitionId, int version, Guid executionId);
+
+        [LoggerMessage(EventId = 5, Level = LogLevel.Error, Message = "Declarative execution error for {DefinitionId} v{Version} executionId={ExecutionId}")]
+        private static partial void LogExecutionError(ILogger logger, Exception? ex, Guid definitionId, int version, Guid executionId);
+
+        public record CreateDefinitionRequest(string Name, string Kind, string ContentYaml);
+
+        public record DefinitionDto(Guid Id, string Name, string Kind, int Version, string CreatedBy, DateTime CreatedAtUtc);
+
+        public record ExecuteRequest(string? Input);
     }
 }

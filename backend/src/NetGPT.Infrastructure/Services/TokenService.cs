@@ -81,11 +81,11 @@ namespace NetGPT.Infrastructure.Services
             DateTime now = DateTime.UtcNow;
             TimeSpan tokenLifetime = lifetime ?? TimeSpan.FromMinutes(15);
 
-            List<Claim> claimsList = new()
-            {
+            List<Claim> claimsList =
+            [
                 new Claim(JwtRegisteredClaimNames.Sub, sub ?? string.Empty),
                 new Claim(JwtRegisteredClaimNames.Iat, ((DateTimeOffset)now).ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Integer64),
-            };
+            ];
 
             // Optionally include name and roles if provided on the user object
             if (user != null)

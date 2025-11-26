@@ -20,7 +20,7 @@ namespace NetGPT.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public sealed class ConversationsController(IMediator mediator, IAgentOrchestrator orchestrator, IConversationRepository repository, ILogger<ConversationsController> logger) : ControllerBase
+    public sealed partial class ConversationsController(IMediator mediator, IAgentOrchestrator orchestrator, IConversationRepository repository, ILogger<ConversationsController> logger) : ControllerBase
     {
         private readonly IMediator mediator = mediator;
         private readonly IAgentOrchestrator orchestrator = orchestrator;
@@ -34,7 +34,7 @@ namespace NetGPT.API.Controllers
         {
             Guid userId = GetCurrentUserId();
             CreateConversationCommand command = new(userId, request.Title, request.Configuration);
-            logger.LogInformation("CreateConversation received for user {UserId}", userId);
+            LogCreateConversationReceived(logger, userId);
             Result<ConversationResponse> result;
             try
             {
@@ -42,11 +42,11 @@ namespace NetGPT.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Exception while handling CreateConversation for user {UserId}", userId);
+                LogCreateConversationException(logger, ex, userId);
                 throw;
             }
 
-            logger.LogInformation("CreateConversation handler returned for user {UserId} with success={IsSuccess}", userId, result.IsSuccess);
+            LogCreateConversationReturned(logger, userId, result.IsSuccess);
 
             return result.IsSuccess
                 ? Ok(result.Value)
@@ -148,5 +148,14 @@ namespace NetGPT.API.Controllers
             // TODO: Get from JWT claims
             return Guid.Parse("00000000-0000-0000-0000-000000000001");
         }
+
+        [LoggerMessage(EventId = 1, Level = LogLevel.Information, Message = "CreateConversation received for user {UserId}")]
+        private static partial void LogCreateConversationReceived(ILogger logger, Guid userId);
+
+        [LoggerMessage(EventId = 2, Level = LogLevel.Error, Message = "Exception while handling CreateConversation for user {UserId}")]
+        private static partial void LogCreateConversationException(ILogger logger, Exception ex, Guid userId);
+
+        [LoggerMessage(EventId = 3, Level = LogLevel.Information, Message = "CreateConversation handler returned for user {UserId} with success={IsSuccess}")]
+        private static partial void LogCreateConversationReturned(ILogger logger, Guid userId, bool isSuccess);
     }
 }

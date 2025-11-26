@@ -31,9 +31,6 @@ namespace NetGPT.Infrastructure.Declarative
         private readonly IOpenAIClientFactory? chatClientFactory = chatClientFactory;
         private readonly DeclarativeCache cache = cache;
 
-        [LoggerMessage(EventId = 1, Level = LogLevel.Error, Message = "Failed to parse declarative definition YAML for {Name}")]
-        private static partial void LogParseError(ILogger logger, Exception? ex, string name);
-
         public async Task<IAgentExecutable> LoadAsync(DefinitionEntity definition, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(definition);
@@ -121,5 +118,8 @@ namespace NetGPT.Infrastructure.Declarative
 
             return wrapper;
         }
+
+        [LoggerMessage(EventId = 1, Level = LogLevel.Error, Message = "Failed to parse declarative definition YAML for {Name}")]
+        private static partial void LogParseError(ILogger logger, Exception? ex, string name);
     }
 }

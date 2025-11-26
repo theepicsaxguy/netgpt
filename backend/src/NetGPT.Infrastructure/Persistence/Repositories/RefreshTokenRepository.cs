@@ -15,7 +15,7 @@ namespace NetGPT.Infrastructure.Persistence.Repositories
 
         public async Task AddAsync(RefreshToken token)
         {
-            await context.RefreshTokens.AddAsync(token);
+            _ = await context.RefreshTokens.AddAsync(token);
         }
 
         public async Task<RefreshToken?> GetByHashAsync(string tokenHash)

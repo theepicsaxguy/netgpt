@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace NetGPT.Infrastructure.Migrations
 {
+    /// <summary>AddRefreshToken migration.</summary>
     public partial class AddRefreshToken : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,7 +24,7 @@ namespace NetGPT.Infrastructure.Migrations
                     ExpiresAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     RevokedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ReplacedByTokenId = table.Column<Guid>(type: "uuid", nullable: true),
-                    DeviceFingerprint = table.Column<string>(type: "text", nullable: true)
+                    DeviceFingerprint = table.Column<string>(type: "text", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -35,7 +36,7 @@ namespace NetGPT.Infrastructure.Migrations
                 table: "RefreshTokens",
                 column: "TokenHash");
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_UserId",
                 table: "RefreshTokens",
                 column: "UserId");
@@ -43,7 +44,7 @@ namespace NetGPT.Infrastructure.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
+            _ = migrationBuilder.DropTable(
                 name: "RefreshTokens");
         }
     }

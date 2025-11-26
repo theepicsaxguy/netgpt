@@ -13,17 +13,16 @@ using NetGPT.Infrastructure.Persistence.Repositories;
 
 namespace NetGPT.API.Controllers
 {
+    /// <summary>
+    /// Controller for authentication operations.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
-    public sealed class AuthController(ITokenService tokenService, RefreshTokenRepository refreshRepo, IConfiguration configuration, ILogger<AuthController> logger, Application.Interfaces.IUserRepository userRepo, Infrastructure.Services.IPasswordHasher hasher) : ControllerBase
+    public sealed partial class AuthController(ITokenService tokenService, RefreshTokenRepository refreshRepo, IConfiguration configuration, ILogger<AuthController> logger, Application.Interfaces.IUserRepository userRepo, Infrastructure.Services.IPasswordHasher hasher) : ControllerBase
     {
-        private readonly ITokenService tokenService = tokenService;
-        private readonly RefreshTokenRepository refreshRepo = refreshRepo;
-        private readonly IConfiguration configuration = configuration;
-        private readonly ILogger<AuthController> logger = logger;
-        private readonly Application.Interfaces.IUserRepository userRepo = userRepo;
-        private readonly Infrastructure.Services.IPasswordHasher hasher = hasher;
-
+        /// <summary>
+        /// Logs in a user.
+        /// </summary>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
@@ -64,13 +63,16 @@ namespace NetGPT.API.Controllers
             await refreshRepo.AddAsync(refreshEntity);
             _ = await refreshRepo.SaveChangesAsync();
 
-            logger.LogInformation("Login: issued refresh token for user {UserId}", user.Id);
+            LogLoginIssuedRefreshToken(logger, user.Id);
 
             SetRefreshCookie(refreshTokenPlain, refreshExpiresAt);
 
             return Ok(new AccessTokenResponseDto { AccessToken = accessToken, ExpiresAt = DateTime.UtcNow.AddMinutes(15) });
         }
 
+        /// <summary>
+        /// Registers a new user.
+        /// </summary>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
         {
@@ -87,7 +89,7 @@ namespace NetGPT.API.Controllers
 
             hasher.CreateHash(request.Password, out byte[] hash, out byte[] salt);
 
-            Infrastructure.Persistence.Entities.User user = new Infrastructure.Persistence.Entities.User
+            User user = new()
             {
                 Id = Guid.NewGuid(),
                 Username = request.Username,
@@ -100,11 +102,14 @@ namespace NetGPT.API.Controllers
             await userRepo.AddAsync(user);
             _ = await refreshRepo.SaveChangesAsync();
 
-            logger.LogInformation("User registered: {Username}", user.Username);
+            LogUserRegistered(logger, user.Username);
 
             return Ok();
         }
 
+        /// <summary>
+        /// Refreshes the access token.
+        /// </summary>
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh()
         {
@@ -118,7 +123,7 @@ namespace NetGPT.API.Controllers
             RefreshToken? existing = await refreshRepo.GetByHashAsync(hash);
             if (existing == null)
             {
-                logger.LogWarning("Refresh failed: token not found");
+                LogRefreshTokenNotFound(logger);
                 ClearRefreshCookie();
                 return Unauthorized();
             }
@@ -126,7 +131,7 @@ namespace NetGPT.API.Controllers
             // Replay detection: token has already been rotated
             if (existing.ReplacedByTokenId != null)
             {
-                logger.LogWarning("Refresh token replay detected for user {UserId}. Revoking all tokens.", existing.UserId);
+                LogRefreshTokenReplayDetected(logger, existing.UserId);
                 await refreshRepo.RevokeAllForUserAsync(existing.UserId);
                 _ = await refreshRepo.SaveChangesAsync();
                 ClearRefreshCookie();
@@ -135,7 +140,7 @@ namespace NetGPT.API.Controllers
 
             if (existing.ExpiresAt <= DateTime.UtcNow || existing.RevokedAt != null)
             {
-                logger.LogWarning("Refresh failed: token expired or revoked for user {UserId}", existing.UserId);
+                LogRefreshTokenExpiredOrRevoked(logger, existing.UserId);
                 ClearRefreshCookie();
                 return Unauthorized();
             }
@@ -164,6 +169,9 @@ namespace NetGPT.API.Controllers
             return Ok(new AccessTokenResponseDto { AccessToken = accessToken, ExpiresAt = DateTime.UtcNow.AddMinutes(15) });
         }
 
+        /// <summary>
+        /// Logs out the user.
+        /// </summary>
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
@@ -175,31 +183,12 @@ namespace NetGPT.API.Controllers
                 {
                     await refreshRepo.RevokeAsync(existingLogout, null);
                     _ = await refreshRepo.SaveChangesAsync();
-                    logger.LogInformation("Logout: revoked refresh token for user {UserId}", existingLogout.UserId);
+                    LogLogoutRevokedRefreshToken(logger, existingLogout.UserId);
                 }
             }
 
             ClearRefreshCookie();
             return Ok();
         }
-
-        private void SetRefreshCookie(string token, DateTime expiresAt)
-        {
-            Microsoft.AspNetCore.Http.CookieOptions cookieOptions = new()
-            {
-                HttpOnly = true,
-                Secure = !string.Equals(configuration["ASPNETCORE_ENVIRONMENT"], "Development", StringComparison.OrdinalIgnoreCase),
-                SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict,
-                Expires = expiresAt,
-            };
-            Response.Cookies.Append("refresh_token", token, cookieOptions);
-        }
-
-        private void ClearRefreshCookie()
-        {
-            Response.Cookies.Delete("refresh_token");
-        }
-
-        // (Removed deterministic GUID helper — user registration now uses real users table)
     }
 }

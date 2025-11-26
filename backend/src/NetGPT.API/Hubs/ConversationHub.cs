@@ -1,10 +1,8 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
 using System;
-using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using NetGPT.Application.DTOs;
@@ -17,12 +15,9 @@ namespace NetGPT.API.Hubs
 {
     [Microsoft.AspNetCore.Authorization.Authorize]
     public sealed class ConversationHub(
-        [Microsoft.AspNetCore.Authorization.Authorize]
-        IMediator mediator,
         IConversationRepository repository,
         IAgentOrchestrator orchestrator) : Hub
     {
-        private readonly IMediator mediator = mediator;
         private readonly IConversationRepository repository = repository;
         private readonly IAgentOrchestrator orchestrator = orchestrator;
 
@@ -59,16 +54,13 @@ namespace NetGPT.API.Hubs
 
         private Guid GetCurrentUserId()
         {
-            ClaimsPrincipal? user = Context.User;
-            if (user == null)
-            {
-                throw new InvalidOperationException("User context is not available");
-            }
+            ClaimsPrincipal? user = Context.User ?? throw new InvalidOperationException("User context is not available");
             HttpContext? httpContext = Context.GetHttpContext();
             if (httpContext?.User?.Identity?.IsAuthenticated == true)
             {
-                var sub = httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
-                    ?? httpContext.User.FindFirst("sub")?.Value;
+                string? sub = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                    ?? httpContext.User.FindFirst("sub")?.Value
+                    ?? user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (Guid.TryParse(sub, out Guid userId))
                 {
                     return userId;
@@ -76,14 +68,6 @@ namespace NetGPT.API.Hubs
             }
 
             throw new InvalidOperationException("Unable to determine current user from claims");
-                          ?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrWhiteSpace(sub) || !Guid.TryParse(sub, out Guid id))
-            {
-                throw new InvalidOperationException("User id claim is missing or invalid");
-            }
-
-            return id;
         }
     }
 }

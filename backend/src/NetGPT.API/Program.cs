@@ -4,9 +4,7 @@ using System;
 using System.IO;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Text;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -16,7 +14,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.IdentityModel.Tokens;
 using NetGPT.API.Configuration;
 using NetGPT.API.Hubs;
@@ -69,7 +66,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 // Declarative definitions DB context (use same connection string)
-builder.Services.AddDbContext<NetGPT.Infrastructure.Persistence.DefinitionDbContext>(options =>
+builder.Services.AddDbContext<NetGPT.Infrastructure.Declarative.DefinitionDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 // Definition repository
