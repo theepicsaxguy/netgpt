@@ -18,12 +18,15 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace NetGPT.API.Controllers
 {
-    [ApiController]
-    [Route("api/declarative/definitions")]
-
     /// <summary>
     /// Controller for managing declarative definitions.
+    /// This is a partial class to keep implementation size within file limits and split responsibilities.
     /// </summary>
+    /// <remarks>
+    /// The partial class splits logging and helper methods into separate files to satisfy style analyzers.
+    /// </remarks>
+    [ApiController]
+    [Route("api/declarative/definitions")]
     public sealed partial class DeclarativeDefinitionsController(
         IDefinitionRepository repo,
         IDeclarativeLoader loader,

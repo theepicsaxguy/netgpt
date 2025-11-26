@@ -16,13 +16,16 @@ namespace NetGPT.API.Controllers
     /// <summary>
     /// Controller for authentication operations.
     /// </summary>
-    [ApiController]
-    [Route("api/[controller]")]
     public sealed partial class AuthController(ITokenService tokenService, RefreshTokenRepository refreshRepo, IConfiguration configuration, ILogger<AuthController> logger, Application.Interfaces.IUserRepository userRepo, Infrastructure.Services.IPasswordHasher hasher) : ControllerBase
     {
         /// <summary>
         /// Logs in a user.
         /// </summary>
+        /// <param name="request">Login request containing username and password.</param>
+        /// <returns>
+        /// A 200 response with an access token when successful,
+        /// 400 if the request is malformed, or 401 if credentials are invalid.
+        /// </returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
@@ -73,6 +76,10 @@ namespace NetGPT.API.Controllers
         /// <summary>
         /// Registers a new user.
         /// </summary>
+        /// <param name="request">Register request containing username, password and optional name.</param>
+        /// <returns>
+        /// A 200 response when registration succeeds, 400 for invalid input, or 409 when username already exists.
+        /// </returns>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
         {
@@ -99,7 +106,7 @@ namespace NetGPT.API.Controllers
                 CreatedAt = DateTime.UtcNow,
             };
 
-            await userRepo.AddAsync(user);
+            _ = await userRepo.AddAsync(user);
             _ = await refreshRepo.SaveChangesAsync();
 
             LogUserRegistered(logger, user.Username);
@@ -108,8 +115,11 @@ namespace NetGPT.API.Controllers
         }
 
         /// <summary>
-        /// Refreshes the access token.
+        /// Refreshes the access token using the refresh token cookie.
         /// </summary>
+        /// <returns>
+        /// A 200 response with a new access token when successful or 401 when refresh fails.
+        /// </returns>
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh()
         {
@@ -172,6 +182,7 @@ namespace NetGPT.API.Controllers
         /// <summary>
         /// Logs out the user.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {

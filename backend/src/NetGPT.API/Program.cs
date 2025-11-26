@@ -2,10 +2,7 @@
 
 using System;
 using System.IO;
-using System.Net.Http.Headers;
-using System.Text;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -13,8 +10,6 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using NetGPT.API.Configuration;
 using NetGPT.API.Hubs;
 using NetGPT.Application.Behaviors;
@@ -89,8 +84,10 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Token service for JWT and refresh tokens
 builder.Services.AddScoped<ITokenService, TokenService>();
+
 // Refresh token repository
 builder.Services.AddScoped<RefreshTokenRepository>();
+
 // User repository
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
@@ -145,6 +142,7 @@ builder.Services.AddSwaggerConfiguration();
 
 // Authorization placeholder: AdminOnly policy (implementation of roles/claims is out of scope)
 builder.Services.AddAuthorizationBuilder().AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+
 // SignalR
 builder.Services.AddSignalR();
 
