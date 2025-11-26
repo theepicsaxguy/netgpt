@@ -68,6 +68,17 @@ string connectionString = builder.Configuration.GetSection("ConnectionStrings")[
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
+// Declarative definitions DB context (use same connection string)
+builder.Services.AddDbContext<NetGPT.Infrastructure.Persistence.DefinitionDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+// Definition repository
+builder.Services.AddScoped<NetGPT.Infrastructure.Declarative.IDefinitionRepository, NetGPT.Infrastructure.Declarative.DefinitionRepository>();
+
+// Declarative loader and cache
+builder.Services.AddSingleton<NetGPT.Infrastructure.Declarative.DeclarativeCache>();
+builder.Services.AddScoped<NetGPT.Infrastructure.Declarative.IDeclarativeLoader, NetGPT.Infrastructure.Declarative.DeclarativeLoader>();
+
 // MediatR
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblyContaining<CreateConversationHandler>());
@@ -96,6 +107,10 @@ builder.Services.AddSingleton<IConversationMapper, ConversationMapper>();
 builder.Services.AddSingleton<IToolRegistry, ToolRegistry>();
 builder.Services.AddScoped<IAgentFactory, AgentFactory>();
 builder.Services.AddScoped<IAgentOrchestrator, AgentOrchestrator>();
+
+// Declarative loader and cache
+builder.Services.AddSingleton<NetGPT.Infrastructure.Declarative.DeclarativeCache>();
+builder.Services.AddScoped<NetGPT.Infrastructure.Declarative.IDeclarativeLoader, NetGPT.Infrastructure.Declarative.DeclarativeLoader>();
 
 // OpenAI client factory used by SDK-backed adapter
 builder.Services.AddSingleton<NetGPT.Infrastructure.Agents.IOpenAIClientFactory, NetGPT.Infrastructure.Agents.OpenAIClientFactory>();
@@ -160,6 +175,25 @@ builder.Services.AddCors(options =>
 });
 
 WebApplication app = builder.Build();
+
+// Optional seeding of declarative definitions when flag --seed-declarative is present
+if (args is not null && args.Contains("--seed-declarative"))
+{
+    // Run seeding synchronously before starting the app
+    var sp = app.Services;
+    var logger = sp.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>().CreateLogger("SeedDefinitions");
+    try
+    {
+        logger.LogInformation("Starting declarative definitions seeding...");
+        SeedDefinitions.RunAsync(sp).GetAwaiter().GetResult();
+        logger.LogInformation("Declarative definitions seeding complete.");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Seeding declarative definitions failed.");
+        throw;
+    }
+}
 
 // Ensure database is ready before starting
 int maxRetries = 10;
