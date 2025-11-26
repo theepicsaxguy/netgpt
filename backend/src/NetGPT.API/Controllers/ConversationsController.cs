@@ -90,7 +90,13 @@ namespace NetGPT.API.Controllers
             CancellationToken cancellationToken)
         {
             Guid userId = GetCurrentUserId();
-            SendMessageCommand command = new(id, userId, request.Content, request.Attachments);
+            SendMessageCommand command = new(
+                id,
+                userId,
+                request.Content,
+                request.Attachments,
+                request.AllowTools,
+                request.RunOptions);
             Result<MessageResponse> result = await mediator.Send(command, cancellationToken);
 
             return result.IsSuccess

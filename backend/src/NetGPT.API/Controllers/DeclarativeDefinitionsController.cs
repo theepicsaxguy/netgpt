@@ -161,6 +161,14 @@ namespace NetGPT.API.Controllers
             }
         }
 
+        [HttpPost("{id:guid}/execute/stream")]
+        [Authorize]
+        public IActionResult ExecuteStream([FromRoute] Guid id)
+        {
+            // Streaming execution placeholder - to be implemented with full orchestrator integration
+            return Ok(new { message = "Streaming execution endpoint - implementation pending", definitionId = id });
+        }
+
         [LoggerMessage(EventId = 1, Level = LogLevel.Error, Message = "Failed to create declarative definition {Name}")]
         private static partial void LogCreateError(ILogger logger, Exception? ex, string name);
 

@@ -12,5 +12,7 @@ namespace NetGPT.Application.Commands
         Guid ConversationId,
         Guid UserId,
         string Content,
-        List<FileAttachmentDto>? Attachments) : IRequest<Result<MessageResponse>>;
+        List<FileAttachmentDto>? Attachments,
+        bool AllowTools = true,
+        RunOptionsDto? RunOptions = null) : IRequest<Result<MessageResponse>>;
 }
