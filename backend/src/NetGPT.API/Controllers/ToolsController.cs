@@ -37,7 +37,7 @@ namespace NetGPT.API.Controllers
             List<ToolInfoDto> toolInfos = allTools.Select(tool => new ToolInfoDto(
                 Name: tool.Name,
                 Description: tool.Description,
-                Parameters: [])).ToList();
+                Parameters: [])).ToList(); // TODO: Extract parameter metadata from AIFunction schema
 
             return Ok(toolInfos);
         }
@@ -57,7 +57,7 @@ namespace NetGPT.API.Controllers
             ToolInfoDto toolInfo = new(
                 Name: tool.Name,
                 Description: tool.Description,
-                Parameters: []);
+                Parameters: []); // TODO: Extract parameter metadata from AIFunction schema
 
             return Ok(toolInfo);
         }
