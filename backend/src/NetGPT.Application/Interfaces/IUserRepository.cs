@@ -1,8 +1,7 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
-using System;
 using System.Threading.Tasks;
-using NetGPT.Infrastructure.Persistence.Entities;
+using NetGPT.Domain.Entities;
 
 namespace NetGPT.Application.Interfaces
 {

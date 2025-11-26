@@ -17,12 +17,25 @@ using NetGPT.Infrastructure.Tools;
 
 namespace NetGPT.Infrastructure.Agents
 {
-    public sealed class AgentOrchestrator(IAgentFactory agentFactory, IToolRegistry toolRegistry, ILogger<AgentOrchestrator> logger) : IAgentOrchestrator
+    /// <summary>
+    /// Orchestrates AI agent execution for conversations and declarative definitions.
+    /// </summary>
+    public sealed partial class AgentOrchestrator(IAgentFactory agentFactory, IToolRegistry toolRegistry, ILogger<AgentOrchestrator> logger) : IAgentOrchestrator
     {
         private static readonly Action<ILogger, string, double, string, Exception?> EvaluationLogged = LoggerMessage.Define<string, double, string>(
             LogLevel.Information,
             new EventId(1, "Evaluation"),
             "Evaluation {Evaluator}: Score {Score}, Feedback {Feedback}");
+
+        private static readonly Action<ILogger, Guid, int, Guid, DateTime, DateTime, Exception?> DeclarativeExecutionFinished = LoggerMessage.Define<Guid, int, Guid, DateTime, DateTime>(
+            LogLevel.Information,
+            new EventId(2, "DeclarativeExecutionFinished"),
+            "Declarative execution finished definitionId={DefinitionId} version={Version} executionId={ExecutionId} start={Start} end={End} outcome=success");
+
+        private static readonly Action<ILogger, Guid, int, Guid, Exception?> DeclarativeExecutionFailed = LoggerMessage.Define<Guid, int, Guid>(
+            LogLevel.Error,
+            new EventId(3, "DeclarativeExecutionFailed"),
+            "Declarative execution failed definitionId={DefinitionId} version={Version} executionId={ExecutionId}");
 
         private readonly IAgentFactory agentFactory = agentFactory;
         private readonly IToolRegistry toolRegistry = toolRegistry;
@@ -99,44 +112,6 @@ namespace NetGPT.Infrastructure.Agents
             {
                 return Result.Failure<AgentResponse>(
                     new DomainError("AgentOrchestrator.ExecutionFailed", ex.Message));
-            }
-        }
-
-        public async Task<Result<AgentResponse>> ExecuteDefinitionAsync(
-            NetGPT.Infrastructure.Declarative.DefinitionEntity definition,
-            NetGPT.Infrastructure.Declarative.IAgentExecutable executable,
-            string input,
-            CancellationToken cancellationToken = default)
-        {
-            if (definition == null) throw new ArgumentNullException(nameof(definition));
-            if (executable == null) throw new ArgumentNullException(nameof(executable));
-
-            DateTime start = DateTime.UtcNow;
-            Guid execId = Guid.NewGuid();
-
-            try
-            {
-                var run = await executable.ExecuteAsync(input, cancellationToken);
-                DateTime end = DateTime.UtcNow;
-
-                int tokenCount = EstimateTokens(string.Join("\n", run.Messages.Select(m => m.Text ?? string.Empty)));
-
-                var agentResponse = new AgentResponse(
-                    Content: run.Messages.LastOrDefault()?.Text ?? string.Empty,
-                    TokensUsed: tokenCount,
-                    ResponseTime: end - start,
-                    ModelUsed: definition.Id.ToString());
-
-                logger.LogInformation("Declarative execution finished definitionId={DefinitionId} version={Version} executionId={ExecutionId} start={Start} end={End} outcome=success",
-                    definition.Id, definition.Version, execId, start, end);
-
-                return Result.Success(agentResponse);
-            }
-            catch (Exception ex)
-            {
-                DateTime end = DateTime.UtcNow;
-                logger.LogError(ex, "Declarative execution failed definitionId={DefinitionId} version={Version} executionId={ExecutionId}", definition.Id, definition.Version, execId);
-                return Result.Failure<AgentResponse>(new DomainError("DeclarativeExecutionFailed", ex.Message));
             }
         }
 

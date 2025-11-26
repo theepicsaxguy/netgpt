@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NetGPT.Domain.Aggregates;
+using NetGPT.Domain.Entities;
 using NetGPT.Domain.Events;
 using NetGPT.Infrastructure.Persistence.Configurations;
 
@@ -17,8 +18,9 @@ namespace NetGPT.Infrastructure.Persistence
 
         public DbSet<Message> Messages => Set<Message>();
 
-        public DbSet<NetGPT.Infrastructure.Persistence.Entities.RefreshToken> RefreshTokens => Set<NetGPT.Infrastructure.Persistence.Entities.RefreshToken>();
-        public DbSet<NetGPT.Infrastructure.Persistence.Entities.User> Users => Set<NetGPT.Infrastructure.Persistence.Entities.User>();
+        public DbSet<Entities.RefreshToken> RefreshTokens => Set<Entities.RefreshToken>();
+
+        public DbSet<User> Users => Set<User>();
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
@@ -43,8 +45,8 @@ namespace NetGPT.Infrastructure.Persistence
         {
             _ = modelBuilder.ApplyConfiguration(new ConversationConfiguration());
             _ = modelBuilder.ApplyConfiguration(new MessageConfiguration());
-            // RefreshToken uses default conventions - explicit configuration may be added later
 
+            // RefreshToken uses default conventions - explicit configuration may be added later
             base.OnModelCreating(modelBuilder);
         }
     }

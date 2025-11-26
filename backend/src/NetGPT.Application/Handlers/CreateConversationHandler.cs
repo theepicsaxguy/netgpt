@@ -1,5 +1,6 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -18,25 +19,40 @@ namespace NetGPT.Application.Handlers
     public class CreateConversationHandler(
         IConversationRepository repository,
         IUnitOfWork unitOfWork,
-        Microsoft.Extensions.Logging.ILogger<CreateConversationHandler> logger) : IRequestHandler<CreateConversationCommand, Result<ConversationResponse>>
+        ILogger<CreateConversationHandler> logger) : IRequestHandler<CreateConversationCommand, Result<ConversationResponse>>
     {
+        private static readonly Action<ILogger, Guid, Exception?> CreateConversationStart = LoggerMessage.Define<Guid>(
+            LogLevel.Debug,
+            new EventId(1, "CreateConversationStart"),
+            "CreateConversationHandler.Handle start for user {UserId}");
+
+        private static readonly Action<ILogger, Exception?> ConversationAdded = LoggerMessage.Define(
+            LogLevel.Debug,
+            new EventId(2, "ConversationAdded"),
+            "Conversation added to repository, saving changes...");
+
+        private static readonly Action<ILogger, Guid, Exception?> SaveChangesCompleted = LoggerMessage.Define<Guid>(
+            LogLevel.Debug,
+            new EventId(3, "SaveChangesCompleted"),
+            "SaveChangesAsync completed for conversation {ConversationId}");
+
         private readonly IConversationRepository repository = repository;
         private readonly IUnitOfWork unitOfWork = unitOfWork;
-        private readonly Microsoft.Extensions.Logging.ILogger<CreateConversationHandler> logger = logger;
+        private readonly ILogger<CreateConversationHandler> logger = logger;
 
         public async Task<Result<ConversationResponse>> Handle(
             CreateConversationCommand request,
             CancellationToken cancellationToken)
         {
-            logger.LogDebug("CreateConversationHandler.Handle start for user {UserId}", request.UserId);
+            CreateConversationStart(logger, request.UserId, null);
             UserId userId = UserId.From(request.UserId);
             AgentConfiguration agentConfig = MapToAgentConfiguration(request.Configuration);
             Conversation conversation = Conversation.Create(userId, request.Title, agentConfig);
 
             _ = await repository.AddAsync(conversation, cancellationToken);
-            logger.LogDebug("Conversation added to repository, saving changes...");
+            ConversationAdded(logger, null);
             _ = await unitOfWork.SaveChangesAsync(cancellationToken);
-            logger.LogDebug("SaveChangesAsync completed for conversation {ConversationId}", conversation.Id.Value);
+            SaveChangesCompleted(logger, conversation.Id.Value, null);
 
             ConversationResponse response = new(
                 conversation.Id.Value,

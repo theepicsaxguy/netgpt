@@ -9,7 +9,7 @@ namespace NetGPT.Application.Services
     {
         string CreateAccessToken(object user, TimeSpan? lifetime = null);
 
-        (string token, DateTime expiresAt) CreateRefreshToken();
+        (string Token, DateTime ExpiresAt) CreateRefreshToken();
 
         ClaimsPrincipal? ValidateAccessToken(string token, bool validateLifetime = true);
 

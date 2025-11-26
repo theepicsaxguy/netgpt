@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NetGPT.Application.DTOs;
 using NetGPT.Domain.Aggregates;
+using NetGPT.Domain.Entities;
 using NetGPT.Domain.Primitives;
 
 namespace NetGPT.Application.Interfaces
@@ -25,8 +26,8 @@ namespace NetGPT.Application.Interfaces
         // return a standard AgentResponse result. This is used for executing
         // persisted declarative definitions.
         Task<Result<AgentResponse>> ExecuteDefinitionAsync(
-            NetGPT.Infrastructure.Declarative.DefinitionEntity definition,
-            NetGPT.Infrastructure.Declarative.IAgentExecutable executable,
+            DefinitionEntity definition,
+            IAgentExecutable executable,
             string input,
             CancellationToken cancellationToken = default);
     }

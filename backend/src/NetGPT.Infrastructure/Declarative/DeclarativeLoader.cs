@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
-using NetGPT.Infrastructure.Declarative.Models;
+using NetGPT.Domain.Entities;
+using NetGPT.Application.Interfaces;
 using NetGPT.Infrastructure.Tools;
 using Microsoft.Extensions.AI;
 using NetGPT.Infrastructure.Agents;
@@ -34,7 +35,7 @@ namespace NetGPT.Infrastructure.Declarative
             this.cache = cache;
         }
 
-        public async Task<IAgentExecutable> LoadAsync(DefinitionEntity definition, CancellationToken cancellationToken = default)
+        public async Task<NetGPT.Application.Interfaces.IAgentExecutable> LoadAsync(DefinitionEntity definition, CancellationToken cancellationToken = default)
         {
             if (definition == null) throw new ArgumentNullException(nameof(definition));
 

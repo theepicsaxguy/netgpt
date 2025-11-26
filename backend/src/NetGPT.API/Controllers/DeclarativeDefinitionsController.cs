@@ -7,7 +7,8 @@ using Microsoft.Extensions.Logging;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
-using NetGPT.Infrastructure.Declarative;
+using NetGPT.Domain.Entities;
+using NetGPT.Application.Interfaces;
 
 namespace NetGPT.API.Controllers
 {

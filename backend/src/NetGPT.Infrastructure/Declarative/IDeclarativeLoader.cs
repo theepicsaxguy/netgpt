@@ -1,21 +1,12 @@
-using System.Threading.Tasks;
-
-namespace NetGPT.Infrastructure.Declarative
-{
-    public interface IDeclarativeLoader
-    {
-        Task<IAgentExecutable> LoadAsync(DefinitionEntity def);
-    }
-}
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using NetGPT.Infrastructure.Declarative.Models;
+using NetGPT.Domain.Entities;
 
 namespace NetGPT.Infrastructure.Declarative
 {
     public interface IDeclarativeLoader
     {
-        Task<IAgentExecutable> LoadAsync(DefinitionEntity definition, CancellationToken cancellationToken = default);
+        Task<NetGPT.Application.Interfaces.IAgentExecutable> LoadAsync(DefinitionEntity definition, CancellationToken cancellationToken = default);
     }
 }

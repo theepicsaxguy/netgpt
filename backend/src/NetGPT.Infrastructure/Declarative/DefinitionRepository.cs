@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using NetGPT.Infrastructure.Persistence;
+using NetGPT.Domain.Entities;
 
 namespace NetGPT.Infrastructure.Declarative
 {
