@@ -2,26 +2,15 @@
 
 using System;
 using System.IO;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NetGPT.API.Configuration;
 using NetGPT.API.Hubs;
-using NetGPT.Application.Behaviors;
-using NetGPT.Application.Handlers;
-using NetGPT.Application.Interfaces;
-using NetGPT.Application.Services;
-using NetGPT.Domain.Interfaces;
-using NetGPT.Infrastructure.Agents;
 using NetGPT.Infrastructure.Configuration;
-using NetGPT.Infrastructure.Persistence;
-using NetGPT.Infrastructure.Persistence.Repositories;
-using NetGPT.Infrastructure.Services;
 using NetGPT.Infrastructure.Tools;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -51,80 +40,28 @@ if (!string.IsNullOrWhiteSpace(httpUrlAll) && !string.IsNullOrWhiteSpace(httpsUr
 }
 
 // Configuration
-builder.Services.Configure<OpenAISettings>(
-    builder.Configuration.GetSection("OpenAI"));
+builder.Services.Configure<OpenAISettings>(builder.Configuration.GetSection("OpenAI"));
 
-// Database
+// Register project services via extension to keep Program.cs small
+builder.Services.AddNetGptServices(builder.Configuration);
+
+// Grab connection string for readiness checks and other uses
 string connectionString = builder.Configuration.GetSection("ConnectionStrings")["DefaultConnection"]
     ?? throw new InvalidOperationException("ConnectionString 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString));
-
-// Declarative definitions DB context (use same connection string)
-builder.Services.AddDbContext<NetGPT.Infrastructure.Declarative.DefinitionDbContext>(options =>
-    options.UseNpgsql(connectionString));
-
-// Definition repository
-builder.Services.AddScoped<NetGPT.Infrastructure.Declarative.IDefinitionRepository, NetGPT.Infrastructure.Declarative.DefinitionRepository>();
-
-// Declarative loader and cache
-builder.Services.AddSingleton<NetGPT.Infrastructure.Declarative.DeclarativeCache>();
-builder.Services.AddScoped<NetGPT.Infrastructure.Declarative.IDeclarativeLoader, NetGPT.Infrastructure.Declarative.DeclarativeLoader>();
-
-// MediatR
-builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssemblyContaining<CreateConversationHandler>());
-
-// MediatR pipeline behaviors (FluentValidation)
-builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-
-// Repositories
-builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-// Token service for JWT and refresh tokens
-builder.Services.AddScoped<ITokenService, TokenService>();
-
-// Refresh token repository
-builder.Services.AddScoped<RefreshTokenRepository>();
-
-// User repository
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-
-// Simple password hasher
-builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
-
-// Mappers
-builder.Services.AddSingleton<IConversationMapper, ConversationMapper>();
-
-// Agent Framework
-builder.Services.AddSingleton<IToolRegistry, ToolRegistry>();
-builder.Services.AddScoped<IAgentFactory, AgentFactory>();
-builder.Services.AddScoped<IAgentOrchestrator, AgentOrchestrator>();
-
-// Declarative loader and cache
-builder.Services.AddSingleton<NetGPT.Infrastructure.Declarative.DeclarativeCache>();
-builder.Services.AddScoped<NetGPT.Infrastructure.Declarative.IDeclarativeLoader, NetGPT.Infrastructure.Declarative.DeclarativeLoader>();
-
-// OpenAI client factory used by SDK-backed adapter
-builder.Services.AddSingleton<IOpenAIClientFactory, OpenAIClientFactory>();
 
 // Register Tool Plugins at Runtime (Flexible DI)
 builder.Services.AddSingleton(sp =>
 {
     IToolRegistry registry = sp.GetRequiredService<IToolRegistry>();
 
-    // Web Search Tool
     AIFunction webSearchTool = AIFunctionFactory.Create(WebSearchToolPlugin.SearchWeb);
     registry.RegisterTool(webSearchTool);
 
-    // Code Execution Tools
     AIFunction pythonTool = AIFunctionFactory.Create(CodeExecutionToolPlugin.ExecutePython);
     AIFunction jsTool = AIFunctionFactory.Create(CodeExecutionToolPlugin.ExecuteJavaScript);
     registry.RegisterTool(pythonTool);
     registry.RegisterTool(jsTool);
 
-    // File Processing Tools
     AIFunction pdfTool = AIFunctionFactory.Create(FileProcessingToolPlugin.ExtractPdfText);
     AIFunction imageTool = AIFunctionFactory.Create(FileProcessingToolPlugin.AnalyzeImage);
     registry.RegisterTool(pdfTool);

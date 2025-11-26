@@ -19,6 +19,7 @@ using NetGPT.Domain.Primitives;
 namespace NetGPT.API.Controllers
 {
     [ApiController]
+    [Microsoft.AspNetCore.Authorization.Authorize]
     [Route("[controller]")]
     public sealed partial class ConversationsController(IMediator mediator, IAgentOrchestrator orchestrator, IConversationRepository repository, ILogger<ConversationsController> logger) : ControllerBase
     {

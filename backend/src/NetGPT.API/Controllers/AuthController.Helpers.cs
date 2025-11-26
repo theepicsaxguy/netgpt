@@ -2,10 +2,12 @@
 
 using System;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 
 namespace NetGPT.API.Controllers
 {
+    /// <summary>
+    /// Contains helper methods for authentication operations in <see cref="AuthController"/>.
+    /// </summary>
     public sealed partial class AuthController
     {
         private void SetRefreshCookie(string token, DateTime expiresAt)
