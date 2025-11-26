@@ -28,11 +28,11 @@ namespace NetGPT.Infrastructure.Agents
             IChatClient chatClient = chatClientFactory.CreateChatClient(agentName);
 
             // Map our lightweight ChatMessage -> Microsoft.Extensions.AI.ChatMessage
-            var sdkMessages = new List<Microsoft.Extensions.AI.ChatMessage>(messages.Count);
+            List<Microsoft.Extensions.AI.ChatMessage> sdkMessages = new(messages.Count);
             foreach (ChatMessage m in messages)
             {
                 var role = string.IsNullOrWhiteSpace(m.Role) ? "user" : m.Role!;
-                Microsoft.Extensions.AI.ChatRole chatRole = role.ToLowerInvariant() switch
+                ChatRole chatRole = role.ToLowerInvariant() switch
                 {
                     "system" => Microsoft.Extensions.AI.ChatRole.System,
                     "assistant" => Microsoft.Extensions.AI.ChatRole.Assistant,
@@ -42,13 +42,13 @@ namespace NetGPT.Infrastructure.Agents
                 sdkMessages.Add(new Microsoft.Extensions.AI.ChatMessage(chatRole, m.Content ?? string.Empty));
             }
 
-            var chatOptions = new ChatOptions()
+            ChatOptions chatOptions = new()
             {
                 ConversationId = threadId,
             };
 
             // Stream updates from SDK and convert to AgentRunResponseUpdate
-            await foreach (var update in chatClient.GetStreamingResponseAsync(sdkMessages, chatOptions, cancellationToken: cancellationToken))
+            await foreach (ChatResponseUpdate update in chatClient.GetStreamingResponseAsync(sdkMessages, chatOptions, cancellationToken: cancellationToken))
             {
                 // The SDK's ChatResponseUpdate exposes text/content depending on update kind.
                 // Convert it to string form for the existing DTO. Consumers can later be

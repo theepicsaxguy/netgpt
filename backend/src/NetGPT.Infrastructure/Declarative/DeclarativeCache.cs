@@ -18,7 +18,7 @@ namespace NetGPT.Infrastructure.Declarative
         public bool TryGet<T>(string key, out T? value)
         {
             value = default;
-            if (cache.TryGetValue(key, out var entry))
+            if (cache.TryGetValue(key, out (object Value, DateTime Expiry) entry))
             {
                 if (entry.Expiry > DateTime.UtcNow)
                 {

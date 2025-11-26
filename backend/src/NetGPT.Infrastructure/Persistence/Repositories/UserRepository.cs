@@ -8,14 +8,9 @@ using NetGPT.Infrastructure.Persistence.Entities;
 
 namespace NetGPT.Infrastructure.Persistence.Repositories
 {
-    public sealed class UserRepository : IUserRepository
+    public sealed class UserRepository(ApplicationDbContext context) : IUserRepository
     {
-        private readonly ApplicationDbContext context;
-
-        public UserRepository(ApplicationDbContext context)
-        {
-            this.context = context;
-        }
+        private readonly ApplicationDbContext context = context;
 
         public async Task<User?> GetByUsernameAsync(string username)
         {

@@ -1,6 +1,7 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -8,14 +9,9 @@ using NetGPT.Infrastructure.Persistence.Entities;
 
 namespace NetGPT.Infrastructure.Persistence.Repositories
 {
-    public sealed class RefreshTokenRepository
+    public sealed class RefreshTokenRepository(ApplicationDbContext context)
     {
-        private readonly ApplicationDbContext context;
-
-        public RefreshTokenRepository(ApplicationDbContext context)
-        {
-            this.context = context;
-        }
+        private readonly ApplicationDbContext context = context;
 
         public async Task AddAsync(RefreshToken token)
         {
@@ -37,8 +33,8 @@ namespace NetGPT.Infrastructure.Persistence.Repositories
 
         public async Task RevokeAllForUserAsync(Guid userId)
         {
-            var tokens = await context.RefreshTokens.Where(t => t.UserId == userId && t.RevokedAt == null).ToListAsync();
-            foreach (var t in tokens)
+            List<RefreshToken> tokens = await context.RefreshTokens.Where(t => t.UserId == userId && t.RevokedAt == null).ToListAsync();
+            foreach (RefreshToken? t in tokens)
             {
                 t.RevokedAt = DateTime.UtcNow;
             }

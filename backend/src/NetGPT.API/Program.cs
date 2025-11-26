@@ -2,6 +2,12 @@
 
 using System;
 using System.IO;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text;
+using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -9,11 +15,13 @@ using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Tokens;
 using NetGPT.API.Configuration;
 using NetGPT.API.Hubs;
-using NetGPT.Application.Handlers;
 using NetGPT.Application.Behaviors;
-using MediatR;
+using NetGPT.Application.Handlers;
 using NetGPT.Application.Interfaces;
 using NetGPT.Application.Services;
 using NetGPT.Domain.Interfaces;
@@ -23,14 +31,6 @@ using NetGPT.Infrastructure.Persistence;
 using NetGPT.Infrastructure.Persistence.Repositories;
 using NetGPT.Infrastructure.Services;
 using NetGPT.Infrastructure.Tools;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using System.Net.Http.Headers;
-using Microsoft.Extensions.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -93,12 +93,12 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 // Token service for JWT and refresh tokens
 builder.Services.AddScoped<ITokenService, TokenService>();
 // Refresh token repository
-builder.Services.AddScoped<NetGPT.Infrastructure.Persistence.Repositories.RefreshTokenRepository>();
+builder.Services.AddScoped<RefreshTokenRepository>();
 // User repository
-builder.Services.AddScoped<NetGPT.Application.Interfaces.IUserRepository, NetGPT.Infrastructure.Persistence.Repositories.UserRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Simple password hasher
-builder.Services.AddSingleton<NetGPT.Infrastructure.Services.IPasswordHasher, NetGPT.Infrastructure.Services.PasswordHasher>();
+builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
 // Mappers
 builder.Services.AddSingleton<IConversationMapper, ConversationMapper>();
@@ -113,7 +113,7 @@ builder.Services.AddSingleton<NetGPT.Infrastructure.Declarative.DeclarativeCache
 builder.Services.AddScoped<NetGPT.Infrastructure.Declarative.IDeclarativeLoader, NetGPT.Infrastructure.Declarative.DeclarativeLoader>();
 
 // OpenAI client factory used by SDK-backed adapter
-builder.Services.AddSingleton<NetGPT.Infrastructure.Agents.IOpenAIClientFactory, NetGPT.Infrastructure.Agents.OpenAIClientFactory>();
+builder.Services.AddSingleton<IOpenAIClientFactory, OpenAIClientFactory>();
 
 // Register Tool Plugins at Runtime (Flexible DI)
 builder.Services.AddSingleton(sp =>

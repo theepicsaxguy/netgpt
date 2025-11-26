@@ -5,14 +5,9 @@ using NetGPT.Application.Interfaces;
 
 namespace NetGPT.Infrastructure.Declarative
 {
-    public sealed class AIAgentExecutable : IAgentExecutable
+    public sealed class AIAgentExecutable(AIAgent agent) : IAgentExecutable
     {
-        private readonly AIAgent agent;
-
-        public AIAgentExecutable(AIAgent agent)
-        {
-            this.agent = agent;
-        }
+        private readonly AIAgent agent = agent;
 
         public async Task<AgentRunResponse> ExecuteAsync(string input, CancellationToken ct = default)
         {

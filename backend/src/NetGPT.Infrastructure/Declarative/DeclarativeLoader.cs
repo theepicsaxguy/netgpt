@@ -1,52 +1,48 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
+using NetGPT.Application.Interfaces;
+using NetGPT.Domain.Entities;
+using NetGPT.Domain.ValueObjects;
+using NetGPT.Infrastructure.Agents;
+using NetGPT.Infrastructure.Tools;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
-using NetGPT.Domain.Entities;
-using NetGPT.Application.Interfaces;
-using NetGPT.Infrastructure.Tools;
-using Microsoft.Extensions.AI;
-using NetGPT.Infrastructure.Agents;
 
 namespace NetGPT.Infrastructure.Declarative
 {
-    public sealed class DeclarativeLoader : IDeclarativeLoader
+    public sealed class DeclarativeLoader(
+        ILogger<DeclarativeLoader> logger,
+        IToolRegistry toolRegistry,
+        IAgentFactory agentFactory,
+        DeclarativeCache cache,
+        IOpenAIClientFactory? chatClientFactory = null) : IDeclarativeLoader
     {
-        private readonly ILogger<DeclarativeLoader> logger;
-        private readonly IToolRegistry toolRegistry;
-        private readonly IAgentFactory agentFactory;
-        private readonly IOpenAIClientFactory? chatClientFactory;
-        private readonly DeclarativeCache cache;
+        private readonly ILogger<DeclarativeLoader> logger = logger;
+        private readonly IToolRegistry toolRegistry = toolRegistry;
+        private readonly IAgentFactory agentFactory = agentFactory;
+        private readonly IOpenAIClientFactory? chatClientFactory = chatClientFactory;
+        private readonly DeclarativeCache cache = cache;
 
-        public DeclarativeLoader(
-            ILogger<DeclarativeLoader> logger,
-            IToolRegistry toolRegistry,
-            IAgentFactory agentFactory,
-            DeclarativeCache cache,
-            IOpenAIClientFactory? chatClientFactory = null)
+        public async Task<IAgentExecutable> LoadAsync(DefinitionEntity definition, CancellationToken cancellationToken = default)
         {
-            this.logger = logger;
-            this.toolRegistry = toolRegistry;
-            this.agentFactory = agentFactory;
-            this.chatClientFactory = chatClientFactory;
-            this.cache = cache;
-        }
-
-        public async Task<NetGPT.Application.Interfaces.IAgentExecutable> LoadAsync(DefinitionEntity definition, CancellationToken cancellationToken = default)
-        {
-            if (definition == null) throw new ArgumentNullException(nameof(definition));
+            if (definition == null)
+            {
+                throw new ArgumentNullException(nameof(definition));
+            }
 
             string cacheKey = $"{definition.Name}:{definition.Version}";
-            if (cache.TryGet<IAgentExecutable>(cacheKey, out var cached))
+            if (cache.TryGet<IAgentExecutable>(cacheKey, out IAgentExecutable? cached))
             {
                 return cached!;
             }
 
             // Parse YAML
-            var deserializer = new DeserializerBuilder()
+            IDeserializer deserializer = new DeserializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
 
@@ -68,14 +64,14 @@ namespace NetGPT.Infrastructure.Declarative
             }
 
             // Resolve tools
-            var resolvedTools = Enumerable.Empty<Microsoft.Extensions.AI.AIFunction>();
+            IEnumerable<AIFunction> resolvedTools = [];
             if (model.Tools is { } tools && tools.Any())
             {
-                var list = new System.Collections.Generic.List<Microsoft.Extensions.AI.AIFunction>();
-                var missing = new System.Collections.Generic.List<string>();
+                List<AIFunction> list = new();
+                List<string> missing = new();
                 foreach (string tname in tools)
                 {
-                    var tf = toolRegistry.GetTool(tname);
+                    AIFunction? tf = toolRegistry.GetTool(tname);
                     if (tf == null)
                     {
                         missing.Add(tname);
@@ -105,14 +101,14 @@ namespace NetGPT.Infrastructure.Declarative
             }
 
             // Map to AgentDefinition and create agent via factory
-            var agentDef = new NetGPT.Domain.ValueObjects.AgentDefinition(
+            AgentDefinition agentDef = new(
                 model.Name,
                 model.Instructions ?? string.Empty,
                 model.Model ?? "gpt-4o");
 
             AIAgent agent = await agentFactory.CreateAgentAsync(agentDef, resolvedTools);
 
-            var wrapper = new AIAgentExecutable(agent);
+            AIAgentExecutable wrapper = new(agent);
 
             // On new version, evict any older entries for the same name
             cache.EvictByPrefix(definition.Name + ":");

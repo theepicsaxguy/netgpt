@@ -2,16 +2,10 @@
 
 namespace NetGPT.Infrastructure.Agents
 {
-    internal sealed class AgentRunResponseUpdate
+    internal sealed class AgentRunResponseUpdate(string content, bool isComplete = false)
     {
-        public AgentRunResponseUpdate(string content, bool isComplete = false)
-        {
-            Content = content;
-            IsComplete = isComplete;
-        }
+        public string Content { get; } = content;
 
-        public string Content { get; }
-
-        public bool IsComplete { get; }
+        public bool IsComplete { get; } = isComplete;
     }
 }

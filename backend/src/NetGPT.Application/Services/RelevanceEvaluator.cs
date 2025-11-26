@@ -19,8 +19,8 @@ namespace NetGPT.Application.Services
         public async Task<EvaluationResult> EvaluateAsync(Conversation conversation, string userMessage, AgentResponse response)
         {
             // Simple heuristic: check if response contains keywords from user message
-            var userWords = userMessage.ToLower(CultureInfo.InvariantCulture).Split(' ', StringSplitOptions.RemoveEmptyEntries).Distinct();
-            var responseWords = response.Content.ToLower(CultureInfo.InvariantCulture).Split(' ', StringSplitOptions.RemoveEmptyEntries).Distinct();
+            IEnumerable<string> userWords = userMessage.ToLower(CultureInfo.InvariantCulture).Split(' ', StringSplitOptions.RemoveEmptyEntries).Distinct();
+            IEnumerable<string> responseWords = response.Content.ToLower(CultureInfo.InvariantCulture).Split(' ', StringSplitOptions.RemoveEmptyEntries).Distinct();
             var overlap = userWords.Intersect(responseWords).Count();
             var score = userWords.Count() > 0 ? (double)overlap / userWords.Count() : 0.0;
 

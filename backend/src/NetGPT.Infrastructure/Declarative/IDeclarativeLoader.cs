@@ -7,6 +7,6 @@ namespace NetGPT.Infrastructure.Declarative
 {
     public interface IDeclarativeLoader
     {
-        Task<NetGPT.Application.Interfaces.IAgentExecutable> LoadAsync(DefinitionEntity definition, CancellationToken cancellationToken = default);
+        Task<Application.Interfaces.IAgentExecutable> LoadAsync(DefinitionEntity definition, CancellationToken cancellationToken = default);
     }
 }

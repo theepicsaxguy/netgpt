@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NetGPT.Application.Commands.Admin;
+using NetGPT.Application.DTOs;
 using NetGPT.Application.Queries.Admin;
 using NetGPT.Domain.Primitives;
 
@@ -26,7 +27,7 @@ namespace NetGPT.API.Controllers.Admin
             CancellationToken cancellationToken = default)
         {
             GetAgentThreadsQuery query = new(page, pageSize);
-            var result = await mediator.Send(query, cancellationToken);
+            PaginatedAgentThreadListDto result = await mediator.Send(query, cancellationToken);
 
             return Ok(result);
         }
@@ -37,7 +38,7 @@ namespace NetGPT.API.Controllers.Admin
             CancellationToken cancellationToken = default)
         {
             GetAgentThreadByIdQuery query = new(id);
-            var result = await mediator.Send(query, cancellationToken);
+            AgentThreadDetailDto result = await mediator.Send(query, cancellationToken);
 
             return Ok(result);
         }
@@ -70,7 +71,7 @@ namespace NetGPT.API.Controllers.Admin
             CancellationToken cancellationToken = default)
         {
             RerunAgentThreadCommand command = new(id);
-            var result = await mediator.Send(command, cancellationToken);
+            AgentThreadSummaryDto result = await mediator.Send(command, cancellationToken);
 
             return Ok(result);
         }

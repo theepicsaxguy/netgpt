@@ -1,37 +1,31 @@
+// Copyright (c) 2025 NetGPT. All rights reserved.
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NetGPT.Application.Interfaces;
+using NetGPT.Domain.Entities;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
-using NetGPT.Domain.Entities;
-using NetGPT.Application.Interfaces;
 
 namespace NetGPT.API.Controllers
 {
     [ApiController]
     [Route("api/declarative/definitions")]
-    public sealed class DeclarativeDefinitionsController : ControllerBase
+    public sealed class DeclarativeDefinitionsController(
+        IDefinitionRepository repo,
+        IDeclarativeLoader loader,
+        IAgentOrchestrator orchestrator,
+        ILogger<DeclarativeDefinitionsController> logger) : ControllerBase
     {
-        private readonly IDefinitionRepository repo;
-        private readonly IDeclarativeLoader loader;
-        private readonly NetGPT.Application.Interfaces.IAgentOrchestrator orchestrator;
-        private readonly ILogger<DeclarativeDefinitionsController> logger;
-
-        public DeclarativeDefinitionsController(
-            IDefinitionRepository repo,
-            IDeclarativeLoader loader,
-            NetGPT.Application.Interfaces.IAgentOrchestrator orchestrator,
-            ILogger<DeclarativeDefinitionsController> logger)
-        {
-            this.repo = repo;
-            this.loader = loader;
-            this.orchestrator = orchestrator;
-            this.logger = logger;
-        }
+        private readonly IDefinitionRepository repo = repo;
+        private readonly IDeclarativeLoader loader = loader;
+        private readonly IAgentOrchestrator orchestrator = orchestrator;
+        private readonly ILogger<DeclarativeDefinitionsController> logger = logger;
 
         public record CreateDefinitionRequest(string Name, string Kind, string ContentYaml);
         public record DefinitionDto(Guid Id, string Name, string Kind, int Version, string CreatedBy, DateTime CreatedAtUtc);
@@ -41,10 +35,13 @@ namespace NetGPT.API.Controllers
         [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Create([FromBody] CreateDefinitionRequest request)
         {
-            if (request is null) return BadRequest("Request body is required");
+            if (request is null)
+            {
+                return BadRequest("Request body is required");
+            }
 
             // Basic YAML parse validation to provide early feedback about syntax
-            var deserializer = new DeserializerBuilder()
+            IDeserializer deserializer = new DeserializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
 
@@ -58,7 +55,7 @@ namespace NetGPT.API.Controllers
                 return BadRequest(new { message = yex.Message, line = yex.Start.Line + 1, column = yex.Start.Column + 1 });
             }
 
-            var def = new DefinitionEntity
+            DefinitionEntity def = new()
             {
                 Name = request.Name,
                 Kind = request.Kind,
@@ -78,7 +75,7 @@ namespace NetGPT.API.Controllers
             try
             {
                 var created = await repo.CreateAsync(def);
-                var dto = new DefinitionDto(created.Id, created.Name, created.Kind, created.Version, created.CreatedBy, created.CreatedAtUtc);
+                DefinitionDto dto = new(created.Id, created.Name, created.Kind, created.Version, created.CreatedBy, created.CreatedAtUtc);
                 return CreatedAtAction(nameof(Get), new { id = created.Id }, dto);
             }
             catch (InvalidOperationException inv)
@@ -105,8 +102,12 @@ namespace NetGPT.API.Controllers
         public async Task<IActionResult> Get([FromRoute] Guid id)
         {
             var def = await repo.GetByIdAsync(id);
-            if (def == null) return NotFound();
-            var dto = new DefinitionDto(def.Id, def.Name, def.Kind, def.Version, def.CreatedBy, def.CreatedAtUtc);
+            if (def == null)
+            {
+                return NotFound();
+            }
+
+            DefinitionDto dto = new(def.Id, def.Name, def.Kind, def.Version, def.CreatedBy, def.CreatedAtUtc);
             return Ok(dto);
         }
 
@@ -115,7 +116,10 @@ namespace NetGPT.API.Controllers
         public async Task<IActionResult> Execute([FromRoute] Guid id, [FromBody] ExecuteRequest? request)
         {
             var def = await repo.GetByIdAsync(id);
-            if (def == null) return NotFound();
+            if (def == null)
+            {
+                return NotFound();
+            }
 
             Guid executionId = Guid.NewGuid();
             DateTime startTime = DateTime.UtcNow;

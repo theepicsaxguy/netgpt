@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NetGPT.Application.DTOs.Auth;
 using NetGPT.Application.Services;
+using NetGPT.Domain.Entities;
 using NetGPT.Infrastructure.Persistence.Entities;
 using NetGPT.Infrastructure.Persistence.Repositories;
 
@@ -14,32 +15,24 @@ namespace NetGPT.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public sealed class AuthController : ControllerBase
+    public sealed class AuthController(ITokenService tokenService, RefreshTokenRepository refreshRepo, IConfiguration configuration, ILogger<AuthController> logger, Application.Interfaces.IUserRepository userRepo, Infrastructure.Services.IPasswordHasher hasher) : ControllerBase
     {
-        private readonly ITokenService tokenService;
-        private readonly RefreshTokenRepository refreshRepo;
-        private readonly IConfiguration configuration;
-        private readonly Microsoft.Extensions.Logging.ILogger<AuthController> logger;
-        private readonly NetGPT.Application.Interfaces.IUserRepository userRepo;
-        private readonly NetGPT.Infrastructure.Services.IPasswordHasher hasher;
-
-        public AuthController(ITokenService tokenService, RefreshTokenRepository refreshRepo, IConfiguration configuration, Microsoft.Extensions.Logging.ILogger<AuthController> logger, NetGPT.Application.Interfaces.IUserRepository userRepo, NetGPT.Infrastructure.Services.IPasswordHasher hasher)
-        {
-            this.tokenService = tokenService;
-            this.refreshRepo = refreshRepo;
-            this.configuration = configuration;
-            this.logger = logger;
-            this.userRepo = userRepo;
-            this.hasher = hasher;
-        }
+        private readonly ITokenService tokenService = tokenService;
+        private readonly RefreshTokenRepository refreshRepo = refreshRepo;
+        private readonly IConfiguration configuration = configuration;
+        private readonly ILogger<AuthController> logger = logger;
+        private readonly Application.Interfaces.IUserRepository userRepo = userRepo;
+        private readonly Infrastructure.Services.IPasswordHasher hasher = hasher;
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
             if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
+            {
                 return BadRequest();
+            }
 
-            var user = await userRepo.GetByUsernameAsync(request.Username);
+            User? user = await userRepo.GetByUsernameAsync(request.Username);
             if (user == null)
             {
                 // user does not exist
@@ -52,14 +45,14 @@ namespace NetGPT.API.Controllers
             }
 
             // Build user object to include claims
-            string[] roles = string.IsNullOrEmpty(user.Roles) ? Array.Empty<string>() : user.Roles.Split(',');
-            object userObj = new { Id = user.Id, Name = user.Name ?? user.Username, Roles = roles };
+            string[] roles = string.IsNullOrEmpty(user.Roles) ? [] : user.Roles.Split(',');
+            object userObj = new { user.Id, Name = user.Name ?? user.Username, Roles = roles };
 
             string accessToken = tokenService.CreateAccessToken(userObj);
             (string refreshTokenPlain, DateTime refreshExpiresAt) = tokenService.CreateRefreshToken();
             string refreshHash = tokenService.HashRefreshToken(refreshTokenPlain);
 
-            RefreshToken refreshEntity = new RefreshToken
+            RefreshToken refreshEntity = new()
             {
                 Id = Guid.NewGuid(),
                 UserId = user.Id,
@@ -79,14 +72,14 @@ namespace NetGPT.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] NetGPT.Application.DTOs.Auth.RegisterRequestDto request)
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
         {
             if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
             {
                 return BadRequest();
             }
 
-            var existing = await userRepo.GetByUsernameAsync(request.Username);
+            User? existing = await userRepo.GetByUsernameAsync(request.Username);
             if (existing != null)
             {
                 return Conflict();
@@ -94,7 +87,7 @@ namespace NetGPT.API.Controllers
 
             hasher.CreateHash(request.Password, out byte[] hash, out byte[] salt);
 
-            NetGPT.Infrastructure.Persistence.Entities.User user = new NetGPT.Infrastructure.Persistence.Entities.User
+            Infrastructure.Persistence.Entities.User user = new Infrastructure.Persistence.Entities.User
             {
                 Id = Guid.NewGuid(),
                 Username = request.Username,
@@ -135,7 +128,7 @@ namespace NetGPT.API.Controllers
             {
                 logger.LogWarning("Refresh token replay detected for user {UserId}. Revoking all tokens.", existing.UserId);
                 await refreshRepo.RevokeAllForUserAsync(existing.UserId);
-                await refreshRepo.SaveChangesAsync();
+                _ = await refreshRepo.SaveChangesAsync();
                 ClearRefreshCookie();
                 return Unauthorized();
             }
@@ -151,7 +144,7 @@ namespace NetGPT.API.Controllers
             (string newRefreshPlain, DateTime newExpiresAt) = tokenService.CreateRefreshToken();
             string newHash = tokenService.HashRefreshToken(newRefreshPlain);
 
-            RefreshToken newEntity = new RefreshToken
+            RefreshToken newEntity = new()
             {
                 Id = Guid.NewGuid(),
                 UserId = existing.UserId,
@@ -192,7 +185,7 @@ namespace NetGPT.API.Controllers
 
         private void SetRefreshCookie(string token, DateTime expiresAt)
         {
-            Microsoft.AspNetCore.Http.CookieOptions cookieOptions = new Microsoft.AspNetCore.Http.CookieOptions
+            Microsoft.AspNetCore.Http.CookieOptions cookieOptions = new()
             {
                 HttpOnly = true,
                 Secure = !string.Equals(configuration["ASPNETCORE_ENVIRONMENT"], "Development", StringComparison.OrdinalIgnoreCase),

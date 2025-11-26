@@ -5,17 +5,17 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Options;
+using NetGPT.Infrastructure.Configuration;
 using NetGPT.Infrastructure.Configuration;
 using OpenAI;
+using OpenAI;
+using OpenAI.Chat;
 using OpenAI.Chat;
 using ChatSdkMessage = Microsoft.Extensions.AI.ChatMessage;
 using ChatSdkResponseUpdate = Microsoft.Extensions.AI.ChatResponseUpdate;
 using ChatSdkRole = Microsoft.Extensions.AI.ChatRole;
-using NetGPT.Infrastructure.Configuration;
-using OpenAI;
-using OpenAI.Chat;
 
 namespace NetGPT.Infrastructure.Agents
 {
@@ -47,7 +47,7 @@ namespace NetGPT.Infrastructure.Agents
             IChatClient aiChatClient = chatClient.AsIChatClient();
 
             // Map our internal lightweight ChatMessage to the Microsoft.Extensions.AI chat message type
-            var sdkMessages = new List<ChatSdkMessage>(messages.Count);
+            List<ChatSdkMessage> sdkMessages = new(messages.Count);
             foreach (ChatMessage m in messages)
             {
                 string role = string.IsNullOrWhiteSpace(m.Role) ? "user" : m.Role;
@@ -62,7 +62,7 @@ namespace NetGPT.Infrastructure.Agents
                 sdkMessages.Add(new ChatSdkMessage(chatRole, m.Content ?? string.Empty));
             }
 
-            ChatOptions chatOptions = new ChatOptions
+            ChatOptions chatOptions = new()
             {
                 ConversationId = threadId,
             };

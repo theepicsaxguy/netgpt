@@ -5,9 +5,9 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NetGPT.Application.Commands;
 using NetGPT.Application.DTOs;
 using NetGPT.Application.Interfaces;
@@ -20,12 +20,12 @@ namespace NetGPT.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public sealed class ConversationsController(IMediator mediator, IAgentOrchestrator orchestrator, IConversationRepository repository, Microsoft.Extensions.Logging.ILogger<ConversationsController> logger) : ControllerBase
+    public sealed class ConversationsController(IMediator mediator, IAgentOrchestrator orchestrator, IConversationRepository repository, ILogger<ConversationsController> logger) : ControllerBase
     {
         private readonly IMediator mediator = mediator;
         private readonly IAgentOrchestrator orchestrator = orchestrator;
         private readonly IConversationRepository repository = repository;
-        private readonly Microsoft.Extensions.Logging.ILogger<ConversationsController> logger = logger;
+        private readonly ILogger<ConversationsController> logger = logger;
 
         [HttpPost]
         public async Task<IActionResult> CreateConversation(
@@ -40,7 +40,7 @@ namespace NetGPT.API.Controllers
             {
                 result = await mediator.Send(command, cancellationToken);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 logger.LogError(ex, "Exception while handling CreateConversation for user {UserId}", userId);
                 throw;

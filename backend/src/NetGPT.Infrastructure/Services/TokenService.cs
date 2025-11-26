@@ -1,7 +1,10 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -31,7 +34,7 @@ namespace NetGPT.Infrastructure.Services
             {
                 using RSA rsa = RSA.Create();
                 rsa.ImportFromPem(rsaPrivatePem.ToCharArray());
-                var key = new RsaSecurityKey(rsa);
+                RsaSecurityKey key = new(rsa);
                 signingCredentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256);
                 validationParameters = new TokenValidationParameters
                 {
@@ -48,7 +51,7 @@ namespace NetGPT.Infrastructure.Services
             else
             {
                 string secret = configuration["Jwt:Secret"] ?? "netgpt_dev_secret_change_me";
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+                SymmetricSecurityKey key = new(Encoding.UTF8.GetBytes(secret));
                 signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
                 validationParameters = new TokenValidationParameters
                 {
@@ -77,7 +80,7 @@ namespace NetGPT.Infrastructure.Services
             DateTime now = DateTime.UtcNow;
             TimeSpan tokenLifetime = lifetime ?? TimeSpan.FromMinutes(15);
 
-            var claimsList = new System.Collections.Generic.List<Claim>
+            List<Claim> claimsList = new()
             {
                 new Claim(JwtRegisteredClaimNames.Sub, sub ?? string.Empty),
                 new Claim(JwtRegisteredClaimNames.Iat, ((DateTimeOffset)now).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
@@ -86,29 +89,35 @@ namespace NetGPT.Infrastructure.Services
             // Optionally include name and roles if provided on the user object
             if (user != null)
             {
-                var type = user.GetType();
-                var nameProp = type.GetProperty("Name");
+                Type type = user.GetType();
+                PropertyInfo? nameProp = type.GetProperty("Name");
                 if (nameProp != null)
                 {
                     var nameVal = nameProp.GetValue(user)?.ToString();
-                    if (!string.IsNullOrEmpty(nameVal)) claimsList.Add(new Claim(ClaimTypes.Name, nameVal));
+                    if (!string.IsNullOrEmpty(nameVal))
+                    {
+                        claimsList.Add(new Claim(ClaimTypes.Name, nameVal));
+                    }
                 }
 
-                var rolesProp = type.GetProperty("Roles");
+                PropertyInfo? rolesProp = type.GetProperty("Roles");
                 if (rolesProp != null)
                 {
-                    var rolesVal = rolesProp.GetValue(user) as System.Collections.IEnumerable;
+                    IEnumerable? rolesVal = rolesProp.GetValue(user) as IEnumerable;
                     if (rolesVal != null)
                     {
                         foreach (var r in rolesVal)
                         {
-                            if (r != null) claimsList.Add(new Claim(ClaimTypes.Role, r.ToString()));
+                            if (r != null)
+                            {
+                                claimsList.Add(new Claim(ClaimTypes.Role, r.ToString()));
+                            }
                         }
                     }
                 }
             }
 
-            var jwt = new JwtSecurityToken(
+            JwtSecurityToken jwt = new(
                 issuer: validationParameters.ValidIssuer,
                 audience: validationParameters.ValidAudience,
                 claims: claimsList,
@@ -122,7 +131,7 @@ namespace NetGPT.Infrastructure.Services
         public (string token, DateTime expiresAt) CreateRefreshToken()
         {
             byte[] data = new byte[64];
-            using var rng = RandomNumberGenerator.Create();
+            using RandomNumberGenerator rng = RandomNumberGenerator.Create();
             rng.GetBytes(data);
             string token = Base64UrlEncoder.Encode(data);
             DateTime expiresAt = DateTime.UtcNow.AddDays(30);
@@ -133,9 +142,9 @@ namespace NetGPT.Infrastructure.Services
         {
             try
             {
-                var parameters = validationParameters.Clone();
+                TokenValidationParameters parameters = validationParameters.Clone();
                 parameters.ValidateLifetime = validateLifetime;
-                var principal = tokenHandler.ValidateToken(token, parameters, out _);
+                ClaimsPrincipal principal = tokenHandler.ValidateToken(token, parameters, out _);
                 return principal;
             }
             catch
@@ -146,7 +155,7 @@ namespace NetGPT.Infrastructure.Services
 
         public string HashRefreshToken(string token)
         {
-            using var sha = SHA256.Create();
+            using SHA256 sha = SHA256.Create();
             byte[] bytes = Encoding.UTF8.GetBytes(token);
             byte[] hash = sha.ComputeHash(bytes);
             return Convert.ToHexString(hash);

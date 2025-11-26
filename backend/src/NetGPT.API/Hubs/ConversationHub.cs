@@ -2,8 +2,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using NetGPT.Application.DTOs;
 using NetGPT.Application.Interfaces;
@@ -57,23 +59,23 @@ namespace NetGPT.API.Hubs
 
         private Guid GetCurrentUserId()
         {
-            var user = Context.User;
+            ClaimsPrincipal? user = Context.User;
             if (user == null)
             {
                 throw new InvalidOperationException("User context is not available");
             }
-                var httpContext = Context.GetHttpContext();
-                if (httpContext?.User?.Identity?.IsAuthenticated == true)
+            HttpContext? httpContext = Context.GetHttpContext();
+            if (httpContext?.User?.Identity?.IsAuthenticated == true)
+            {
+                var sub = httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                    ?? httpContext.User.FindFirst("sub")?.Value;
+                if (Guid.TryParse(sub, out Guid userId))
                 {
-                    var sub = httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
-                        ?? httpContext.User.FindFirst("sub")?.Value;
-                    if (Guid.TryParse(sub, out Guid userId))
-                    {
-                        return userId;
-                    }
+                    return userId;
                 }
+            }
 
-                throw new InvalidOperationException("Unable to determine current user from claims");
+            throw new InvalidOperationException("Unable to determine current user from claims");
                           ?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrWhiteSpace(sub) || !Guid.TryParse(sub, out Guid id))
