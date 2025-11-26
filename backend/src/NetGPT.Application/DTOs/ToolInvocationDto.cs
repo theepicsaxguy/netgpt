@@ -9,5 +9,6 @@ namespace NetGPT.Application.DTOs
         string Arguments,
         string? Result,
         DateTime InvokedAt,
-        double DurationMs);
+        double DurationMs,
+        string? InvocationId = null);
 }

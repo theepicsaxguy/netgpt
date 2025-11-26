@@ -6,5 +6,8 @@ namespace NetGPT.Application.DTOs
 {
     public record SendMessageRequest(
         string Content,
-        List<FileAttachmentDto>? Attachments = null);
+        List<FileAttachmentDto>? Attachments = null,
+        bool AllowTools = true,
+        RunOptionsDto? RunOptions = null,
+        bool Stream = false);
 }
