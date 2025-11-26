@@ -54,7 +54,7 @@ namespace NetGPT.API.Controllers
             catch (YamlException yex)
             {
                 // Return parser location and message
-                return BadRequest(new { message = yex.Message, start = yex.Start, end = yex.End });
+                return BadRequest(new { message = yex.Message, line = yex.Start.Line + 1, column = yex.Start.Column + 1 });
             }
 
             var def = new DefinitionEntity
@@ -64,6 +64,15 @@ namespace NetGPT.API.Controllers
                 ContentYaml = request.ContentYaml,
                 CreatedBy = User?.Identity?.Name ?? "api",
             };
+
+            try
+            {
+                await loader.LoadAsync(def);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return UnprocessableEntity(new { error = ex.Message });
+            }
 
             try
             {

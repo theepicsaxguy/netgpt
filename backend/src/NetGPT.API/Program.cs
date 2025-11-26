@@ -115,17 +115,6 @@ builder.Services.AddScoped<NetGPT.Infrastructure.Declarative.IDeclarativeLoader,
 // OpenAI client factory used by SDK-backed adapter
 builder.Services.AddSingleton<NetGPT.Infrastructure.Agents.IOpenAIClientFactory, NetGPT.Infrastructure.Agents.OpenAIClientFactory>();
 
-// Register SDK-backed OpenAI adapter and map the abstract base to it
-builder.Services.AddScoped<NetGPT.Infrastructure.Agents.OpenAIResponsesSdkAgentClient>();
-builder.Services.AddScoped<NetGPT.Infrastructure.Agents.AgentClientBase>(sp => sp.GetRequiredService<NetGPT.Infrastructure.Agents.OpenAIResponsesSdkAgentClient>());
-
-// Register SDK-backed OpenAIResponsesAgentClient using configured settings.
-builder.Services.AddScoped<NetGPT.Infrastructure.Agents.OpenAIResponsesAgentClient>();
-
-// Map the abstract base so other components can depend on it.
-builder.Services.AddScoped<NetGPT.Infrastructure.Agents.AgentClientBase>(sp =>
-    sp.GetRequiredService<NetGPT.Infrastructure.Agents.OpenAIResponsesAgentClient>());
-
 // Register Tool Plugins at Runtime (Flexible DI)
 builder.Services.AddSingleton(sp =>
 {
@@ -175,27 +164,6 @@ builder.Services.AddCors(options =>
 });
 
 WebApplication app = builder.Build();
-
-// Optional seeding of declarative definitions when flag --seed-declarative is present
-if (args is not null && args.Contains("--seed-declarative"))
-{
-    // Run seeding synchronously before starting the app
-    var sp = app.Services;
-    // Resolve a typed logger from the IServiceProvider so the logger is created
-    // with the DI container and any logging providers configured there.
-    var logger = sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<NetGPT.Infrastructure.Declarative.SeedDefinitions>>();
-    try
-    {
-        logger.LogInformation("Starting declarative definitions seeding...");
-        SeedDefinitions.RunAsync(sp).GetAwaiter().GetResult();
-        logger.LogInformation("Declarative definitions seeding complete.");
-    }
-    catch (Exception ex)
-    {
-        logger.LogError(ex, "Seeding declarative definitions failed.");
-        throw;
-    }
-}
 
 // Ensure database is ready before starting
 int maxRetries = 10;

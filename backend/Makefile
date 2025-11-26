@@ -12,6 +12,9 @@ test:
 migrate:
 	cd src/NetGPT.API && dotnet ef database update --project ../NetGPT.Infrastructure
 
+seed-declarative:
+	cd src/NetGPT.API && dotnet run -- --seed-declarative
+
 docker-up:
 	docker-compose up -d
 
