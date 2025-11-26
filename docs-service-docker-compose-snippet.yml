@@ -1,0 +1,43 @@
+# Docker Compose service definition for netgpt-docs-service
+# Add this to your main docker-compose.yml file
+
+  docs-service:
+    build:
+      context: ./netgpt-docs-service
+      dockerfile: Dockerfile
+    container_name: netgpt-docs-service
+    ports:
+      - "8000:8000"
+    environment:
+      - QDRANT_URL=http://qdrant:6333
+      - QDRANT_API_KEY=${QDRANT_API_KEY:-}
+      - EMBEDDING_MODEL=BAAI/bge-small-en-v1.5
+      - COLLECTION_NAME=netgpt_documents
+      - CHUNK_SIZE=512
+    depends_on:
+      - qdrant
+    restart: unless-stopped
+    networks:
+      - netgpt-network
+
+  # If Qdrant is not already defined, add:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: netgpt-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant-storage:/qdrant/storage
+    restart: unless-stopped
+    networks:
+      - netgpt-network
+
+# Add volume definition:
+volumes:
+  qdrant-storage:
+
+# Ensure network is defined:
+networks:
+  netgpt-network:
+    driver: bridge
