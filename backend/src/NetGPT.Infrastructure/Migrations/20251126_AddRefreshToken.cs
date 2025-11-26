@@ -1,3 +1,5 @@
+// Copyright (c) 2025 NetGPT. All rights reserved.
+
 // Auto-generated minimal EF Core migration for RefreshToken table
 using System;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -10,7 +12,7 @@ namespace NetGPT.Infrastructure.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
+            _ = migrationBuilder.CreateTable(
                 name: "RefreshTokens",
                 columns: table => new
                 {
@@ -25,10 +27,10 @@ namespace NetGPT.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                    _ = table.PrimaryKey("PK_RefreshTokens", x => x.Id);
                 });
 
-            migrationBuilder.CreateIndex(
+            _ = migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_TokenHash",
                 table: "RefreshTokens",
                 column: "TokenHash");

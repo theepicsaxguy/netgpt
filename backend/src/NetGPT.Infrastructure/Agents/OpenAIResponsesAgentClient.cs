@@ -4,14 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Options;
 using NetGPT.Infrastructure.Configuration;
-using NetGPT.Infrastructure.Configuration;
 using OpenAI;
-using OpenAI;
-using OpenAI.Chat;
 using OpenAI.Chat;
 using ChatSdkMessage = Microsoft.Extensions.AI.ChatMessage;
 using ChatSdkResponseUpdate = Microsoft.Extensions.AI.ChatResponseUpdate;
@@ -24,9 +20,9 @@ namespace NetGPT.Infrastructure.Agents
     /// This implementation constructs an <see cref="OpenAIClient"/> using configuration and then uses
     /// the ChatClient/AsIChatClient extension to obtain streaming responses.
     /// </summary>
-        internal sealed class OpenAIResponsesAgentClient(IOptions<OpenAISettings> options) : AgentClientBase
-        {
-            private readonly OpenAISettings settings = options.Value;
+    internal sealed class OpenAIResponsesAgentClient(IOptions<OpenAISettings> options) : AgentClientBase
+    {
+        private readonly OpenAISettings settings = options.Value;
 
         public override async IAsyncEnumerable<AgentRunResponseUpdate> RunStreamingAsync(
             string agentName,

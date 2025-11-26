@@ -12,7 +12,10 @@ using NetGPT.Domain.Entities;
 
 namespace NetGPT.Infrastructure.Declarative
 {
-    public sealed class DefinitionRepository(DefinitionDbContext db) : IDefinitionRepository
+    /// <summary>
+    /// Repository for managing DefinitionEntity objects, including creation, retrieval, and versioning.
+    /// </summary>
+    public sealed partial class DefinitionRepository(DefinitionDbContext db) : IDefinitionRepository
     {
         private readonly DefinitionDbContext db = db;
 
@@ -23,27 +26,27 @@ namespace NetGPT.Infrastructure.Declarative
             // Basic required fields
             if (string.IsNullOrWhiteSpace(def.Name))
             {
-                throw new ArgumentException("Definition Name is required", nameof(def.Name));
+                throw new ArgumentException("Definition Name is required", nameof(def));
             }
 
             if (string.IsNullOrWhiteSpace(def.Kind))
             {
-                throw new ArgumentException("Definition Kind is required", nameof(def.Kind));
+                throw new ArgumentException("Definition Kind is required", nameof(def));
             }
 
             if (string.IsNullOrWhiteSpace(def.ContentYaml))
             {
-                throw new ArgumentException("Definition ContentYaml is required", nameof(def.ContentYaml));
+                throw new ArgumentException("Definition ContentYaml is required", nameof(def));
             }
 
             if (string.IsNullOrWhiteSpace(def.CreatedBy))
             {
-                throw new ArgumentException("Definition CreatedBy is required", nameof(def.CreatedBy));
+                throw new ArgumentException("Definition CreatedBy is required", nameof(def));
             }
 
             // Security check: disallow raw secret values. Allow placeholders that start with =Secret. or =Env.
             // Match common secret keys in YAML like `secret: value`, `api_key: value`, `password: value`.
-            Regex rawSecretPattern = new(@"(?im)^[\s-]*?(api[_-]?key|apikey|password|secret)\s*:\s*(.+)$");
+            Regex rawSecretPattern = MyRegex();
             MatchCollection matches = rawSecretPattern.Matches(def.ContentYaml);
             foreach (Match m in matches)
             {
@@ -57,6 +60,7 @@ namespace NetGPT.Infrastructure.Declarative
                 {
                     continue;
                 }
+
                 // Accept placeholders that start with =Secret. or =Env.
                 if (value.StartsWith("=Secret.", StringComparison.OrdinalIgnoreCase) || value.StartsWith("=Env.", StringComparison.OrdinalIgnoreCase))
                 {
@@ -76,17 +80,16 @@ namespace NetGPT.Infrastructure.Declarative
             // Compute content hash if not present (used by seeding/idempotency)
             if (string.IsNullOrEmpty(def.ContentHash))
             {
-                using SHA256 sha = SHA256.Create();
                 byte[] bytes = Encoding.UTF8.GetBytes(def.ContentYaml);
-                byte[] hash = sha.ComputeHash(bytes);
+                byte[] hash = SHA256.HashData(bytes);
                 def.ContentHash = BitConverter.ToString(hash).Replace("-", string.Empty).ToLowerInvariant();
             }
 
             def.Id = def.Id == Guid.Empty ? Guid.NewGuid() : def.Id;
             def.CreatedAtUtc = def.CreatedAtUtc == default ? DateTime.UtcNow : def.CreatedAtUtc;
 
-            db.Definitions.Add(def);
-            await db.SaveChangesAsync();
+            _ = db.Definitions.Add(def);
+            _ = await db.SaveChangesAsync();
             return def;
         }
 
@@ -113,7 +116,7 @@ namespace NetGPT.Infrastructure.Declarative
                 .Take(pageSize)
                 .ToListAsync();
 
-            return grouped.Where(x => x != null)!.Cast<DefinitionEntity>();
+            return grouped.Where(x => x != null).Cast<DefinitionEntity>();
         }
 
         public async Task<int> GetNextVersionAsync(string name)
@@ -128,8 +131,11 @@ namespace NetGPT.Infrastructure.Declarative
 
         public async Task UpdateAsync(DefinitionEntity def)
         {
-            db.Definitions.Update(def);
-            await db.SaveChangesAsync();
+            _ = db.Definitions.Update(def);
+            _ = await db.SaveChangesAsync();
         }
+
+        [GeneratedRegex(@"(?im)^[\s-]*?(api[_-]?key|apikey|password|secret)\s*:\s*(.+)$", RegexOptions.None, "en-US")]
+        private static partial Regex MyRegex();
     }
 }

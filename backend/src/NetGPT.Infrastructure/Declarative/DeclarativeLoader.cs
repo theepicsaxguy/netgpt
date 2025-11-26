@@ -1,21 +1,24 @@
+// Copyright (c) 2025 NetGPT. All rights reserved.
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Agents.AI;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using NetGPT.Application.Interfaces;
 using NetGPT.Domain.Entities;
 using NetGPT.Domain.ValueObjects;
 using NetGPT.Infrastructure.Agents;
+using NetGPT.Infrastructure.Declarative.Models;
 using NetGPT.Infrastructure.Tools;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace NetGPT.Infrastructure.Declarative
 {
-    public sealed class DeclarativeLoader(
+    public sealed partial class DeclarativeLoader(
         ILogger<DeclarativeLoader> logger,
         IToolRegistry toolRegistry,
         IAgentFactory agentFactory,
@@ -28,15 +31,15 @@ namespace NetGPT.Infrastructure.Declarative
         private readonly IOpenAIClientFactory? chatClientFactory = chatClientFactory;
         private readonly DeclarativeCache cache = cache;
 
+        [LoggerMessage(EventId = 1, Level = LogLevel.Error, Message = "Failed to parse declarative definition YAML for {Name}")]
+        private static partial void LogParseError(ILogger logger, Exception? ex, string name);
+
         public async Task<IAgentExecutable> LoadAsync(DefinitionEntity definition, CancellationToken cancellationToken = default)
         {
-            if (definition == null)
-            {
-                throw new ArgumentNullException(nameof(definition));
-            }
+            ArgumentNullException.ThrowIfNull(definition);
 
             string cacheKey = $"{definition.Name}:{definition.Version}";
-            if (cache.TryGet<IAgentExecutable>(cacheKey, out IAgentExecutable? cached))
+            if (cache.TryGet(cacheKey, out IAgentExecutable? cached))
             {
                 return cached!;
             }
@@ -53,7 +56,7 @@ namespace NetGPT.Infrastructure.Declarative
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to parse declarative definition YAML for {Name}", definition.Name);
+                LogParseError(logger, ex, definition.Name);
                 throw new InvalidOperationException("YAML parse failed", ex);
             }
 
@@ -65,10 +68,10 @@ namespace NetGPT.Infrastructure.Declarative
 
             // Resolve tools
             IEnumerable<AIFunction> resolvedTools = [];
-            if (model.Tools is { } tools && tools.Any())
+            if (model.Tools is { } tools && tools.Count > 0)
             {
-                List<AIFunction> list = new();
-                List<string> missing = new();
+                List<AIFunction> list = [];
+                List<string> missing = [];
                 foreach (string tname in tools)
                 {
                     AIFunction? tf = toolRegistry.GetTool(tname);
@@ -82,7 +85,7 @@ namespace NetGPT.Infrastructure.Declarative
                     }
                 }
 
-                if (missing.Any())
+                if (missing.Count > 0)
                 {
                     throw new InvalidOperationException($"Unknown tool(s) referenced: {string.Join(',', missing)}");
                 }

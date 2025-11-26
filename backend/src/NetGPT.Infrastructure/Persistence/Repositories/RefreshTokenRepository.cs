@@ -38,7 +38,8 @@ namespace NetGPT.Infrastructure.Persistence.Repositories
             {
                 t.RevokedAt = DateTime.UtcNow;
             }
-            _ = context.RefreshTokens.UpdateRange(tokens);
+
+            context.RefreshTokens.UpdateRange(tokens);
         }
 
         public Task<int> SaveChangesAsync()

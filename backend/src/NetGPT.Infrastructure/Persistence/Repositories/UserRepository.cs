@@ -1,10 +1,9 @@
 // Copyright (c) 2025 NetGPT. All rights reserved.
 
-using System;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NetGPT.Application.Interfaces;
-using NetGPT.Infrastructure.Persistence.Entities;
+using NetGPT.Domain.Entities;
 
 namespace NetGPT.Infrastructure.Persistence.Repositories
 {
@@ -19,7 +18,7 @@ namespace NetGPT.Infrastructure.Persistence.Repositories
 
         public async Task<User> AddAsync(User user)
         {
-            await context.Set<User>().AddAsync(user);
+            _ = await context.Set<User>().AddAsync(user);
             return user;
         }
     }

@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Security.Claims;
@@ -45,7 +46,7 @@ namespace NetGPT.Infrastructure.Services
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = key,
                     ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromSeconds(30)
+                    ClockSkew = TimeSpan.FromSeconds(30),
                 };
             }
             else
@@ -62,7 +63,7 @@ namespace NetGPT.Infrastructure.Services
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = key,
                     ValidateLifetime = true,
-                    ClockSkew = TimeSpan.FromSeconds(30)
+                    ClockSkew = TimeSpan.FromSeconds(30),
                 };
             }
         }
@@ -73,8 +74,8 @@ namespace NetGPT.Infrastructure.Services
             string sub = user switch
             {
                 Guid g => g.ToString(),
-                string s when Guid.TryParse(s, out Guid _ ) => s,
-                var u => u?.GetType().GetProperty("Id")?.GetValue(u)?.ToString() ?? "",
+                string s when Guid.TryParse(s, out Guid _) => s,
+                var u => u?.GetType().GetProperty("Id")?.GetValue(u)?.ToString() ?? string.Empty,
             };
 
             DateTime now = DateTime.UtcNow;
@@ -83,7 +84,7 @@ namespace NetGPT.Infrastructure.Services
             List<Claim> claimsList = new()
             {
                 new Claim(JwtRegisteredClaimNames.Sub, sub ?? string.Empty),
-                new Claim(JwtRegisteredClaimNames.Iat, ((DateTimeOffset)now).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
+                new Claim(JwtRegisteredClaimNames.Iat, ((DateTimeOffset)now).ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Integer64),
             };
 
             // Optionally include name and roles if provided on the user object
@@ -93,24 +94,23 @@ namespace NetGPT.Infrastructure.Services
                 PropertyInfo? nameProp = type.GetProperty("Name");
                 if (nameProp != null)
                 {
-                    var nameVal = nameProp.GetValue(user)?.ToString();
+                    string? nameVal = nameProp.GetValue(user)?.ToString();
                     if (!string.IsNullOrEmpty(nameVal))
                     {
-                        claimsList.Add(new Claim(ClaimTypes.Name, nameVal));
+                        claimsList.Add(new Claim(ClaimTypes.Name, nameVal!));
                     }
                 }
 
                 PropertyInfo? rolesProp = type.GetProperty("Roles");
                 if (rolesProp != null)
                 {
-                    IEnumerable? rolesVal = rolesProp.GetValue(user) as IEnumerable;
-                    if (rolesVal != null)
+                    if (rolesProp.GetValue(user) is IEnumerable rolesVal)
                     {
-                        foreach (var r in rolesVal)
+                        foreach (object? r in rolesVal)
                         {
                             if (r != null)
                             {
-                                claimsList.Add(new Claim(ClaimTypes.Role, r.ToString()));
+                                claimsList.Add(new Claim(ClaimTypes.Role, r.ToString()!));
                             }
                         }
                     }
@@ -128,7 +128,7 @@ namespace NetGPT.Infrastructure.Services
             return tokenHandler.WriteToken(jwt);
         }
 
-        public (string token, DateTime expiresAt) CreateRefreshToken()
+        public (string Token, DateTime ExpiresAt) CreateRefreshToken()
         {
             byte[] data = new byte[64];
             using RandomNumberGenerator rng = RandomNumberGenerator.Create();
@@ -155,9 +155,8 @@ namespace NetGPT.Infrastructure.Services
 
         public string HashRefreshToken(string token)
         {
-            using SHA256 sha = SHA256.Create();
             byte[] bytes = Encoding.UTF8.GetBytes(token);
-            byte[] hash = sha.ComputeHash(bytes);
+            byte[] hash = SHA256.HashData(bytes);
             return Convert.ToHexString(hash);
         }
     }
