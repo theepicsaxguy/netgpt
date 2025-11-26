@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NetGPT.Infrastructure.Persistence;
@@ -18,8 +21,51 @@ namespace NetGPT.Infrastructure.Declarative
 
         public async Task<DefinitionEntity> CreateAsync(DefinitionEntity def)
         {
-            def.Id = Guid.NewGuid();
-            def.CreatedAtUtc = DateTime.UtcNow;
+            if (def is null) throw new ArgumentNullException(nameof(def));
+
+            // Basic required fields
+            if (string.IsNullOrWhiteSpace(def.Name)) throw new ArgumentException("Definition Name is required", nameof(def.Name));
+            if (string.IsNullOrWhiteSpace(def.Kind)) throw new ArgumentException("Definition Kind is required", nameof(def.Kind));
+            if (string.IsNullOrWhiteSpace(def.ContentYaml)) throw new ArgumentException("Definition ContentYaml is required", nameof(def.ContentYaml));
+            if (string.IsNullOrWhiteSpace(def.CreatedBy)) throw new ArgumentException("Definition CreatedBy is required", nameof(def.CreatedBy));
+
+            // Security check: disallow raw secret values. Allow placeholders that start with =Secret. or =Env.
+            // Match common secret keys in YAML like `secret: value`, `api_key: value`, `password: value`.
+            var rawSecretPattern = new Regex(@"(?im)^[\s-]*?(api[_-]?key|apikey|password|secret)\s*:\s*(.+)$");
+            var matches = rawSecretPattern.Matches(def.ContentYaml);
+            foreach (Match m in matches)
+            {
+                if (m.Groups.Count < 3) continue;
+                string value = m.Groups[2].Value.Trim();
+                if (string.IsNullOrEmpty(value)) continue;
+                // Accept placeholders that start with =Secret. or =Env.
+                if (value.StartsWith("=Secret.", StringComparison.OrdinalIgnoreCase) || value.StartsWith("=Env.", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                // Reject raw secret values (do not persist)
+                throw new InvalidOperationException("Definition contains raw secret values which are not allowed. Use placeholders like =Secret.<Name> or =Env.<Name> instead.");
+            }
+
+            // Ensure versioning: if caller didn't set a positive version, compute next version for the name
+            if (def.Version <= 0)
+            {
+                def.Version = await GetNextVersionAsync(def.Name);
+            }
+
+            // Compute content hash if not present (used by seeding/idempotency)
+            if (string.IsNullOrEmpty(def.ContentHash))
+            {
+                using var sha = SHA256.Create();
+                byte[] bytes = Encoding.UTF8.GetBytes(def.ContentYaml);
+                byte[] hash = sha.ComputeHash(bytes);
+                def.ContentHash = BitConverter.ToString(hash).Replace("-", string.Empty).ToLowerInvariant();
+            }
+
+            def.Id = def.Id == Guid.Empty ? Guid.NewGuid() : def.Id;
+            def.CreatedAtUtc = def.CreatedAtUtc == default ? DateTime.UtcNow : def.CreatedAtUtc;
+
             _db.Definitions.Add(def);
             await _db.SaveChangesAsync();
             return def;

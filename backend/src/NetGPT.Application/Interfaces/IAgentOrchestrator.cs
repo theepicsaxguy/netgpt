@@ -20,5 +20,14 @@ namespace NetGPT.Application.Interfaces
             Conversation conversation,
             string userMessage,
             CancellationToken cancellationToken = default);
+
+        // Execute an IAgentExecutable produced by the DeclarativeLoader and
+        // return a standard AgentResponse result. This is used for executing
+        // persisted declarative definitions.
+        Task<Result<AgentResponse>> ExecuteDefinitionAsync(
+            NetGPT.Infrastructure.Declarative.DefinitionEntity definition,
+            NetGPT.Infrastructure.Declarative.IAgentExecutable executable,
+            string input,
+            CancellationToken cancellationToken = default);
     }
 }

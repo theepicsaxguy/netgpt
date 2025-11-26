@@ -102,6 +102,44 @@ namespace NetGPT.Infrastructure.Agents
             }
         }
 
+        public async Task<Result<AgentResponse>> ExecuteDefinitionAsync(
+            NetGPT.Infrastructure.Declarative.DefinitionEntity definition,
+            NetGPT.Infrastructure.Declarative.IAgentExecutable executable,
+            string input,
+            CancellationToken cancellationToken = default)
+        {
+            if (definition == null) throw new ArgumentNullException(nameof(definition));
+            if (executable == null) throw new ArgumentNullException(nameof(executable));
+
+            DateTime start = DateTime.UtcNow;
+            Guid execId = Guid.NewGuid();
+
+            try
+            {
+                var run = await executable.ExecuteAsync(input, cancellationToken);
+                DateTime end = DateTime.UtcNow;
+
+                int tokenCount = EstimateTokens(string.Join("\n", run.Messages.Select(m => m.Text ?? string.Empty)));
+
+                var agentResponse = new AgentResponse(
+                    Content: run.Messages.LastOrDefault()?.Text ?? string.Empty,
+                    TokensUsed: tokenCount,
+                    ResponseTime: end - start,
+                    ModelUsed: definition.Id.ToString());
+
+                logger.LogInformation("Declarative execution finished definitionId={DefinitionId} version={Version} executionId={ExecutionId} start={Start} end={End} outcome=success",
+                    definition.Id, definition.Version, execId, start, end);
+
+                return Result.Success(agentResponse);
+            }
+            catch (Exception ex)
+            {
+                DateTime end = DateTime.UtcNow;
+                logger.LogError(ex, "Declarative execution failed definitionId={DefinitionId} version={Version} executionId={ExecutionId}", definition.Id, definition.Version, execId);
+                return Result.Failure<AgentResponse>(new DomainError("DeclarativeExecutionFailed", ex.Message));
+            }
+        }
+
         public async IAsyncEnumerable<StreamingChunkDto> ExecuteStreamingAsync(
             Conversation conversation,
             string userMessage,

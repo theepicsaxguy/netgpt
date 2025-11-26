@@ -181,7 +181,9 @@ if (args is not null && args.Contains("--seed-declarative"))
 {
     // Run seeding synchronously before starting the app
     var sp = app.Services;
-    var logger = sp.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>().CreateLogger("SeedDefinitions");
+    // Resolve a typed logger from the IServiceProvider so the logger is created
+    // with the DI container and any logging providers configured there.
+    var logger = sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<NetGPT.Infrastructure.Declarative.SeedDefinitions>>();
     try
     {
         logger.LogInformation("Starting declarative definitions seeding...");
