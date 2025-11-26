@@ -61,6 +61,20 @@ export interface CreateConversationRequest {
   configuration?: AgentConfigurationDto;
 }
 
+export interface CreateDefinitionRequest {
+  /** @nullable */
+  name?: string | null;
+  /** @nullable */
+  kind?: string | null;
+  /** @nullable */
+  contentYaml?: string | null;
+}
+
+export interface ExecuteRequest {
+  /** @nullable */
+  input?: string | null;
+}
+
 export interface FileAttachmentDto {
   /** @nullable */
   url?: string | null;
@@ -69,6 +83,22 @@ export interface FileAttachmentDto {
   size?: number;
   /** @nullable */
   contentType?: string | null;
+}
+
+export interface LoginRequestDto {
+  /** @nullable */
+  username?: string | null;
+  /** @nullable */
+  password?: string | null;
+}
+
+export interface RegisterRequestDto {
+  /** @nullable */
+  username?: string | null;
+  /** @nullable */
+  password?: string | null;
+  /** @nullable */
+  name?: string | null;
 }
 
 export interface SendMessageRequest {
@@ -88,6 +118,11 @@ export type PostAttachmentsBody = {
 };
 
 export type GetConversationsParams = {
+  page?: number;
+  pageSize?: number;
+};
+
+export type GetApiDeclarativeDefinitionsParams = {
   page?: number;
   pageSize?: number;
 };
@@ -746,6 +781,320 @@ export const usePostAttachments = <TError = unknown, TContext = unknown>(
   return useMutation(mutationOptions, queryClient);
 };
 
+export const postApiAuthLogin = (
+  loginRequestDto: LoginRequestDto,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<void>(
+    {
+      url: `/api/Auth/login`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: loginRequestDto,
+      signal,
+    },
+    options,
+  );
+};
+
+export const getPostApiAuthLoginMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiAuthLogin>>,
+    TError,
+    { data: LoginRequestDto },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiAuthLogin>>,
+  TError,
+  { data: LoginRequestDto },
+  TContext
+> => {
+  const mutationKey = ["postApiAuthLogin"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiAuthLogin>>,
+    { data: LoginRequestDto }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return postApiAuthLogin(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiAuthLoginMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiAuthLogin>>
+>;
+export type PostApiAuthLoginMutationBody = LoginRequestDto;
+export type PostApiAuthLoginMutationError = unknown;
+
+export const usePostApiAuthLogin = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiAuthLogin>>,
+      TError,
+      { data: LoginRequestDto },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiAuthLogin>>,
+  TError,
+  { data: LoginRequestDto },
+  TContext
+> => {
+  const mutationOptions = getPostApiAuthLoginMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+
+export const postApiAuthRegister = (
+  registerRequestDto: RegisterRequestDto,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<void>(
+    {
+      url: `/api/Auth/register`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: registerRequestDto,
+      signal,
+    },
+    options,
+  );
+};
+
+export const getPostApiAuthRegisterMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiAuthRegister>>,
+    TError,
+    { data: RegisterRequestDto },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiAuthRegister>>,
+  TError,
+  { data: RegisterRequestDto },
+  TContext
+> => {
+  const mutationKey = ["postApiAuthRegister"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiAuthRegister>>,
+    { data: RegisterRequestDto }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return postApiAuthRegister(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiAuthRegisterMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiAuthRegister>>
+>;
+export type PostApiAuthRegisterMutationBody = RegisterRequestDto;
+export type PostApiAuthRegisterMutationError = unknown;
+
+export const usePostApiAuthRegister = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiAuthRegister>>,
+      TError,
+      { data: RegisterRequestDto },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiAuthRegister>>,
+  TError,
+  { data: RegisterRequestDto },
+  TContext
+> => {
+  const mutationOptions = getPostApiAuthRegisterMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+
+export const postApiAuthRefresh = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<void>(
+    { url: `/api/Auth/refresh`, method: "POST", signal },
+    options,
+  );
+};
+
+export const getPostApiAuthRefreshMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiAuthRefresh>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiAuthRefresh>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["postApiAuthRefresh"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiAuthRefresh>>,
+    void
+  > = () => {
+    return postApiAuthRefresh(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiAuthRefreshMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiAuthRefresh>>
+>;
+
+export type PostApiAuthRefreshMutationError = unknown;
+
+export const usePostApiAuthRefresh = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiAuthRefresh>>,
+      TError,
+      void,
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiAuthRefresh>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationOptions = getPostApiAuthRefreshMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+
+export const postApiAuthLogout = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<void>(
+    { url: `/api/Auth/logout`, method: "POST", signal },
+    options,
+  );
+};
+
+export const getPostApiAuthLogoutMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiAuthLogout>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiAuthLogout>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["postApiAuthLogout"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiAuthLogout>>,
+    void
+  > = () => {
+    return postApiAuthLogout(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiAuthLogoutMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiAuthLogout>>
+>;
+
+export type PostApiAuthLogoutMutationError = unknown;
+
+export const usePostApiAuthLogout = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiAuthLogout>>,
+      TError,
+      void,
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiAuthLogout>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationOptions = getPostApiAuthLogoutMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+
 export const postConversations = (
   createConversationRequest: CreateConversationRequest,
   options?: SecondParameter<typeof customInstance>,
@@ -1397,6 +1746,510 @@ export const usePostConversationsIdMessagesStream = <
 > => {
   const mutationOptions =
     getPostConversationsIdMessagesStreamMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+
+export const postApiDeclarativeDefinitions = (
+  createDefinitionRequest: CreateDefinitionRequest,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<void>(
+    {
+      url: `/api/declarative/definitions`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: createDefinitionRequest,
+      signal,
+    },
+    options,
+  );
+};
+
+export const getPostApiDeclarativeDefinitionsMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiDeclarativeDefinitions>>,
+    TError,
+    { data: CreateDefinitionRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiDeclarativeDefinitions>>,
+  TError,
+  { data: CreateDefinitionRequest },
+  TContext
+> => {
+  const mutationKey = ["postApiDeclarativeDefinitions"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiDeclarativeDefinitions>>,
+    { data: CreateDefinitionRequest }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return postApiDeclarativeDefinitions(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiDeclarativeDefinitionsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiDeclarativeDefinitions>>
+>;
+export type PostApiDeclarativeDefinitionsMutationBody = CreateDefinitionRequest;
+export type PostApiDeclarativeDefinitionsMutationError = unknown;
+
+export const usePostApiDeclarativeDefinitions = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiDeclarativeDefinitions>>,
+      TError,
+      { data: CreateDefinitionRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiDeclarativeDefinitions>>,
+  TError,
+  { data: CreateDefinitionRequest },
+  TContext
+> => {
+  const mutationOptions =
+    getPostApiDeclarativeDefinitionsMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+
+export const getApiDeclarativeDefinitions = (
+  params?: GetApiDeclarativeDefinitionsParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<void>(
+    { url: `/api/declarative/definitions`, method: "GET", params, signal },
+    options,
+  );
+};
+
+export const getGetApiDeclarativeDefinitionsQueryKey = (
+  params?: GetApiDeclarativeDefinitionsParams,
+) => {
+  return [`/api/declarative/definitions`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetApiDeclarativeDefinitionsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiDeclarativeDefinitions>>,
+  TError = unknown,
+>(
+  params?: GetApiDeclarativeDefinitionsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiDeclarativeDefinitions>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetApiDeclarativeDefinitionsQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiDeclarativeDefinitions>>
+  > = ({ signal }) =>
+    getApiDeclarativeDefinitions(params, requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiDeclarativeDefinitions>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetApiDeclarativeDefinitionsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiDeclarativeDefinitions>>
+>;
+export type GetApiDeclarativeDefinitionsQueryError = unknown;
+
+export function useGetApiDeclarativeDefinitions<
+  TData = Awaited<ReturnType<typeof getApiDeclarativeDefinitions>>,
+  TError = unknown,
+>(
+  params: undefined | GetApiDeclarativeDefinitionsParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiDeclarativeDefinitions>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiDeclarativeDefinitions>>,
+          TError,
+          Awaited<ReturnType<typeof getApiDeclarativeDefinitions>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetApiDeclarativeDefinitions<
+  TData = Awaited<ReturnType<typeof getApiDeclarativeDefinitions>>,
+  TError = unknown,
+>(
+  params?: GetApiDeclarativeDefinitionsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiDeclarativeDefinitions>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiDeclarativeDefinitions>>,
+          TError,
+          Awaited<ReturnType<typeof getApiDeclarativeDefinitions>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetApiDeclarativeDefinitions<
+  TData = Awaited<ReturnType<typeof getApiDeclarativeDefinitions>>,
+  TError = unknown,
+>(
+  params?: GetApiDeclarativeDefinitionsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiDeclarativeDefinitions>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useGetApiDeclarativeDefinitions<
+  TData = Awaited<ReturnType<typeof getApiDeclarativeDefinitions>>,
+  TError = unknown,
+>(
+  params?: GetApiDeclarativeDefinitionsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiDeclarativeDefinitions>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetApiDeclarativeDefinitionsQueryOptions(
+    params,
+    options,
+  );
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const getApiDeclarativeDefinitionsId = (
+  id: string,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<void>(
+    { url: `/api/declarative/definitions/${id}`, method: "GET", signal },
+    options,
+  );
+};
+
+export const getGetApiDeclarativeDefinitionsIdQueryKey = (id?: string) => {
+  return [`/api/declarative/definitions/${id}`] as const;
+};
+
+export const getGetApiDeclarativeDefinitionsIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiDeclarativeDefinitionsId>>,
+  TError = unknown,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiDeclarativeDefinitionsId>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetApiDeclarativeDefinitionsIdQueryKey(id);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiDeclarativeDefinitionsId>>
+  > = ({ signal }) =>
+    getApiDeclarativeDefinitionsId(id, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiDeclarativeDefinitionsId>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetApiDeclarativeDefinitionsIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiDeclarativeDefinitionsId>>
+>;
+export type GetApiDeclarativeDefinitionsIdQueryError = unknown;
+
+export function useGetApiDeclarativeDefinitionsId<
+  TData = Awaited<ReturnType<typeof getApiDeclarativeDefinitionsId>>,
+  TError = unknown,
+>(
+  id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiDeclarativeDefinitionsId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiDeclarativeDefinitionsId>>,
+          TError,
+          Awaited<ReturnType<typeof getApiDeclarativeDefinitionsId>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetApiDeclarativeDefinitionsId<
+  TData = Awaited<ReturnType<typeof getApiDeclarativeDefinitionsId>>,
+  TError = unknown,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiDeclarativeDefinitionsId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiDeclarativeDefinitionsId>>,
+          TError,
+          Awaited<ReturnType<typeof getApiDeclarativeDefinitionsId>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetApiDeclarativeDefinitionsId<
+  TData = Awaited<ReturnType<typeof getApiDeclarativeDefinitionsId>>,
+  TError = unknown,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiDeclarativeDefinitionsId>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+
+export function useGetApiDeclarativeDefinitionsId<
+  TData = Awaited<ReturnType<typeof getApiDeclarativeDefinitionsId>>,
+  TError = unknown,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiDeclarativeDefinitionsId>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetApiDeclarativeDefinitionsIdQueryOptions(
+    id,
+    options,
+  );
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+export const postApiDeclarativeDefinitionsIdExecute = (
+  id: string,
+  executeRequest: ExecuteRequest,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<void>(
+    {
+      url: `/api/declarative/definitions/${id}/execute`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: executeRequest,
+      signal,
+    },
+    options,
+  );
+};
+
+export const getPostApiDeclarativeDefinitionsIdExecuteMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiDeclarativeDefinitionsIdExecute>>,
+    TError,
+    { id: string; data: ExecuteRequest },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiDeclarativeDefinitionsIdExecute>>,
+  TError,
+  { id: string; data: ExecuteRequest },
+  TContext
+> => {
+  const mutationKey = ["postApiDeclarativeDefinitionsIdExecute"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiDeclarativeDefinitionsIdExecute>>,
+    { id: string; data: ExecuteRequest }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return postApiDeclarativeDefinitionsIdExecute(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiDeclarativeDefinitionsIdExecuteMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiDeclarativeDefinitionsIdExecute>>
+>;
+export type PostApiDeclarativeDefinitionsIdExecuteMutationBody = ExecuteRequest;
+export type PostApiDeclarativeDefinitionsIdExecuteMutationError = unknown;
+
+export const usePostApiDeclarativeDefinitionsIdExecute = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiDeclarativeDefinitionsIdExecute>>,
+      TError,
+      { id: string; data: ExecuteRequest },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiDeclarativeDefinitionsIdExecute>>,
+  TError,
+  { id: string; data: ExecuteRequest },
+  TContext
+> => {
+  const mutationOptions =
+    getPostApiDeclarativeDefinitionsIdExecuteMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };

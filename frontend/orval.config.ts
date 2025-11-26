@@ -8,7 +8,11 @@ let appApiUrl = 'http://localhost:5000';
 try {
   const raw = fs.readFileSync(runtimePath, { encoding: 'utf8' });
   const parsed = JSON.parse(raw);
-  appApiUrl = parsed?.api?.app ?? appApiUrl;
+  // If runtime.json contains an empty string for api.app we should fallback to the default.
+  const runtimeUrl = parsed?.api?.app?.toString().trim();
+  if (runtimeUrl) {
+    appApiUrl = runtimeUrl;
+  }
 } catch (e) {
   // fallback to default
 }
