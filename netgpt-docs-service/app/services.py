@@ -21,6 +21,35 @@ logging.basicConfig(level=logging.INFO)
 # Lazy-initialized clients to avoid importing heavy native libs at module import
 _client = None
 _embedder = None
+import os
+USE_MOCK_QDRANT = os.getenv("USE_MOCK_QDRANT", "0") == "1"
+
+class _MockQdrantClient:
+    def __init__(self):
+        self._store = []
+
+    def collection_exists(self, collection_name: str) -> bool:
+        # For demo purposes, always assume collection exists
+        return True
+
+    def create_collection(self, collection_name: str, vectors_config=None):
+        # no-op for mock
+        return None
+
+    def upload_collection(self, collection_name: str, vectors, payload):
+        for v, p in zip(vectors, payload):
+            self._store.append({"vector": v, "payload": p})
+
+    def search(self, collection_name: str, query_vector, limit=5):
+        # Return simple mock hits with decreasing score
+        hits = []
+        for i, item in enumerate(self._store[:limit]):
+            class _Hit:
+                def __init__(self, payload, score):
+                    self.payload = payload
+                    self.score = score
+            hits.append(_Hit(item["payload"], 1.0 - i * 0.1))
+        return hits
 
 def get_client():
     global _client
