@@ -21,35 +21,6 @@ logging.basicConfig(level=logging.INFO)
 # Lazy-initialized clients to avoid importing heavy native libs at module import
 _client = None
 _embedder = None
-import os
-USE_MOCK_QDRANT = os.getenv("USE_MOCK_QDRANT", "0") == "1"
-
-class _MockQdrantClient:
-    def __init__(self):
-        self._store = []
-
-    def collection_exists(self, collection_name: str) -> bool:
-        # For demo purposes, always assume collection exists
-        return True
-
-    def create_collection(self, collection_name: str, vectors_config=None):
-        # no-op for mock
-        return None
-
-    def upload_collection(self, collection_name: str, vectors, payload):
-        for v, p in zip(vectors, payload):
-            self._store.append({"vector": v, "payload": p})
-
-    def search(self, collection_name: str, query_vector, limit=5):
-        # Return simple mock hits with decreasing score
-        hits = []
-        for i, item in enumerate(self._store[:limit]):
-            class _Hit:
-                def __init__(self, payload, score):
-                    self.payload = payload
-                    self.score = score
-            hits.append(_Hit(item["payload"], 1.0 - i * 0.1))
-        return hits
 
 def get_client():
     global _client
@@ -62,22 +33,15 @@ def get_client():
         globals()["Distance"] = _Distance
         globals()["PointStruct"] = _PointStruct
 
-        # QdrantClient supports api_key parameter for cloud use. If provided,
-        # pass it through. Also allow using local in-memory or http endpoints.
-        if USE_MOCK_QDRANT:
-            _client = _MockQdrantClient()
-        else:
-            # QdrantClient will accept None for api_key; in cloud scenarios set it.
-            # If a full URL is provided with https, QdrantClient will use REST transport.
-            kwargs = {}
-            if QDRANT_API_KEY:
-                kwargs["api_key"] = QDRANT_API_KEY
-            # Create the client with provided URL and optional api_key
-            try:
-                _client = QdrantClient(url=QDRANT_URL, **kwargs)
-            except TypeError:
-                # Older versions may expect 'host'/'port' args; fall back to url-only
-                _client = QdrantClient(url=QDRANT_URL)
+        # QdrantClient will accept api_key for cloud; pass it if present.
+        kwargs = {}
+        if QDRANT_API_KEY:
+            kwargs["api_key"] = QDRANT_API_KEY
+        try:
+            _client = QdrantClient(url=QDRANT_URL, **kwargs)
+        except TypeError:
+            # Older client versions may not accept api_key or url keyword; try url-only
+            _client = QdrantClient(QDRANT_URL)
     return _client
 
 def get_embedder():
