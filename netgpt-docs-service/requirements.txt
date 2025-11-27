@@ -1,0 +1,5 @@
+fastapi
+uvicorn[standard]
+chonkie
+fastembed
+qdrant-client[fastembed]

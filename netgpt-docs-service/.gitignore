@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+.env
+.fastembed_cache/
+qdrant_storage/
