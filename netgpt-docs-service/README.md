@@ -40,7 +40,7 @@ Important variables:
 - `QDRANT_URL`: Qdrant HTTP endpoint (e.g. https://<cluster>.us-east.aws.cloud.qdrant.io:6333)
 - `QDRANT_API_KEY`: API key for Qdrant Cloud (optional for self-hosted Qdrant)
 - `COLLECTION_NAME`: default collection name used by the service
-- `USE_MOCK_QDRANT`: set to `1` to use an in-process mock client for local testing
+Note: this service is designed to use a production Qdrant instance. There is no built-in mock Qdrant supported in this distribution; set `QDRANT_URL` to your real Qdrant endpoint (e.g. `http://localhost:6333` or a cloud cluster URL).
 
 Admin endpoints
 ---------------
