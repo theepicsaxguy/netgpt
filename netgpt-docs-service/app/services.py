@@ -88,25 +88,21 @@ def get_embedder():
         _embedder = TextEmbedding(model=EMBEDDING_MODEL)
     return _embedder
 
-def setup_collection(dim: int):
+def setup_collection(collection_name: str, dim: int):
     client = get_client()
-    # VectorParams and Distance are injected into globals when the client is
-    # first created by get_client(). Ensure they exist now.
-    # If the client is a mock, let it handle itself
+    # Defensive check for existence of collection
     try:
-        exists = client.collection_exists(COLLECTION_NAME)
+        if getattr(client, "collection_exists", None):
+            exists = client.collection_exists(collection_name)
+        else:
+            exists = collection_name in [c.name for c in client.get_collections().collections]
     except Exception:
-        # Some client versions expose get_collections; try defensive checks
-        try:
-            exists = COLLECTION_NAME in [c.name for c in client.get_collections().collections]
-        except Exception:
-            # If we cannot determine, assume false so creation will be attempted
-            exists = False
+        exists = False
 
     if not exists:
-        logger.info(f"Creating Qdrant collection '{COLLECTION_NAME}' (dim={dim})")
+        logger.info(f"Creating Qdrant collection '{collection_name}' (dim={dim})")
         client.create_collection(
-            collection_name=COLLECTION_NAME,
+            collection_name=collection_name,
             vectors_config=VectorParams(size=dim, distance=Distance.COSINE)
         )
 
@@ -181,7 +177,7 @@ def get_raw_client():
     qdrant-client API (admin, snapshots, cluster methods, etc.)."""
     return get_client()
 
-def ingest_document(doc_id: str, text: str) -> int:
+def ingest_document(doc_id: str, text: str, collection: str | None = None) -> int:
     chunker = RecursiveChunker(chunk_size=CHUNK_SIZE, tokenizer="gpt2")
     chunks = chunker(text)
     texts = [chunk.text for chunk in chunks]
@@ -191,7 +187,13 @@ def ingest_document(doc_id: str, text: str) -> int:
     embedder = get_embedder()
     embeddings = list(embedder.embed(texts))
     dim = embeddings[0].shape[0]
-    setup_collection(dim)
+    # Determine target collection: request-level, then configured default, else raise
+    target = collection or COLLECTION_NAME
+    if not target:
+        raise ValueError("No target collection provided; set COLLECTION_NAME or pass collection parameter.")
+
+    # Ensure the collection exists before uploading
+    setup_collection(target, dim)
 
     payloads = []
     vectors = []
@@ -201,7 +203,7 @@ def ingest_document(doc_id: str, text: str) -> int:
 
     client = get_client()
     client.upload_collection(
-        collection_name=COLLECTION_NAME,
+        collection_name=target,
         vectors=vectors,
         payload=payloads
     )
@@ -209,12 +211,16 @@ def ingest_document(doc_id: str, text: str) -> int:
     logger.info(f"Ingested document '{doc_id}' with {len(chunks)} chunks.")
     return len(chunks)
 
-def query_text(query: str, top_k: int = 5):
+def query_text(query: str, top_k: int = 5, collection: str | None = None):
     embedder = get_embedder()
     q_vec = next(embedder.embed([query]))
     client = get_client()
+    target = collection or COLLECTION_NAME
+    if not target:
+        raise ValueError("No target collection provided; set COLLECTION_NAME or pass collection parameter.")
+
     hits = client.search(
-        collection_name=COLLECTION_NAME,
+        collection_name=target,
         query_vector=q_vec.tolist(),
         limit=top_k
     )

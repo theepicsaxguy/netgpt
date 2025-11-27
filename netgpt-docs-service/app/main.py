@@ -39,14 +39,20 @@ app = FastAPI(
 
 @app.post("/ingest")
 def ingest_endpoint(doc: DocumentIn):
-    count = ingest_document(doc.doc_id, doc.text)
+    try:
+        count = ingest_document(doc.doc_id, doc.text, collection=doc.collection)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     if count == 0:
         raise HTTPException(status_code=400, detail="No content to ingest.")
     return {"status": "success", "chunks_ingested": count}
 
 @app.post("/query", response_model=list[SearchResult])
 def query_endpoint(query: QueryIn):
-    results = query_text(query.query, top_k=5)
+    try:
+        results = query_text(query.query, top_k=5, collection=query.collection)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return results
 
 @app.get("/health")
