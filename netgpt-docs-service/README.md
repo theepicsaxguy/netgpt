@@ -11,68 +11,50 @@ The service should be organized as follows:
 ```
 netgpt-docs-service/
 ├── Dockerfile
+# NetGPT Document Ingestion Service
+
+A Python + FastAPI microservice for ingesting text documents, generating embeddings with FastEmbed, storing vectors in Qdrant, and answering semantic queries.
+
+Directory structure:
+
+```
+netgpt-docs-service/
+├── Dockerfile
 ├── requirements.txt
+├── docker-compose.yml
+├── .gitignore
+├── organize-docs-service.sh
 └── app/
-		├── main.py
-		├── config.py
-		├── models.py
-		└── services.py
+    ├── __init__.py
+    ├── main.py
+    ├── config.py
+    ├── models.py
+    └── services.py
 ```
 
-## Features
-
-- **Document Ingestion**: Parse and chunk text documents using Chonkie's RecursiveChunker
-- **Vector Embeddings**: Generate embeddings using FastEmbed (BAAI/bge-small-en-v1.5 by default)
-- **Vector Storage**: Store and retrieve embeddings using Qdrant vector database
-- **Semantic Search**: Query documents by semantic similarity
-
-## API Endpoints
-
-- `POST /ingest` - Ingest a document (splits text into chunks, embeds them, and stores in Qdrant)
-	- Request body: `{"doc_id": "string", "text": "string"}`
-	- Response: `{"status": "success", "chunks_ingested": number}`
-
-- `POST /query` - Query the vector database with a text string
-	- Request body: `{"query": "string"}`
-	- Response: `[{"doc_id": "string", "chunk": "string", "score": number}]`
-
-- `GET /health` - Health check endpoint
-	- Response: `{"status": "healthy"}`
-
-## Configuration
-
-All configuration is via environment variables:
-
-- `QDRANT_URL` - Qdrant connection URL (default: `http://qdrant.pc-tips.se:6333`)
-- `QDRANT_API_KEY` - Qdrant API key (if authentication is required)
-- `EMBEDDING_MODEL` - FastEmbed model name (default: `BAAI/bge-small-en-v1.5`)
-- `COLLECTION_NAME` - Qdrant collection name (default: `netgpt_documents`)
-- `CHUNK_SIZE` - Maximum tokens per chunk (default: `512`)
-
-## Running with Docker
+Quick start (Docker):
 
 ```bash
-# Build the image
-docker build -t netgpt-docs-service -f docs-service-dockerfile .
-
-# Run the container
-docker run -p 8000:8000 \
-	-e QDRANT_URL=http://qdrant.pc-tips.se:6333 \
-	-e EMBEDDING_MODEL=BAAI/bge-small-en-v1.5 \
-	netgpt-docs-service
+cd netgpt-docs-service
+docker-compose up -d --build
+# then:
+curl http://localhost:8000/health
 ```
 
-## Development
+Development (local):
 
 ```bash
-# Install dependencies
-pip install -r docs-service-requirements.txt
-
-# Run the service
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-... (full README retained in file) ...
+Tests are available under `tests/document-service/` and a small organization script `organize-docs-service.sh` exists to move prefixed files into this layout if they are still present in the repository root.
 
-````
+For full documentation see `docs/document-service/` in the repository.
 
+-- NetGPT Team
+# Run the container
+
+docker run -p 8000:8000 \
