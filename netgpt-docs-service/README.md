@@ -2,17 +2,6 @@
 ````markdown
 # NetGPT Document Ingestion Service
 
-A Python/FastAPI microservice for ingesting text documents and serving semantic queries using Chonkie, FastEmbed, and Qdrant.
-
-## Directory Structure
-
-The service should be organized as follows:
-
-```
-netgpt-docs-service/
-├── Dockerfile
-# NetGPT Document Ingestion Service
-
 A Python + FastAPI microservice for ingesting text documents, generating embeddings with FastEmbed, storing vectors in Qdrant, and answering semantic queries.
 
 Directory structure:
@@ -55,6 +44,3 @@ Tests are available under `tests/document-service/` and a small organization scr
 For full documentation see `docs/document-service/` in the repository.
 
 -- NetGPT Team
-# Run the container
-
-docker run -p 8000:8000 \
