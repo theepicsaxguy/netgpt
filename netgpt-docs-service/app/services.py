@@ -44,6 +44,9 @@ def get_embedder():
     return _embedder
 
 def setup_collection(dim: int):
+    client = get_client()
+    # VectorParams and Distance are injected into globals when the client is
+    # first created by get_client(). Ensure they exist now.
     if not client.collection_exists(COLLECTION_NAME):
         logger.info(f"Creating Qdrant collection '{COLLECTION_NAME}' (dim={dim})")
         client.create_collection(
