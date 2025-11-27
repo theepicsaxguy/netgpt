@@ -61,7 +61,23 @@ def get_client():
         globals()["VectorParams"] = _VectorParams
         globals()["Distance"] = _Distance
         globals()["PointStruct"] = _PointStruct
-        _client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
+
+        # QdrantClient supports api_key parameter for cloud use. If provided,
+        # pass it through. Also allow using local in-memory or http endpoints.
+        if USE_MOCK_QDRANT:
+            _client = _MockQdrantClient()
+        else:
+            # QdrantClient will accept None for api_key; in cloud scenarios set it.
+            # If a full URL is provided with https, QdrantClient will use REST transport.
+            kwargs = {}
+            if QDRANT_API_KEY:
+                kwargs["api_key"] = QDRANT_API_KEY
+            # Create the client with provided URL and optional api_key
+            try:
+                _client = QdrantClient(url=QDRANT_URL, **kwargs)
+            except TypeError:
+                # Older versions may expect 'host'/'port' args; fall back to url-only
+                _client = QdrantClient(url=QDRANT_URL)
     return _client
 
 def get_embedder():
@@ -76,12 +92,94 @@ def setup_collection(dim: int):
     client = get_client()
     # VectorParams and Distance are injected into globals when the client is
     # first created by get_client(). Ensure they exist now.
-    if not client.collection_exists(COLLECTION_NAME):
+    # If the client is a mock, let it handle itself
+    try:
+        exists = client.collection_exists(COLLECTION_NAME)
+    except Exception:
+        # Some client versions expose get_collections; try defensive checks
+        try:
+            exists = COLLECTION_NAME in [c.name for c in client.get_collections().collections]
+        except Exception:
+            # If we cannot determine, assume false so creation will be attempted
+            exists = False
+
+    if not exists:
         logger.info(f"Creating Qdrant collection '{COLLECTION_NAME}' (dim={dim})")
         client.create_collection(
             collection_name=COLLECTION_NAME,
             vectors_config=VectorParams(size=dim, distance=Distance.COSINE)
         )
+
+
+def ensure_collection(collection_name: str, dim: int, distance=None):
+    """Ensure a collection with given name exists; create if missing.
+
+    Returns True if created or already exists, False on failure.
+    """
+    client = get_client()
+    try:
+        if getattr(client, "collection_exists", None):
+            if client.collection_exists(collection_name):
+                return True
+        # Fallback using get_collections
+        if getattr(client, "get_collections", None):
+            cols = client.get_collections().collections
+            if any(c.name == collection_name for c in cols):
+                return True
+    except Exception:
+        # continue to try creating
+        pass
+
+    try:
+        # Accept either a Distance enum or a string like "COSINE"/"EUCLID"
+        if distance is None:
+            vec_distance = Distance.COSINE
+        else:
+            if isinstance(distance, str):
+                try:
+                    vec_distance = getattr(Distance, distance)
+                except Exception:
+                    vec_distance = Distance.COSINE
+            else:
+                vec_distance = distance
+        client.create_collection(
+            collection_name=collection_name,
+            vectors_config=VectorParams(size=dim, distance=vec_distance)
+        )
+        return True
+    except Exception as e:
+        logger.exception("Failed to create collection: %s", e)
+        return False
+
+
+def list_collections():
+    client = get_client()
+    if getattr(client, "get_collections", None):
+        try:
+            return [c.name for c in client.get_collections().collections]
+        except Exception:
+            pass
+    # If mock or fallback
+    try:
+        # Some clients may have collections property
+        return [c.name for c in client.get_collections().collections]
+    except Exception:
+        return []
+
+
+def delete_collection(collection_name: str):
+    client = get_client()
+    try:
+        return client.delete_collection(collection_name=collection_name)
+    except Exception:
+        logger.exception("Failed to delete collection %s", collection_name)
+        return False
+
+
+def get_raw_client():
+    """Return the underlying Qdrant client instance so callers can use the full
+    qdrant-client API (admin, snapshots, cluster methods, etc.)."""
+    return get_client()
 
 def ingest_document(doc_id: str, text: str) -> int:
     chunker = RecursiveChunker(chunk_size=CHUNK_SIZE, tokenizer="gpt2")

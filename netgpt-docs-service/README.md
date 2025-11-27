@@ -30,6 +30,30 @@ docker-compose up -d --build
 curl http://localhost:8000/health
 ```
 
+Qdrant configuration
+--------------------
+
+This service reads Qdrant connection settings from environment variables. You can provide them via a `.env` file in the `netgpt-docs-service/` folder (an example `.env.example` is included).
+
+Important variables:
+
+- `QDRANT_URL`: Qdrant HTTP endpoint (e.g. https://<cluster>.us-east.aws.cloud.qdrant.io:6333)
+- `QDRANT_API_KEY`: API key for Qdrant Cloud (optional for self-hosted Qdrant)
+- `COLLECTION_NAME`: default collection name used by the service
+- `USE_MOCK_QDRANT`: set to `1` to use an in-process mock client for local testing
+
+Admin endpoints
+---------------
+
+The service exposes a few admin endpoints to manage Qdrant collections:
+
+- POST /admin/ensure-collection?name=NAME&dim=384 - Ensure the named collection exists (creates it if missing)
+- GET /admin/collections - List collections visible to the client
+- DELETE /admin/collections/{name} - Delete a named collection
+- GET /admin/client-info - Returns minimal metadata about the internal Qdrant client (does not return API keys)
+
+These are intended for operational convenience; secure them appropriately before exposing in production.
+
 Development (local):
 
 ```bash

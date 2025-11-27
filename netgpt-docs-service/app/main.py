@@ -24,10 +24,13 @@ if str(project_root) not in sys.path:
 try:
     from app.models import DocumentIn, QueryIn, SearchResult
     from app.services import ingest_document, query_text
+    # Admin helpers
+    from app.services import ensure_collection, list_collections, delete_collection, get_raw_client
 except ImportError:
     # Fallback for script execution where the current directory is the package folder
     from models import DocumentIn, QueryIn, SearchResult
     from services import ingest_document, query_text
+    from services import ensure_collection, list_collections, delete_collection, get_raw_client
 
 app = FastAPI(
     title="NetGPT Document Ingestion Service",
@@ -49,6 +52,41 @@ def query_endpoint(query: QueryIn):
 @app.get("/health")
 def health():
     return {"status": "healthy"}
+
+
+@app.post("/admin/ensure-collection")
+def admin_ensure_collection(name: str, dim: int = 384):
+    ok = ensure_collection(name, dim)
+    if not ok:
+        raise HTTPException(status_code=500, detail="Failed to ensure collection")
+    return {"status": "ok", "collection": name}
+
+
+@app.get("/admin/collections")
+def admin_list_collections():
+    cols = list_collections()
+    return {"collections": cols}
+
+
+@app.delete("/admin/collections/{name}")
+def admin_delete_collection(name: str):
+    ok = delete_collection(name)
+    if not ok:
+        raise HTTPException(status_code=500, detail="Failed to delete collection")
+    return {"status": "deleted", "collection": name}
+
+
+@app.get("/admin/client-info")
+def admin_client_info():
+    client = get_raw_client()
+    info = {"type": client.__class__.__name__}
+    # Avoid leaking credentials; include only safe metadata
+    try:
+        if hasattr(client, "url"):
+            info["url"] = getattr(client, "url")
+    except Exception:
+        pass
+    return info
 
 
 if __name__ == "__main__":
