@@ -45,42 +45,47 @@ def get_client():
             _client = QdrantClient(QDRANT_URL)
 
         # Quick connectivity check: request collections to ensure the host is reachable.
-        # Retry a few times with backoff to handle transient network issues.
-        import time
-        try:
-            from qdrant_client.http.exceptions import ResponseHandlingException
-        except Exception:
-            # Fallback if qdrant_client not available at analysis time; use generic Exception
-            ResponseHandlingException = Exception
-
-        max_retries = 3
-        delay = 1.0
-        last_exc = None
-        for attempt in range(1, max_retries + 1):
+            # Quick connectivity check: request collections to ensure the host is reachable.
+            # This can be skipped by setting QDRANT_SKIP_CONNECT_CHECK=1 in the environment
+            import time
+            import os
             try:
-                # Use a lightweight endpoint to validate the connection
-                if getattr(_client, "get_collections", None):
-                    _client.get_collections()
-                else:
-                    # Older clients may expose collections differently; try a simple call
-                    _client._client.request("GET", "/collections")
-                # If we reach here, the client is reachable
-                break
-            except Exception as e:
-                last_exc = e
-                logger.warning("Attempt %d: failed to contact Qdrant at %s: %s", attempt, QDRANT_URL, e)
-                if attempt < max_retries:
-                    time.sleep(delay)
-                    delay *= 2
-                else:
-                    # Raise a clear error indicating the target and hint possible causes
-                    msg = (
-                        f"Failed to connect to Qdrant at {QDRANT_URL} after {max_retries} attempts. "
-                        "Check network connectivity, DNS, firewall, and that Qdrant is running and accessible from this host."
-                    )
-                    logger.exception(msg)
-                    # Re-raise a ResponseHandlingException for callers expecting qdrant-client exceptions
-                    raise ResponseHandlingException(last_exc)
+                from qdrant_client.http.exceptions import ResponseHandlingException
+            except Exception:
+                ResponseHandlingException = Exception
+
+            if os.getenv("QDRANT_SKIP_CONNECT_CHECK", "0") == "1":
+                logger.info("Skipping Qdrant connectivity check because QDRANT_SKIP_CONNECT_CHECK=1")
+            else:
+                # Retry a few times with backoff to handle transient network issues.
+                max_retries = 3
+                delay = 1.0
+                last_exc = None
+                for attempt in range(1, max_retries + 1):
+                    try:
+                        # Use a lightweight endpoint to validate the connection
+                        if getattr(_client, "get_collections", None):
+                            _client.get_collections()
+                        else:
+                            # Older clients may expose collections differently; try a simple call
+                            _client._client.request("GET", "/collections")
+                        # If we reach here, the client is reachable
+                        break
+                    except Exception as e:
+                        last_exc = e
+                        logger.warning("Attempt %d: failed to contact Qdrant at %s: %s", attempt, QDRANT_URL, e)
+                        if attempt < max_retries:
+                            time.sleep(delay)
+                            delay *= 2
+                        else:
+                            # Raise a clear error indicating the target and hint possible causes
+                            msg = (
+                                f"Failed to connect to Qdrant at {QDRANT_URL} after {max_retries} attempts. "
+                                "Check network connectivity, DNS, firewall, and that Qdrant is running and accessible from this host."
+                            )
+                            logger.exception(msg)
+                            # Re-raise a ResponseHandlingException for callers expecting qdrant-client exceptions
+                            raise ResponseHandlingException(last_exc)
     return _client
 
 def get_embedder():
