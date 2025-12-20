@@ -27,7 +27,7 @@
     <PackageReference Include="OpenAI" Version="2.7.0" />
     <PackageReference Include="YamlDotNet" Version="16.3.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.101" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>
