@@ -30,6 +30,6 @@
     "orval": "^7.16.1",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.5.4",
-    "vite": "^7.2.4"
+    "vite": "^8.0.0"
   }
 }
